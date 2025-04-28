@@ -1,0 +1,2027 @@
+[
+    {
+        "timestamp": 1745861323.9856992,
+        "classification": "Snort",
+        "confidence": 35.74
+    },
+    {
+        "timestamp": 1745861347.455332,
+        "classification": "Speech",
+        "confidence": 45.5
+    },
+    {
+        "timestamp": 1745861347.956744,
+        "classification": "Speech",
+        "confidence": 39.04
+    },
+    {
+        "timestamp": 1745861348.479792,
+        "classification": "Speech",
+        "confidence": 43.08
+    },
+    {
+        "timestamp": 1745861358.961152,
+        "classification": "Typing",
+        "confidence": 32.33
+    },
+    {
+        "timestamp": 1745861366.483117,
+        "classification": "Crack",
+        "confidence": 39.82
+    },
+    {
+        "timestamp": 1745861382.95392,
+        "classification": "Speech",
+        "confidence": 46.78
+    },
+    {
+        "timestamp": 1745861383.4674308,
+        "classification": "Speech",
+        "confidence": 54.46
+    },
+    {
+        "timestamp": 1745861383.96498,
+        "classification": "Speech",
+        "confidence": 51.15
+    },
+    {
+        "timestamp": 1745861384.489793,
+        "classification": "Speech",
+        "confidence": 40.4
+    },
+    {
+        "timestamp": 1745861387.973863,
+        "classification": "Speech",
+        "confidence": 30.17
+    },
+    {
+        "timestamp": 1745861396.938394,
+        "classification": "Speech",
+        "confidence": 62.03
+    },
+    {
+        "timestamp": 1745861397.448214,
+        "classification": "Speech",
+        "confidence": 44.16
+    },
+    {
+        "timestamp": 1745861398.898271,
+        "classification": "Speech",
+        "confidence": 39.63
+    },
+    {
+        "timestamp": 1745861399.920614,
+        "classification": "Speech",
+        "confidence": 45.55
+    },
+    {
+        "timestamp": 1745861403.419105,
+        "classification": "Speech",
+        "confidence": 32.15
+    },
+    {
+        "timestamp": 1745861406.406663,
+        "classification": "Speech",
+        "confidence": 51.73
+    },
+    {
+        "timestamp": 1745861406.920115,
+        "classification": "Music",
+        "confidence": 33.04
+    },
+    {
+        "timestamp": 1745861407.94166,
+        "classification": "Speech",
+        "confidence": 47.97
+    },
+    {
+        "timestamp": 1745861408.452798,
+        "classification": "Speech",
+        "confidence": 48.24
+    },
+    {
+        "timestamp": 1745861408.966513,
+        "classification": "Speech",
+        "confidence": 35.96
+    },
+    {
+        "timestamp": 1745861409.390827,
+        "classification": "Speech",
+        "confidence": 42.5
+    },
+    {
+        "timestamp": 1745861411.442819,
+        "classification": "Speech",
+        "confidence": 50.41
+    },
+    {
+        "timestamp": 1745861411.956801,
+        "classification": "Speech",
+        "confidence": 44.94
+    },
+    {
+        "timestamp": 1745861412.467425,
+        "classification": "Speech",
+        "confidence": 55.28
+    },
+    {
+        "timestamp": 1745861412.978763,
+        "classification": "Speech",
+        "confidence": 60.46
+    },
+    {
+        "timestamp": 1745861413.4062378,
+        "classification": "Speech",
+        "confidence": 58.4
+    },
+    {
+        "timestamp": 1745861413.915953,
+        "classification": "Speech",
+        "confidence": 67.46
+    },
+    {
+        "timestamp": 1745861414.4288619,
+        "classification": "Speech",
+        "confidence": 52.88
+    },
+    {
+        "timestamp": 1745861414.9418838,
+        "classification": "Speech",
+        "confidence": 71.6
+    },
+    {
+        "timestamp": 1745861415.450681,
+        "classification": "Speech",
+        "confidence": 92.06
+    },
+    {
+        "timestamp": 1745861415.9651132,
+        "classification": "Speech",
+        "confidence": 96.43
+    },
+    {
+        "timestamp": 1745861416.475085,
+        "classification": "Speech",
+        "confidence": 51.9
+    },
+    {
+        "timestamp": 1745861416.903657,
+        "classification": "Speech",
+        "confidence": 55.57
+    },
+    {
+        "timestamp": 1745861417.414808,
+        "classification": "Speech",
+        "confidence": 48.23
+    },
+    {
+        "timestamp": 1745861418.439483,
+        "classification": "Speech",
+        "confidence": 56.48
+    },
+    {
+        "timestamp": 1745861418.9536698,
+        "classification": "Speech",
+        "confidence": 56.6
+    },
+    {
+        "timestamp": 1745861419.464855,
+        "classification": "Speech",
+        "confidence": 44.1
+    },
+    {
+        "timestamp": 1745861419.978949,
+        "classification": "Speech",
+        "confidence": 67.53
+    },
+    {
+        "timestamp": 1745861420.402574,
+        "classification": "Speech",
+        "confidence": 51.99
+    },
+    {
+        "timestamp": 1745861423.473463,
+        "classification": "Speech",
+        "confidence": 35.53
+    },
+    {
+        "timestamp": 1745861424.413141,
+        "classification": "Speech",
+        "confidence": 42.44
+    },
+    {
+        "timestamp": 1745861424.9263942,
+        "classification": "Speech",
+        "confidence": 42.59
+    },
+    {
+        "timestamp": 1745861425.9474182,
+        "classification": "Speech",
+        "confidence": 50.56
+    },
+    {
+        "timestamp": 1745861426.462563,
+        "classification": "Speech",
+        "confidence": 40.37
+    },
+    {
+        "timestamp": 1745861426.9737349,
+        "classification": "Speech",
+        "confidence": 35.1
+    },
+    {
+        "timestamp": 1745861429.960038,
+        "classification": "Speech",
+        "confidence": 59.8
+    },
+    {
+        "timestamp": 1745861430.474633,
+        "classification": "Speech",
+        "confidence": 44.96
+    },
+    {
+        "timestamp": 1745861430.901172,
+        "classification": "Speech",
+        "confidence": 38.52
+    },
+    {
+        "timestamp": 1745861433.456652,
+        "classification": "Speech",
+        "confidence": 41.47
+    },
+    {
+        "timestamp": 1745861436.4497259,
+        "classification": "Inside, small room",
+        "confidence": 32.88
+    },
+    {
+        "timestamp": 1745861437.4663801,
+        "classification": "Speech",
+        "confidence": 45.18
+    },
+    {
+        "timestamp": 1745861437.89327,
+        "classification": "Speech",
+        "confidence": 33.61
+    },
+    {
+        "timestamp": 1745861439.432627,
+        "classification": "Speech",
+        "confidence": 37.69
+    },
+    {
+        "timestamp": 1745861439.942572,
+        "classification": "Speech",
+        "confidence": 32.08
+    },
+    {
+        "timestamp": 1745861441.3924491,
+        "classification": "Speech",
+        "confidence": 41.89
+    },
+    {
+        "timestamp": 1745861442.941727,
+        "classification": "Speech",
+        "confidence": 48.91
+    },
+    {
+        "timestamp": 1745861444.467516,
+        "classification": "Speech",
+        "confidence": 30.38
+    },
+    {
+        "timestamp": 1745861444.979769,
+        "classification": "Speech",
+        "confidence": 53.25
+    },
+    {
+        "timestamp": 1745861445.406007,
+        "classification": "Speech",
+        "confidence": 47.95
+    },
+    {
+        "timestamp": 1745861447.963095,
+        "classification": "Speech",
+        "confidence": 32.25
+    },
+    {
+        "timestamp": 1745861448.4775412,
+        "classification": "Speech",
+        "confidence": 43.47
+    },
+    {
+        "timestamp": 1745861448.901765,
+        "classification": "Speech",
+        "confidence": 47.41
+    },
+    {
+        "timestamp": 1745861449.418111,
+        "classification": "Speech",
+        "confidence": 33.28
+    },
+    {
+        "timestamp": 1745861449.936021,
+        "classification": "Speech",
+        "confidence": 44.31
+    },
+    {
+        "timestamp": 1745861450.953127,
+        "classification": "Speech",
+        "confidence": 60.81
+    },
+    {
+        "timestamp": 1745861451.463312,
+        "classification": "Speech",
+        "confidence": 45.9
+    },
+    {
+        "timestamp": 1745861454.447517,
+        "classification": "Speech",
+        "confidence": 72.18
+    },
+    {
+        "timestamp": 1745861454.9640682,
+        "classification": "Speech",
+        "confidence": 57.72
+    },
+    {
+        "timestamp": 1745861455.47375,
+        "classification": "Speech",
+        "confidence": 61.33
+    },
+    {
+        "timestamp": 1745861455.901206,
+        "classification": "Speech",
+        "confidence": 45.78
+    },
+    {
+        "timestamp": 1745861456.925296,
+        "classification": "Speech",
+        "confidence": 50.15
+    },
+    {
+        "timestamp": 1745861457.434179,
+        "classification": "Speech",
+        "confidence": 72.55
+    },
+    {
+        "timestamp": 1745861457.950929,
+        "classification": "Speech",
+        "confidence": 54.06
+    },
+    {
+        "timestamp": 1745861460.4293702,
+        "classification": "Speech",
+        "confidence": 65.19
+    },
+    {
+        "timestamp": 1745861460.938854,
+        "classification": "Speech",
+        "confidence": 43.87
+    },
+    {
+        "timestamp": 1745861461.9599948,
+        "classification": "Speech",
+        "confidence": 46.76
+    },
+    {
+        "timestamp": 1745861463.919963,
+        "classification": "Speech",
+        "confidence": 51.94
+    },
+    {
+        "timestamp": 1745861464.436008,
+        "classification": "Speech",
+        "confidence": 74.41
+    },
+    {
+        "timestamp": 1745861464.944685,
+        "classification": "Speech",
+        "confidence": 57.76
+    },
+    {
+        "timestamp": 1745861465.456212,
+        "classification": "Speech",
+        "confidence": 47.03
+    },
+    {
+        "timestamp": 1745861466.394283,
+        "classification": "Speech",
+        "confidence": 37.59
+    },
+    {
+        "timestamp": 1745861466.916184,
+        "classification": "Speech",
+        "confidence": 55.11
+    },
+    {
+        "timestamp": 1745861467.423766,
+        "classification": "Speech",
+        "confidence": 63.32
+    },
+    {
+        "timestamp": 1745861467.935452,
+        "classification": "Speech",
+        "confidence": 30.72
+    },
+    {
+        "timestamp": 1745861468.446908,
+        "classification": "Speech",
+        "confidence": 45.03
+    },
+    {
+        "timestamp": 1745861468.959616,
+        "classification": "Speech",
+        "confidence": 67.11
+    },
+    {
+        "timestamp": 1745861469.470588,
+        "classification": "Speech",
+        "confidence": 77.85
+    },
+    {
+        "timestamp": 1745861469.8964338,
+        "classification": "Speech",
+        "confidence": 82.26
+    },
+    {
+        "timestamp": 1745861470.405359,
+        "classification": "Speech",
+        "confidence": 97.2
+    },
+    {
+        "timestamp": 1745861470.917867,
+        "classification": "Speech",
+        "confidence": 51.21
+    },
+    {
+        "timestamp": 1745861471.4304252,
+        "classification": "Speech",
+        "confidence": 78.99
+    },
+    {
+        "timestamp": 1745861471.944148,
+        "classification": "Speech",
+        "confidence": 52.89
+    },
+    {
+        "timestamp": 1745861472.458816,
+        "classification": "Speech",
+        "confidence": 48.9
+    },
+    {
+        "timestamp": 1745861472.968437,
+        "classification": "Speech",
+        "confidence": 37.2
+    },
+    {
+        "timestamp": 1745861473.391283,
+        "classification": "Speech",
+        "confidence": 50.3
+    },
+    {
+        "timestamp": 1745861473.904671,
+        "classification": "Speech",
+        "confidence": 75.26
+    },
+    {
+        "timestamp": 1745861474.416812,
+        "classification": "Speech",
+        "confidence": 47.99
+    },
+    {
+        "timestamp": 1745861475.439564,
+        "classification": "Speech",
+        "confidence": 52.08
+    },
+    {
+        "timestamp": 1745861475.9521742,
+        "classification": "Speech",
+        "confidence": 67.23
+    },
+    {
+        "timestamp": 1745861476.463951,
+        "classification": "Speech",
+        "confidence": 90.9
+    },
+    {
+        "timestamp": 1745861476.975341,
+        "classification": "Speech",
+        "confidence": 51.23
+    },
+    {
+        "timestamp": 1745861477.410704,
+        "classification": "Speech",
+        "confidence": 31.84
+    },
+    {
+        "timestamp": 1745861477.923883,
+        "classification": "Speech",
+        "confidence": 62.21
+    },
+    {
+        "timestamp": 1745861478.43251,
+        "classification": "Speech",
+        "confidence": 49.03
+    },
+    {
+        "timestamp": 1745861479.45369,
+        "classification": "Speech",
+        "confidence": 32.87
+    },
+    {
+        "timestamp": 1745861479.9635048,
+        "classification": "Speech",
+        "confidence": 50.42
+    },
+    {
+        "timestamp": 1745861480.474818,
+        "classification": "Speech",
+        "confidence": 51.76
+    },
+    {
+        "timestamp": 1745861481.924931,
+        "classification": "Speech",
+        "confidence": 88.64
+    },
+    {
+        "timestamp": 1745861482.436003,
+        "classification": "Speech",
+        "confidence": 72.77
+    },
+    {
+        "timestamp": 1745861482.948609,
+        "classification": "Speech",
+        "confidence": 78.6
+    },
+    {
+        "timestamp": 1745861483.466523,
+        "classification": "Speech",
+        "confidence": 52.84
+    },
+    {
+        "timestamp": 1745861483.977321,
+        "classification": "Speech",
+        "confidence": 84.77
+    },
+    {
+        "timestamp": 1745861484.4017532,
+        "classification": "Speech",
+        "confidence": 65.59
+    },
+    {
+        "timestamp": 1745861484.9126232,
+        "classification": "Speech",
+        "confidence": 44.81
+    },
+    {
+        "timestamp": 1745861493.4442701,
+        "classification": "Speech",
+        "confidence": 45.7
+    },
+    {
+        "timestamp": 1745861493.9604921,
+        "classification": "Speech",
+        "confidence": 92.88
+    },
+    {
+        "timestamp": 1745861494.482757,
+        "classification": "Speech",
+        "confidence": 53.51
+    },
+    {
+        "timestamp": 1745861494.9107141,
+        "classification": "Speech",
+        "confidence": 48.52
+    },
+    {
+        "timestamp": 1745861495.420566,
+        "classification": "Speech",
+        "confidence": 46.51
+    },
+    {
+        "timestamp": 1745861496.947625,
+        "classification": "Speech",
+        "confidence": 95.04
+    },
+    {
+        "timestamp": 1745861497.454546,
+        "classification": "Speech",
+        "confidence": 98.46
+    },
+    {
+        "timestamp": 1745861497.970295,
+        "classification": "Speech",
+        "confidence": 95.79
+    },
+    {
+        "timestamp": 1745861498.3942778,
+        "classification": "Speech",
+        "confidence": 86.5
+    },
+    {
+        "timestamp": 1745861498.906183,
+        "classification": "Speech",
+        "confidence": 49.98
+    },
+    {
+        "timestamp": 1745861499.428277,
+        "classification": "Speech",
+        "confidence": 34.51
+    },
+    {
+        "timestamp": 1745861504.456359,
+        "classification": "Inside, small room",
+        "confidence": 35.75
+    },
+    {
+        "timestamp": 1745861510.439602,
+        "classification": "Speech",
+        "confidence": 61.82
+    },
+    {
+        "timestamp": 1745861510.939471,
+        "classification": "Speech",
+        "confidence": 40.34
+    },
+    {
+        "timestamp": 1745861512.899852,
+        "classification": "Speech",
+        "confidence": 39.08
+    },
+    {
+        "timestamp": 1745861514.9488409,
+        "classification": "Speech",
+        "confidence": 47.44
+    },
+    {
+        "timestamp": 1745861515.4597208,
+        "classification": "Speech",
+        "confidence": 45.8
+    },
+    {
+        "timestamp": 1745861517.4370072,
+        "classification": "Speech",
+        "confidence": 40.91
+    },
+    {
+        "timestamp": 1745861517.950915,
+        "classification": "Speech",
+        "confidence": 65.76
+    },
+    {
+        "timestamp": 1745861518.4556968,
+        "classification": "Speech",
+        "confidence": 68.47
+    },
+    {
+        "timestamp": 1745861518.9615831,
+        "classification": "Speech",
+        "confidence": 38.89
+    },
+    {
+        "timestamp": 1745861520.409757,
+        "classification": "Speech",
+        "confidence": 70.89
+    },
+    {
+        "timestamp": 1745861525.447191,
+        "classification": "Speech",
+        "confidence": 49.79
+    },
+    {
+        "timestamp": 1745861526.468176,
+        "classification": "Speech",
+        "confidence": 50.57
+    },
+    {
+        "timestamp": 1745861529.455766,
+        "classification": "Speech",
+        "confidence": 65.69
+    },
+    {
+        "timestamp": 1745861529.967304,
+        "classification": "Speech",
+        "confidence": 46.72
+    },
+    {
+        "timestamp": 1745861531.425964,
+        "classification": "Speech",
+        "confidence": 45.96
+    },
+    {
+        "timestamp": 1745861531.94466,
+        "classification": "Speech",
+        "confidence": 59.05
+    },
+    {
+        "timestamp": 1745861532.454783,
+        "classification": "Speech",
+        "confidence": 66.47
+    },
+    {
+        "timestamp": 1745861532.965665,
+        "classification": "Speech",
+        "confidence": 47.5
+    },
+    {
+        "timestamp": 1745861533.4661171,
+        "classification": "Speech",
+        "confidence": 61.19
+    },
+    {
+        "timestamp": 1745861533.895427,
+        "classification": "Speech",
+        "confidence": 43.1
+    },
+    {
+        "timestamp": 1745861534.404237,
+        "classification": "Speech",
+        "confidence": 47.71
+    },
+    {
+        "timestamp": 1745861534.9168289,
+        "classification": "Speech",
+        "confidence": 76.38
+    },
+    {
+        "timestamp": 1745861535.432288,
+        "classification": "Speech",
+        "confidence": 72.68
+    },
+    {
+        "timestamp": 1745861535.939689,
+        "classification": "Speech",
+        "confidence": 63.48
+    },
+    {
+        "timestamp": 1745861536.4527419,
+        "classification": "Speech",
+        "confidence": 43.24
+    },
+    {
+        "timestamp": 1745861537.9088662,
+        "classification": "Speech",
+        "confidence": 43.01
+    },
+    {
+        "timestamp": 1745861541.4007082,
+        "classification": "Speech",
+        "confidence": 81.23
+    },
+    {
+        "timestamp": 1745861541.912858,
+        "classification": "Speech",
+        "confidence": 48.29
+    },
+    {
+        "timestamp": 1745861542.425996,
+        "classification": "Speech",
+        "confidence": 35.25
+    },
+    {
+        "timestamp": 1745861545.9280581,
+        "classification": "Speech",
+        "confidence": 46.55
+    },
+    {
+        "timestamp": 1745861546.437618,
+        "classification": "Speech",
+        "confidence": 44.06
+    },
+    {
+        "timestamp": 1745861551.478705,
+        "classification": "Vehicle",
+        "confidence": 32.78
+    },
+    {
+        "timestamp": 1745861559.4065201,
+        "classification": "Speech",
+        "confidence": 31.73
+    },
+    {
+        "timestamp": 1745861561.455422,
+        "classification": "Speech",
+        "confidence": 45.28
+    },
+    {
+        "timestamp": 1745861561.967042,
+        "classification": "Speech",
+        "confidence": 49.36
+    },
+    {
+        "timestamp": 1745861563.9296231,
+        "classification": "Speech",
+        "confidence": 42.3
+    },
+    {
+        "timestamp": 1745861569.389809,
+        "classification": "Speech",
+        "confidence": 35.36
+    },
+    {
+        "timestamp": 1745861570.414557,
+        "classification": "Speech",
+        "confidence": 72.83
+    },
+    {
+        "timestamp": 1745861570.9261582,
+        "classification": "Speech",
+        "confidence": 49.18
+    },
+    {
+        "timestamp": 1745861573.406473,
+        "classification": "Vehicle",
+        "confidence": 49.48
+    },
+    {
+        "timestamp": 1745861573.9184792,
+        "classification": "Vehicle",
+        "confidence": 51.15
+    },
+    {
+        "timestamp": 1745861574.4290502,
+        "classification": "Vehicle",
+        "confidence": 50.05
+    },
+    {
+        "timestamp": 1745861574.942488,
+        "classification": "Vehicle",
+        "confidence": 50.33
+    },
+    {
+        "timestamp": 1745861577.9242392,
+        "classification": "Vehicle",
+        "confidence": 35.49
+    },
+    {
+        "timestamp": 1745861585.445487,
+        "classification": "Speech",
+        "confidence": 41.7
+    },
+    {
+        "timestamp": 1745861593.469463,
+        "classification": "Speech",
+        "confidence": 64.59
+    },
+    {
+        "timestamp": 1745861593.971402,
+        "classification": "Speech",
+        "confidence": 53.51
+    },
+    {
+        "timestamp": 1745861594.411244,
+        "classification": "Speech",
+        "confidence": 40.39
+    },
+    {
+        "timestamp": 1745861594.9182348,
+        "classification": "Speech",
+        "confidence": 91.68
+    },
+    {
+        "timestamp": 1745861595.428339,
+        "classification": "Speech",
+        "confidence": 68.99
+    },
+    {
+        "timestamp": 1745861595.9279182,
+        "classification": "Speech",
+        "confidence": 87.85
+    },
+    {
+        "timestamp": 1745861596.443003,
+        "classification": "Speech",
+        "confidence": 48.54
+    },
+    {
+        "timestamp": 1745861596.9531252,
+        "classification": "Speech",
+        "confidence": 51.5
+    },
+    {
+        "timestamp": 1745861597.465274,
+        "classification": "Speech",
+        "confidence": 52.05
+    },
+    {
+        "timestamp": 1745861597.891555,
+        "classification": "Speech",
+        "confidence": 48.37
+    },
+    {
+        "timestamp": 1745861599.4271948,
+        "classification": "Speech",
+        "confidence": 49.65
+    },
+    {
+        "timestamp": 1745861599.938524,
+        "classification": "Speech",
+        "confidence": 44.04
+    },
+    {
+        "timestamp": 1745861600.455915,
+        "classification": "Speech",
+        "confidence": 41.5
+    },
+    {
+        "timestamp": 1745861600.9622378,
+        "classification": "Speech",
+        "confidence": 85.15
+    },
+    {
+        "timestamp": 1745861601.3909051,
+        "classification": "Speech",
+        "confidence": 39.98
+    },
+    {
+        "timestamp": 1745861601.903008,
+        "classification": "Speech",
+        "confidence": 45.73
+    },
+    {
+        "timestamp": 1745861602.41484,
+        "classification": "Speech",
+        "confidence": 75.47
+    },
+    {
+        "timestamp": 1745861602.9267142,
+        "classification": "Speech",
+        "confidence": 50.24
+    },
+    {
+        "timestamp": 1745861606.939391,
+        "classification": "Speech",
+        "confidence": 45.95
+    },
+    {
+        "timestamp": 1745861607.451953,
+        "classification": "Speech",
+        "confidence": 42.15
+    },
+    {
+        "timestamp": 1745861607.964753,
+        "classification": "Speech",
+        "confidence": 75.04
+    },
+    {
+        "timestamp": 1745861608.4731488,
+        "classification": "Speech",
+        "confidence": 51.17
+    },
+    {
+        "timestamp": 1745861608.90037,
+        "classification": "Speech",
+        "confidence": 54.84
+    },
+    {
+        "timestamp": 1745861609.413249,
+        "classification": "Speech",
+        "confidence": 79.96
+    },
+    {
+        "timestamp": 1745861609.9233768,
+        "classification": "Speech",
+        "confidence": 42.66
+    },
+    {
+        "timestamp": 1745861614.4455628,
+        "classification": "Speech",
+        "confidence": 38.36
+    },
+    {
+        "timestamp": 1745861614.961725,
+        "classification": "Speech",
+        "confidence": 45.76
+    },
+    {
+        "timestamp": 1745861626.4064472,
+        "classification": "Clip-clop",
+        "confidence": 30.22
+    },
+    {
+        "timestamp": 1745861626.915366,
+        "classification": "Crackle",
+        "confidence": 30.68
+    },
+    {
+        "timestamp": 1745861627.429625,
+        "classification": "Patter",
+        "confidence": 41.18
+    },
+    {
+        "timestamp": 1745861629.4649549,
+        "classification": "Speech",
+        "confidence": 64.83
+    },
+    {
+        "timestamp": 1745861629.891863,
+        "classification": "Speech",
+        "confidence": 35.18
+    },
+    {
+        "timestamp": 1745861633.401891,
+        "classification": "Speech",
+        "confidence": 30.74
+    },
+    {
+        "timestamp": 1745861633.900458,
+        "classification": "Speech",
+        "confidence": 40.11
+    },
+    {
+        "timestamp": 1745861634.413548,
+        "classification": "Speech",
+        "confidence": 67.15
+    },
+    {
+        "timestamp": 1745861634.9258602,
+        "classification": "Speech",
+        "confidence": 50.23
+    },
+    {
+        "timestamp": 1745861635.437275,
+        "classification": "Speech",
+        "confidence": 44.37
+    },
+    {
+        "timestamp": 1745861636.974376,
+        "classification": "Speech",
+        "confidence": 42.39
+    },
+    {
+        "timestamp": 1745861637.405716,
+        "classification": "Speech",
+        "confidence": 59.14
+    },
+    {
+        "timestamp": 1745861637.91632,
+        "classification": "Speech",
+        "confidence": 49.1
+    },
+    {
+        "timestamp": 1745861639.450508,
+        "classification": "Speech",
+        "confidence": 64.0
+    },
+    {
+        "timestamp": 1745861639.975411,
+        "classification": "Speech",
+        "confidence": 49.95
+    },
+    {
+        "timestamp": 1745861640.492012,
+        "classification": "Speech",
+        "confidence": 74.88
+    },
+    {
+        "timestamp": 1745861640.915452,
+        "classification": "Speech",
+        "confidence": 52.93
+    },
+    {
+        "timestamp": 1745861641.411628,
+        "classification": "Speech",
+        "confidence": 37.62
+    },
+    {
+        "timestamp": 1745861641.926147,
+        "classification": "Speech",
+        "confidence": 84.51
+    },
+    {
+        "timestamp": 1745861642.437941,
+        "classification": "Speech",
+        "confidence": 73.66
+    },
+    {
+        "timestamp": 1745861642.9480178,
+        "classification": "Speech",
+        "confidence": 35.72
+    },
+    {
+        "timestamp": 1745861643.4615061,
+        "classification": "Speech",
+        "confidence": 39.17
+    },
+    {
+        "timestamp": 1745861643.971825,
+        "classification": "Speech",
+        "confidence": 69.15
+    },
+    {
+        "timestamp": 1745861644.3983119,
+        "classification": "Speech",
+        "confidence": 48.42
+    },
+    {
+        "timestamp": 1745861646.448874,
+        "classification": "Speech",
+        "confidence": 42.49
+    },
+    {
+        "timestamp": 1745861650.457336,
+        "classification": "Speech",
+        "confidence": 30.65
+    },
+    {
+        "timestamp": 1745861651.398499,
+        "classification": "Speech",
+        "confidence": 30.97
+    },
+    {
+        "timestamp": 1745861653.955339,
+        "classification": "Vehicle",
+        "confidence": 30.21
+    },
+    {
+        "timestamp": 1745861654.4685261,
+        "classification": "Vehicle",
+        "confidence": 48.47
+    },
+    {
+        "timestamp": 1745861654.8952901,
+        "classification": "Vehicle",
+        "confidence": 68.41
+    },
+    {
+        "timestamp": 1745861655.408597,
+        "classification": "Vehicle",
+        "confidence": 52.19
+    },
+    {
+        "timestamp": 1745861655.919292,
+        "classification": "Vehicle",
+        "confidence": 37.58
+    },
+    {
+        "timestamp": 1745861656.434994,
+        "classification": "Vehicle",
+        "confidence": 32.8
+    },
+    {
+        "timestamp": 1745861657.970311,
+        "classification": "Vehicle",
+        "confidence": 44.61
+    },
+    {
+        "timestamp": 1745861658.3927228,
+        "classification": "Vehicle",
+        "confidence": 38.6
+    },
+    {
+        "timestamp": 1745861682.4712472,
+        "classification": "Speech",
+        "confidence": 53.59
+    },
+    {
+        "timestamp": 1745861682.975018,
+        "classification": "Speech",
+        "confidence": 47.36
+    },
+    {
+        "timestamp": 1745861683.924663,
+        "classification": "Speech",
+        "confidence": 53.02
+    },
+    {
+        "timestamp": 1745861709.4352262,
+        "classification": "Speech",
+        "confidence": 47.12
+    },
+    {
+        "timestamp": 1745861709.9362051,
+        "classification": "Speech",
+        "confidence": 46.77
+    },
+    {
+        "timestamp": 1745861710.973712,
+        "classification": "Speech",
+        "confidence": 72.69
+    },
+    {
+        "timestamp": 1745861711.4687748,
+        "classification": "Speech",
+        "confidence": 44.29
+    },
+    {
+        "timestamp": 1745861716.929884,
+        "classification": "Speech",
+        "confidence": 38.96
+    },
+    {
+        "timestamp": 1745861719.4053068,
+        "classification": "Speech",
+        "confidence": 31.98
+    },
+    {
+        "timestamp": 1745861719.917343,
+        "classification": "Speech",
+        "confidence": 48.17
+    },
+    {
+        "timestamp": 1745861720.428749,
+        "classification": "Speech",
+        "confidence": 32.83
+    },
+    {
+        "timestamp": 1745861768.0824351,
+        "classification": "Vehicle",
+        "confidence": 25.41
+    },
+    {
+        "timestamp": 1745861769.107944,
+        "classification": "Vehicle",
+        "confidence": 46.6
+    },
+    {
+        "timestamp": 1745861769.620102,
+        "classification": "Speech",
+        "confidence": 71.65
+    },
+    {
+        "timestamp": 1745861770.125578,
+        "classification": "Speech",
+        "confidence": 43.65
+    },
+    {
+        "timestamp": 1745861771.579674,
+        "classification": "Vehicle",
+        "confidence": 22.84
+    },
+    {
+        "timestamp": 1745861774.721,
+        "classification": "Vehicle",
+        "confidence": 20.29
+    },
+    {
+        "timestamp": 1745861775.078414,
+        "classification": "Speech",
+        "confidence": 28.15
+    },
+    {
+        "timestamp": 1745861775.587615,
+        "classification": "Speech",
+        "confidence": 35.69
+    },
+    {
+        "timestamp": 1745861777.654067,
+        "classification": "Speech",
+        "confidence": 34.66
+    },
+    {
+        "timestamp": 1745861778.15326,
+        "classification": "Speech",
+        "confidence": 27.67
+    },
+    {
+        "timestamp": 1745861778.576298,
+        "classification": "Speech",
+        "confidence": 90.26
+    },
+    {
+        "timestamp": 1745861779.087679,
+        "classification": "Speech",
+        "confidence": 50.56
+    },
+    {
+        "timestamp": 1745861779.599773,
+        "classification": "Speech",
+        "confidence": 26.68
+    },
+    {
+        "timestamp": 1745861780.109162,
+        "classification": "Vehicle",
+        "confidence": 21.11
+    },
+    {
+        "timestamp": 1745861784.6316118,
+        "classification": "Microwave oven",
+        "confidence": 23.05
+    },
+    {
+        "timestamp": 1745861785.572823,
+        "classification": "Vehicle",
+        "confidence": 24.21
+    },
+    {
+        "timestamp": 1745861786.083405,
+        "classification": "Vehicle",
+        "confidence": 24.79
+    },
+    {
+        "timestamp": 1745861787.12382,
+        "classification": "Vehicle",
+        "confidence": 22.71
+    },
+    {
+        "timestamp": 1745861790.092424,
+        "classification": "Vehicle",
+        "confidence": 24.45
+    },
+    {
+        "timestamp": 1745861792.1414862,
+        "classification": "Vehicle",
+        "confidence": 23.4
+    },
+    {
+        "timestamp": 1745861793.592098,
+        "classification": "Speech",
+        "confidence": 34.54
+    },
+    {
+        "timestamp": 1745861794.619308,
+        "classification": "Vehicle",
+        "confidence": 23.06
+    },
+    {
+        "timestamp": 1745861795.642762,
+        "classification": "Vehicle",
+        "confidence": 23.47
+    },
+    {
+        "timestamp": 1745861796.580363,
+        "classification": "Vehicle",
+        "confidence": 23.01
+    },
+    {
+        "timestamp": 1745861799.150888,
+        "classification": "Speech",
+        "confidence": 50.52
+    },
+    {
+        "timestamp": 1745861799.653603,
+        "classification": "Speech",
+        "confidence": 30.88
+    },
+    {
+        "timestamp": 1745861801.616052,
+        "classification": "Inside, small room",
+        "confidence": 21.49
+    },
+    {
+        "timestamp": 1745861803.5749938,
+        "classification": "Vehicle",
+        "confidence": 23.64
+    },
+    {
+        "timestamp": 1745861805.111069,
+        "classification": "Crack",
+        "confidence": 21.43
+    },
+    {
+        "timestamp": 1745861806.135925,
+        "classification": "Vehicle",
+        "confidence": 22.27
+    },
+    {
+        "timestamp": 1745861811.6064389,
+        "classification": "Vehicle",
+        "confidence": 27.58
+    },
+    {
+        "timestamp": 1745861814.5854888,
+        "classification": "Speech",
+        "confidence": 74.98
+    },
+    {
+        "timestamp": 1745861815.100876,
+        "classification": "Speech",
+        "confidence": 46.44
+    },
+    {
+        "timestamp": 1745861819.105945,
+        "classification": "Vehicle",
+        "confidence": 21.8
+    },
+    {
+        "timestamp": 1745861820.643669,
+        "classification": "Squish",
+        "confidence": 22.6
+    },
+    {
+        "timestamp": 1745861822.607716,
+        "classification": "Inside, small room",
+        "confidence": 21.72
+    },
+    {
+        "timestamp": 1745861825.082591,
+        "classification": "Writing",
+        "confidence": 28.12
+    },
+    {
+        "timestamp": 1745861825.595083,
+        "classification": "Inside, small room",
+        "confidence": 22.1
+    },
+    {
+        "timestamp": 1745861826.104098,
+        "classification": "Typing",
+        "confidence": 41.59
+    },
+    {
+        "timestamp": 1745861828.069047,
+        "classification": "Pour",
+        "confidence": 47.62
+    },
+    {
+        "timestamp": 1745861828.579125,
+        "classification": "Typing",
+        "confidence": 33.66
+    },
+    {
+        "timestamp": 1745861829.093007,
+        "classification": "Patter",
+        "confidence": 23.85
+    },
+    {
+        "timestamp": 1745861831.1399171,
+        "classification": "Inside, small room",
+        "confidence": 25.08
+    },
+    {
+        "timestamp": 1745861834.638738,
+        "classification": "Vehicle",
+        "confidence": 25.27
+    },
+    {
+        "timestamp": 1745861836.602536,
+        "classification": "Inside, small room",
+        "confidence": 26.83
+    },
+    {
+        "timestamp": 1745861837.629743,
+        "classification": "Fire",
+        "confidence": 34.77
+    },
+    {
+        "timestamp": 1745861838.137689,
+        "classification": "Crackle",
+        "confidence": 20.59
+    },
+    {
+        "timestamp": 1745861839.591726,
+        "classification": "Inside, small room",
+        "confidence": 21.94
+    },
+    {
+        "timestamp": 1745861840.6127849,
+        "classification": "Speech",
+        "confidence": 34.36
+    },
+    {
+        "timestamp": 1745861841.125422,
+        "classification": "Speech",
+        "confidence": 61.19
+    },
+    {
+        "timestamp": 1745861841.636661,
+        "classification": "Speech",
+        "confidence": 31.43
+    },
+    {
+        "timestamp": 1745861842.147115,
+        "classification": "Inside, small room",
+        "confidence": 30.52
+    },
+    {
+        "timestamp": 1745861845.6462898,
+        "classification": "Speech",
+        "confidence": 49.84
+    },
+    {
+        "timestamp": 1745861846.07249,
+        "classification": "Speech",
+        "confidence": 54.7
+    },
+    {
+        "timestamp": 1745861846.5831318,
+        "classification": "Speech",
+        "confidence": 37.17
+    },
+    {
+        "timestamp": 1745861847.107392,
+        "classification": "Inside, small room",
+        "confidence": 27.88
+    },
+    {
+        "timestamp": 1745861847.610325,
+        "classification": "Writing",
+        "confidence": 32.74
+    },
+    {
+        "timestamp": 1745861848.121592,
+        "classification": "Inside, small room",
+        "confidence": 24.04
+    },
+    {
+        "timestamp": 1745861848.638578,
+        "classification": "Inside, small room",
+        "confidence": 23.68
+    },
+    {
+        "timestamp": 1745861849.575499,
+        "classification": "Vehicle",
+        "confidence": 20.57
+    },
+    {
+        "timestamp": 1745861850.5944152,
+        "classification": "Vehicle",
+        "confidence": 28.76
+    },
+    {
+        "timestamp": 1745861851.622147,
+        "classification": "Chewing, mastication",
+        "confidence": 36.9
+    },
+    {
+        "timestamp": 1745861856.142092,
+        "classification": "Speech",
+        "confidence": 80.06
+    },
+    {
+        "timestamp": 1745861856.56814,
+        "classification": "Speech",
+        "confidence": 93.33
+    },
+    {
+        "timestamp": 1745861857.080837,
+        "classification": "Speech",
+        "confidence": 89.89
+    },
+    {
+        "timestamp": 1745861857.591882,
+        "classification": "Speech",
+        "confidence": 35.26
+    },
+    {
+        "timestamp": 1745861858.615407,
+        "classification": "Speech",
+        "confidence": 77.58
+    },
+    {
+        "timestamp": 1745861859.128843,
+        "classification": "Speech",
+        "confidence": 47.94
+    },
+    {
+        "timestamp": 1745861859.6510022,
+        "classification": "Speech",
+        "confidence": 79.23
+    },
+    {
+        "timestamp": 1745861860.072182,
+        "classification": "Speech",
+        "confidence": 56.09
+    },
+    {
+        "timestamp": 1745861860.5779321,
+        "classification": "Speech",
+        "confidence": 48.1
+    },
+    {
+        "timestamp": 1745861861.092351,
+        "classification": "Speech",
+        "confidence": 62.96
+    },
+    {
+        "timestamp": 1745861861.60741,
+        "classification": "Speech",
+        "confidence": 90.34
+    },
+    {
+        "timestamp": 1745861862.1149068,
+        "classification": "Speech",
+        "confidence": 75.3
+    },
+    {
+        "timestamp": 1745861862.6259909,
+        "classification": "Speech",
+        "confidence": 38.47
+    },
+    {
+        "timestamp": 1745861863.137741,
+        "classification": "Speech",
+        "confidence": 28.05
+    },
+    {
+        "timestamp": 1745861863.652936,
+        "classification": "Speech",
+        "confidence": 42.96
+    },
+    {
+        "timestamp": 1745861864.086394,
+        "classification": "Speech",
+        "confidence": 46.9
+    },
+    {
+        "timestamp": 1745861864.603847,
+        "classification": "Speech",
+        "confidence": 55.97
+    },
+    {
+        "timestamp": 1745861865.108518,
+        "classification": "Speech",
+        "confidence": 68.87
+    },
+    {
+        "timestamp": 1745861865.624165,
+        "classification": "Speech",
+        "confidence": 51.53
+    },
+    {
+        "timestamp": 1745861866.1401632,
+        "classification": "Speech",
+        "confidence": 31.91
+    },
+    {
+        "timestamp": 1745861866.642716,
+        "classification": "Speech",
+        "confidence": 59.35
+    },
+    {
+        "timestamp": 1745861867.155104,
+        "classification": "Speech",
+        "confidence": 70.1
+    },
+    {
+        "timestamp": 1745861867.589503,
+        "classification": "Speech",
+        "confidence": 41.57
+    },
+    {
+        "timestamp": 1745861868.097504,
+        "classification": "Speech",
+        "confidence": 86.24
+    },
+    {
+        "timestamp": 1745861868.6091142,
+        "classification": "Speech",
+        "confidence": 66.94
+    },
+    {
+        "timestamp": 1745861869.123706,
+        "classification": "Speech",
+        "confidence": 21.7
+    },
+    {
+        "timestamp": 1745861869.633596,
+        "classification": "Speech",
+        "confidence": 48.42
+    },
+    {
+        "timestamp": 1745861870.1374762,
+        "classification": "Speech",
+        "confidence": 51.7
+    },
+    {
+        "timestamp": 1745861870.645948,
+        "classification": "Speech",
+        "confidence": 30.36
+    },
+    {
+        "timestamp": 1745861871.074961,
+        "classification": "Speech",
+        "confidence": 26.5
+    },
+    {
+        "timestamp": 1745861873.632521,
+        "classification": "Vehicle",
+        "confidence": 24.25
+    },
+    {
+        "timestamp": 1745861874.1461499,
+        "classification": "Speech",
+        "confidence": 20.26
+    },
+    {
+        "timestamp": 1745861874.573372,
+        "classification": "Speech",
+        "confidence": 47.92
+    },
+    {
+        "timestamp": 1745861875.610632,
+        "classification": "Speech",
+        "confidence": 25.07
+    },
+    {
+        "timestamp": 1745861876.122794,
+        "classification": "Speech",
+        "confidence": 53.04
+    },
+    {
+        "timestamp": 1745861876.619793,
+        "classification": "Speech",
+        "confidence": 31.54
+    },
+    {
+        "timestamp": 1745861877.136419,
+        "classification": "Speech",
+        "confidence": 31.83
+    },
+    {
+        "timestamp": 1745861877.648654,
+        "classification": "Speech",
+        "confidence": 23.94
+    },
+    {
+        "timestamp": 1745861880.6323998,
+        "classification": "Speech",
+        "confidence": 22.17
+    },
+    {
+        "timestamp": 1745861881.15095,
+        "classification": "Speech",
+        "confidence": 40.47
+    },
+    {
+        "timestamp": 1745861881.582573,
+        "classification": "Speech",
+        "confidence": 31.71
+    },
+    {
+        "timestamp": 1745861882.0812721,
+        "classification": "Speech",
+        "confidence": 43.74
+    },
+    {
+        "timestamp": 1745861882.595933,
+        "classification": "Speech",
+        "confidence": 67.46
+    },
+    {
+        "timestamp": 1745861883.1099908,
+        "classification": "Speech",
+        "confidence": 50.51
+    },
+    {
+        "timestamp": 1745861911.760208,
+        "classification": "Typing",
+        "confidence": 42.02
+    },
+    {
+        "timestamp": 1745861911.779121,
+        "classification": "Clip-clop",
+        "confidence": 43.66
+    },
+    {
+        "timestamp": 1745861911.999003,
+        "classification": "Patter",
+        "confidence": 28.89
+    },
+    {
+        "timestamp": 1745861912.506007,
+        "classification": "Crackle",
+        "confidence": 28.55
+    },
+    {
+        "timestamp": 1745861913.024342,
+        "classification": "Typing",
+        "confidence": 48.2
+    },
+    {
+        "timestamp": 1745861913.5436,
+        "classification": "Typing",
+        "confidence": 45.03
+    },
+    {
+        "timestamp": 1745861918.481984,
+        "classification": "Speech",
+        "confidence": 52.01
+    },
+    {
+        "timestamp": 1745861919.5102022,
+        "classification": "Typing",
+        "confidence": 28.96
+    },
+    {
+        "timestamp": 1745861920.02355,
+        "classification": "Typing",
+        "confidence": 50.14
+    },
+    {
+        "timestamp": 1745861920.53317,
+        "classification": "Typing",
+        "confidence": 42.77
+    },
+    {
+        "timestamp": 1745861920.960991,
+        "classification": "Computer keyboard",
+        "confidence": 34.42
+    },
+    {
+        "timestamp": 1745861922.4930549,
+        "classification": "Typing",
+        "confidence": 49.3
+    },
+    {
+        "timestamp": 1745861924.456486,
+        "classification": "Typing",
+        "confidence": 38.94
+    },
+    {
+        "timestamp": 1745861924.9652119,
+        "classification": "Typing",
+        "confidence": 34.17
+    },
+    {
+        "timestamp": 1745861925.992426,
+        "classification": "Typing",
+        "confidence": 49.02
+    },
+    {
+        "timestamp": 1745861926.506005,
+        "classification": "Patter",
+        "confidence": 35.09
+    },
+    {
+        "timestamp": 1745861927.5384169,
+        "classification": "Scrape",
+        "confidence": 27.68
+    },
+    {
+        "timestamp": 1745861929.491037,
+        "classification": "Typing",
+        "confidence": 45.4
+    },
+    {
+        "timestamp": 1745861931.025675,
+        "classification": "Typing",
+        "confidence": 37.32
+    },
+    {
+        "timestamp": 1745861931.451444,
+        "classification": "Typing",
+        "confidence": 30.09
+    },
+    {
+        "timestamp": 1745861931.963768,
+        "classification": "Typing",
+        "confidence": 48.06
+    },
+    {
+        "timestamp": 1745861932.475717,
+        "classification": "Clip-clop",
+        "confidence": 33.18
+    },
+    {
+        "timestamp": 1745861933.4998431,
+        "classification": "Typing",
+        "confidence": 41.05
+    },
+    {
+        "timestamp": 1745861934.012836,
+        "classification": "Typing",
+        "confidence": 45.75
+    },
+    {
+        "timestamp": 1745861937.510296,
+        "classification": "Typing",
+        "confidence": 46.19
+    },
+    {
+        "timestamp": 1745861938.040689,
+        "classification": "Rattle",
+        "confidence": 26.99
+    },
+    {
+        "timestamp": 1745861938.456536,
+        "classification": "Typing",
+        "confidence": 51.19
+    },
+    {
+        "timestamp": 1745861938.9704351,
+        "classification": "Typing",
+        "confidence": 35.07
+    },
+    {
+        "timestamp": 1745861939.480584,
+        "classification": "Patter",
+        "confidence": 34.34
+    },
+    {
+        "timestamp": 1745861940.499061,
+        "classification": "Typing",
+        "confidence": 37.99
+    },
+    {
+        "timestamp": 1745861941.009053,
+        "classification": "Typing",
+        "confidence": 41.85
+    },
+    {
+        "timestamp": 1745861941.52026,
+        "classification": "Typing",
+        "confidence": 25.54
+    },
+    {
+        "timestamp": 1745861941.94825,
+        "classification": "Chewing, mastication",
+        "confidence": 25.76
+    },
+    {
+        "timestamp": 1745861943.9958222,
+        "classification": "Chewing, mastication",
+        "confidence": 29.95
+    },
+    {
+        "timestamp": 1745861945.959643,
+        "classification": "Inside, small room",
+        "confidence": 27.45
+    },
+    {
+        "timestamp": 1745861946.471072,
+        "classification": "Inside, small room",
+        "confidence": 39.66
+    },
+    {
+        "timestamp": 1745861946.982899,
+        "classification": "Inside, small room",
+        "confidence": 32.85
+    },
+    {
+        "timestamp": 1745861948.0065222,
+        "classification": "Writing",
+        "confidence": 28.32
+    },
+    {
+        "timestamp": 1745861949.031542,
+        "classification": "Inside, small room",
+        "confidence": 26.12
+    },
+    {
+        "timestamp": 1745861949.969815,
+        "classification": "Inside, small room",
+        "confidence": 25.55
+    },
+    {
+        "timestamp": 1745861950.491572,
+        "classification": "Inside, small room",
+        "confidence": 30.15
+    },
+    {
+        "timestamp": 1745861953.471482,
+        "classification": "Vehicle",
+        "confidence": 26.91
+    },
+    {
+        "timestamp": 1745861956.452798,
+        "classification": "Crack",
+        "confidence": 38.88
+    },
+    {
+        "timestamp": 1745861981.9710011,
+        "classification": "Inside, small room",
+        "confidence": 30.24
+    },
+    {
+        "timestamp": 1745861983.5059168,
+        "classification": "Vehicle",
+        "confidence": 27.22
+    },
+    {
+        "timestamp": 1745861989.4804502,
+        "classification": "Speech",
+        "confidence": 62.73
+    },
+    {
+        "timestamp": 1745861989.990133,
+        "classification": "Speech",
+        "confidence": 44.65
+    },
+    {
+        "timestamp": 1745861990.5039868,
+        "classification": "Speech",
+        "confidence": 49.42
+    },
+    {
+        "timestamp": 1745861991.01375,
+        "classification": "Speech",
+        "confidence": 33.29
+    },
+    {
+        "timestamp": 1745861992.978841,
+        "classification": "Speech",
+        "confidence": 49.28
+    },
+    {
+        "timestamp": 1745861993.490321,
+        "classification": "Speech",
+        "confidence": 47.11
+    },
+    {
+        "timestamp": 1745861995.963059,
+        "classification": "Sliding door",
+        "confidence": 29.47
+    },
+    {
+        "timestamp": 1745862005.0118039,
+        "classification": "Speech",
+        "confidence": 38.3
+    },
+    {
+        "timestamp": 1745862005.523516,
+        "classification": "Speech",
+        "confidence": 35.88
+    }
+]
