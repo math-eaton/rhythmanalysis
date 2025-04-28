@@ -1,5 +1,8 @@
 # mjh
 misc/
+*.wav
+research/
+samples/
 
 # platformio
 .pio
