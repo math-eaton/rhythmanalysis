@@ -66,8 +66,47 @@ button:focus-visible {
 }
 
 body { font-family: sans-serif; }
-.tick-label { font-size: 12px; fill: #333; text-anchor: middle; }
-.legend text { font-size: 12px; }
+  .tick-label { font-size: 12px; fill: #333; text-anchor: middle; }
+  .legend text { font-size: 12px; }
+
+.container { 
+  display: flex; 
+  align-items: flex-start; 
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+
+}
+
+#polar-graph {
+
+
+}
+
+#clock { 
+  flex: 1;
+  width: 50vw;
+  height: auto;
+ }
+
+#legend {
+  margin-left: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #212121;
+  max-width: 15vw;
+}
+#legend .item {
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.1rem;
+}
+#legend .swatch {
+  width: 12px;
+  height: 12px;
+  margin-right: 0.5rem;
+}
+
 
 
 @media (prefers-color-scheme: light) {
