@@ -125,17 +125,21 @@ async def consumer(q):
             print(f"{ts:.2f} → {entry['cl']} ({entry['cf']}%)")
 
             if os.path.exists(OUTPUT_JSON):
-                # 1) read
-                with open(OUTPUT_JSON, 'r') as f:
-                    data = json.load(f)
-                # 2) modify
+                # 1) load
+                try:
+                    with open(OUTPUT_JSON, 'r') as f:
+                        data = json.load(f)
+                except (FileNotFoundError, json.JSONDecodeError):
+                    data = []
+
+                # 2) append to temp
                 data.append(entry)
-                # 3) overwrite
-                with open(OUTPUT_JSON, 'w') as f:
+
+                # 3) write temp back to permanent
+                tmp_path = OUTPUT_JSON + '.tmp'
+                with open(tmp_path, 'w') as f:
                     json.dump(data, f, indent=2)
-            else:
-                with open(OUTPUT_JSON, 'w') as f:
-                    json.dump([entry], f, indent=2)
+                os.replace(tmp_path, OUTPUT_JSON)
 
 async def main():
     q = asyncio.Queue()
