@@ -6,12 +6,21 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from scipy.signal import resample
 from scipy.io import wavfile
+import time
 
 # — USER CONFIG —
-MODEL_PATH = "/path/to/local/yamnet_saved_model"
-INPUT_DIR = "/path/to/your/wav_files"
-OUTPUT_DIR = "/path/to/output/json"
-THRESHOLD = 0.1   # same as 10%
+MODEL_PATH = "/Users/matthewheaton/Documents/GitHub/natural-synthetic/models/mjh/model"
+if os.path.exists(MODEL_PATH):
+    yamnet = tf.saved_model.load(MODEL_PATH)  # Use tf.saved_model.load for SavedModel format
+    # print(f"YAMNet model loaded locally in {time.time() - start_time:.2f} seconds.")
+else:
+    print("Local model not found. Downloading from TensorFlow Hub...")
+    yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
+    tf.saved_model.save(yamnet, MODEL_PATH)  # Save in SavedModel format
+    # print(f"YAMNet model downloaded and saved locally in {time.time() - start_time:.2f} seconds.")
+INPUT_DIR = "/Users/matthewheaton/Documents/GitHub/natural-synthetic/samples/zoom_20250430"
+OUTPUT_DIR = "/Users/matthewheaton/Documents/GitHub/natural-synthetic/output/classifications_zoom_20250430.json"
+THRESHOLD = 0.333
 FRAME_SEC = 1.0
 HOP_SEC   = 0.5
 

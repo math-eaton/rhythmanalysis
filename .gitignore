@@ -3,6 +3,9 @@ misc/
 *.wav
 research/
 samples/
+node_modules/
+models/
+config.py
 
 # platformio
 .pio
