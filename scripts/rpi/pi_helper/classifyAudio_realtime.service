@@ -10,6 +10,11 @@ Type=simple
 User=mjh2241
 Group=audio
 
+# TODO: fix the env file read
+Environment=MICROMAMBA_BIN=/home/mjh2241/.local/bin/micromamba
+Environment=ENV_NAME=yamnet
+Environment=SCRIPT=/home/mjh2241/GitHub/natural-synthetic/scripts/rpi/classifyAudio_realtime.py
+
 # cd for rel paths - this needs to be hardcoded
 WorkingDirectory=/home/mjh2241/GitHub/natural-synthetic/scripts/rpi
 
