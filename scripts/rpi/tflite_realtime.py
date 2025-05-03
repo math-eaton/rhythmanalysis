@@ -13,9 +13,9 @@ import tflite_runtime.interpreter as tflite
 # ——— USER SETTINGS ————————————————————————————————————————————————
 INPUT_DEVICE_NAME = "USB PnP Sound Device: Audio (hw:2,0)"  # adjust to match an item in sd.query_devices()
 HOP_SEC           = 0.5    # hop length in seconds (50% overlap)
-THRESHOLD         = 0.1    # min average confidence to log (0–1)
+THRESHOLD         = 0.333    # min average confidence to log (0–1)
 NUM_THREADS       = 4      # TFLite interpreter threads
-OUTPUT_JSON       = "classifications.json"
+OUTPUT_JSON       = "output/classifications.json"
 MODEL_FILE        = "yamnet_waveform.tflite"
 CLASS_CSV         = "yamnet_class_map.csv"
 # ————————————————————————————————————————————————————————————————
@@ -78,7 +78,7 @@ async def producer(q):
                         channels=1,
                         samplerate=fs,
                         dtype='float32',
-                        blocksize=HOP_LEN,
+                        # blocksize=HOP_LEN,
                         callback=callback):
         await asyncio.Event().wait()
 
@@ -124,22 +124,22 @@ async def consumer(q):
             entry = {"ts": ts, "cl": class_names[idx], "cf": round(conf * 100, 1)}
             print(f"{ts:.2f} → {entry['cl']} ({entry['cf']}%)")
 
-        if os.path.exists(OUTPUT_JSON):
-            # 1) read
-            with open(OUTPUT_JSON, 'r') as f:
-                data = json.load(f)
-            # 2) modify
-            data.append(entry)
-            # 3) overwrite
-            with open(OUTPUT_JSON, 'w') as f:
-                json.dump(data, f, indent=2)
-        else:
-            with open(OUTPUT_JSON, 'w') as f:
-                json.dump([entry], f, indent=2)
+            if os.path.exists(OUTPUT_JSON):
+                # 1) read
+                with open(OUTPUT_JSON, 'r') as f:
+                    data = json.load(f)
+                # 2) modify
+                data.append(entry)
+                # 3) overwrite
+                with open(OUTPUT_JSON, 'w') as f:
+                    json.dump(data, f, indent=2)
+            else:
+                with open(OUTPUT_JSON, 'w') as f:
+                    json.dump([entry], f, indent=2)
 
 async def main():
     q = asyncio.Queue()
-    print("▶ +++++ LOOPING +++++")
+    print("+++++ LOOPING +++++")
     await asyncio.gather(producer(q), consumer(q))
 
 if __name__ == "__main__":
