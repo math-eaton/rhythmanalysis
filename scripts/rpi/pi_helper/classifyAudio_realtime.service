@@ -1,0 +1,33 @@
+[Unit]
+Description=YAMNet TFLite real-time audio classification
+After=multi-user.target sound.target
+Wants=sound.target
+
+[Service]
+Type=simple
+# ----------------------------------------
+# Run as 'xyz' user, in the 'audio' group
+User=mjh2241
+Group=audio
+
+# cd for rel paths - this needs to be hardcoded
+WorkingDirectory=/home/mjh2241/GitHub/natural-synthetic/scripts/rpi
+
+# read env for paths + execute
+EnvironmentFile=/home/mjh2241/.config/yamnet/env
+ExecStart=${MICROMAMBA_BIN} run -n ${ENV_NAME} \
+          python3 ${SCRIPT}
+
+# Always restart on failure (so transient audio errors don’t kill the daemon)
+Restart=on-failure
+RestartSec=5
+
+# Unbuffered Python output → logs show up in real time
+Environment=PYTHONUNBUFFERED=1
+
+# Send stdout+stderr into journald
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
