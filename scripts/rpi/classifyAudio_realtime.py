@@ -10,7 +10,9 @@ from collections import deque
 import numpy as np
 from scipy.signal import resample_poly
 import sounddevice as sd
-import tflite_runtime.interpreter as tflite
+from ai_edge_litert.interpreter import Interpreter
+interpreter = Interpreter(model_path=args.model_file)
+
 
 # ——— USER SETTINGS ————————————————————————————————————————————————
 INPUT_DEVICE_NAME = "USB PnP Sound Device: Audio (hw:2,0)"  # adjust to match an item in sd.query_devices()
@@ -49,7 +51,8 @@ if INPUT_DEVICE is None:
         raise RuntimeError(f"Fallback device index 0 ('{devices[INPUT_DEVICE]['name']}') is not valid for input.")
 
 fs_native = int(sd.query_devices(INPUT_DEVICE, 'input')['default_samplerate'])
-fs = 16_000  # ← YAMNet’s native rate; we will resample if mic cannot deliver 16 kHz
+fs = int(sd.query_devices(INPUT_DEVICE, 'input')['default_samplerate'])
+# fs = 16000
 print(f"→ Using device #{INPUT_DEVICE}: '{devices[INPUT_DEVICE]['name']}' @ {fs_native} Hz → model @ 16 kHz")
 
 # 2. Load class names
@@ -152,8 +155,11 @@ async def consumer(q):
 
         # Resample/trim/pad to exactly MODEL_INPUT_LEN @ 16 kHz
         if fs_native != 16000:
-            # Fast rational resampler (e.g. 48 kHz → 16 kHz uses 1/3)
-            wf = resample_poly(cmp, 16000, fs_native).astype('float32')
+            # General resampler for non-integer multiples (e.g., 41000 Hz → 16000 Hz)
+            gcd = np.gcd(fs_native, 16000)
+            up = 16000 // gcd
+            down = fs_native // gcd
+            wf = resample_poly(cmp, up, down).astype('float32')
         else:
             wf = cmp.astype('float32')
 
@@ -195,7 +201,7 @@ async def consumer(q):
                 "ts": ts,
                 "cl": class_names[idx],
                 "db": round(db_now, 1),
-                "cf": round(conf * 100, 1)
+                "cf": round(conf * 100, 1),
             }
             print(f"{ts:.2f} → {entry['cl']} "
                   f"({entry['cf']}%)  {entry['db']} dBFS")
