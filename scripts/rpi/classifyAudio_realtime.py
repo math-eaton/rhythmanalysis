@@ -10,9 +10,7 @@ from collections import deque
 import numpy as np
 from scipy.signal import resample_poly
 import sounddevice as sd
-from ai_edge_litert.interpreter import Interpreter
-interpreter = Interpreter(model_path=args.model_file)
-
+import ai_edge_litert.interpreter as litert
 
 # ——— USER SETTINGS ————————————————————————————————————————————————
 INPUT_DEVICE_NAME = "USB PnP Sound Device: Audio (hw:2,0)"  # adjust to match an item in sd.query_devices()
@@ -62,16 +60,16 @@ with open(CLASS_CSV) as f:
 
 # 3. Set up the TFLite interpreter
 try:
-    xnn_delegate = tflite.load_delegate("libtensorflowlite_delegate_xnnpack.so")
-    interpreter = tflite.Interpreter(model_path=MODEL_FILE,
+    xnn_delegate = litert.load_delegate("libtensorflowlite_delegate_xnnpack.so")
+    interpreter = litert.Interpreter(model_path=MODEL_FILE,
                                      num_threads=NUM_THREADS,
                                      experimental_delegates=[xnn_delegate])
     print("XNNPACK delegate loaded")
 except (OSError, ValueError) as e:
-    print("XNNPACK delegate not available – "
-          "falling back to default CPU kernel:", e)
-    interpreter = tflite.Interpreter(model_path=MODEL_FILE,
+    print("XNNPACK delegate not available – CPU kernels in use:", e)
+    interpreter = litert.Interpreter(model_path=MODEL_FILE,
                                      num_threads=NUM_THREADS)
+
 interpreter.allocate_tensors()
 inp_detail = interpreter.get_input_details()[0]
 out_detail = interpreter.get_output_details()[0]
