@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import csv
 import json
@@ -28,7 +29,7 @@ for idx, dev in enumerate(devices):
         break
 
 if INPUT_DEVICE is None:
-    print(f"⚠️ Audio device '{INPUT_DEVICE_NAME}' not found. Falling back to device index 0.")
+    print(f"Audio device '{INPUT_DEVICE_NAME}' not found. Falling back to device index 0.")
     INPUT_DEVICE = 0
     if devices[INPUT_DEVICE]['max_input_channels'] <= 0:
         raise RuntimeError(f"Fallback device index 0 ('{devices[INPUT_DEVICE]['name']}') is not valid for input.")
@@ -47,21 +48,30 @@ interpreter.allocate_tensors()
 inp_detail = interpreter.get_input_details()[0]
 out_detail = interpreter.get_output_details()[0]
 
-# 4. Derive buffer lengths from the model’s input shape
-MODEL_INPUT_LEN = inp_detail['shape'][1]       # should be 15600
-WINDOW_SEC      = MODEL_INPUT_LEN / 16000.0   # ~0.975 seconds
-FRAME_LEN       = int(fs * WINDOW_SEC)        # buffer length @ device sample rate
-HOP_LEN         = int(HOP_SEC * fs)           # hop length @ device sample rate
+# 4. Derive model input length + dynamic shape
+inp_shape = inp_detail['shape']  # could be [15600] or [1,15600]
+if len(inp_shape) == 2:
+    _, MODEL_INPUT_LEN = inp_shape
+    reshape_shape = (1, MODEL_INPUT_LEN)
+elif len(inp_shape) == 1:
+    MODEL_INPUT_LEN = inp_shape[0]
+    reshape_shape = (MODEL_INPUT_LEN,)
+else:
+    # fallback to last dim
+    MODEL_INPUT_LEN = int(inp_shape[-1])
+    reshape_shape = tuple(inp_shape)
+
+WINDOW_SEC = MODEL_INPUT_LEN / 16000.0
+FRAME_LEN  = int(fs * WINDOW_SEC)
+HOP_LEN    = int(HOP_SEC * fs)
 
 print(f"Buffering {FRAME_LEN} samples (~{WINDOW_SEC:.3f}s) with {HOP_LEN}-sample hop")
 
-# 5. Audio producer & consumer
 async def producer(q):
     loop = asyncio.get_event_loop()
     def callback(indata, frames, t0, status):
         if status:
-            print("⚠️ Audio status:", status)
-        # enqueue a copy of the newest chunk
+            print("Audio status:", status)
         loop.call_soon_threadsafe(q.put_nowait, indata[:, 0].copy())
 
     with sd.InputStream(device=INPUT_DEVICE,
@@ -86,14 +96,12 @@ async def consumer(q):
         buf = np.roll(buf, -len(chunk))
         buf[-len(chunk):] = chunk
 
-        # Apply compressor
         cmp = compressor(buf)
 
-        # Resample to exactly MODEL_INPUT_LEN samples (16 kHz)
+        # Resample/trim/pad to exactly MODEL_INPUT_LEN at 16 kHz
         if fs != 16000:
             wf = resample(cmp, MODEL_INPUT_LEN).astype('float32')
         else:
-            # if the device is already 16kHz, just trim/pad to exact length
             if cmp.size > MODEL_INPUT_LEN:
                 wf = cmp[-MODEL_INPUT_LEN:]
             elif cmp.size < MODEL_INPUT_LEN:
@@ -102,8 +110,8 @@ async def consumer(q):
             else:
                 wf = cmp.astype('float32')
 
-        # Run inference
-        interpreter.set_tensor(inp_detail['index'], wf.reshape((1, MODEL_INPUT_LEN)))
+        # Inference
+        interpreter.set_tensor(inp_detail['index'], wf.reshape(reshape_shape))
         interpreter.invoke()
         out = interpreter.get_tensor(out_detail['index'])
         scores = out[0] if out.ndim == 3 else out
@@ -111,13 +119,11 @@ async def consumer(q):
         idx = int(np.argmax(avg_scores))
         conf = float(avg_scores[idx])
 
-        # Log if above threshold
         if conf > THRESHOLD:
             ts = time.time()
             entry = {"ts": ts, "cl": class_names[idx], "cf": round(conf * 100, 1)}
             print(f"{ts:.2f} → {entry['cl']} ({entry['cf']}%)")
 
-            # Append to JSON file
             if os.path.exists(OUTPUT_JSON):
                 with open(OUTPUT_JSON, 'r+') as f:
                     data = json.load(f)
@@ -130,7 +136,7 @@ async def consumer(q):
 
 async def main():
     q = asyncio.Queue()
-    print("▶️ Starting realtime YAMNet loop…")
+    print("▶ +++++ LOOPING +++++")
     await asyncio.gather(producer(q), consumer(q))
 
 if __name__ == "__main__":
