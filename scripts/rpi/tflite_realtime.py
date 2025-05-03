@@ -7,10 +7,10 @@ import tflite_runtime.interpreter as tflite
 
 # ——— USER SETTINGS ————————————————————————————————————————————————
 INPUT_DEVICE_NAME = "USB PnP Sound Device: Audio (hw:2,0)"  # adjust to match an item in sd.query_devices()
-FRAME_SEC  = 1.0    # window length in seconds
-HOP_SEC    = 0.5    # hop length in seconds (50% overlap)
-THRESHOLD  = 0.1    # min average confidence to log (0–1)
-NUM_THREADS= 4      # TFLite interpreter threads
+FRAME_LEN = int(44100 * (15600/16000)) # yamnet expects 0.975 sec
+HOP_SEC    = 0.5 # hop length in seconds (50% overlap)
+THRESHOLD  = 0.1 # min average confidence to log (0–1)
+NUM_THREADS= 4  # TFLite interpreter threads
 OUTPUT_JSON= "classifications.json"
 MODEL_FILE = "yamnet_waveform.tflite"
 CLASS_CSV  = "yamnet_class_map.csv"
