@@ -10,6 +10,8 @@ from collections import deque
 import numpy as np
 from scipy.signal import resample_poly
 import sounddevice as sd
+# import soxr
+
 import ai_edge_litert.interpreter as litert
 
 # ——— USER SETTINGS ————————————————————————————————————————————————
@@ -28,6 +30,7 @@ HP_FC             = 100       # one-pole high-pass corner frequency (Hz)
 
 DEBUG            = True      # print top-5 scores even if below threshold
 QUEUE_SIZE       = 8         # queue to ease callback pressure
+DESIRED_SR       = 16_000    # target sample rate for model
 
 # ————————————————————————————————————————————————————————————————
 
@@ -41,17 +44,40 @@ for idx, dev in enumerate(devices):
     if INPUT_DEVICE_NAME.lower() in dev['name'].lower() and dev['max_input_channels'] > 0:
         INPUT_DEVICE = idx
         break
-
 if INPUT_DEVICE is None:
-    print(f"Audio device '{INPUT_DEVICE_NAME}' not found. Falling back to device index 0.")
+    print(f"Audio device '{INPUT_DEVICE_NAME}' not found. Falling back to device 0.")
     INPUT_DEVICE = 0
-    if devices[INPUT_DEVICE]['max_input_channels'] <= 0:
-        raise RuntimeError(f"Fallback device index 0 ('{devices[INPUT_DEVICE]['name']}') is not valid for input.")
+    if devices[0]['max_input_channels'] <= 0:
+        raise RuntimeError("Fallback device 0 is not valid for input.")
 
-fs_native = int(sd.query_devices(INPUT_DEVICE, 'input')['default_samplerate'])
-fs = int(sd.query_devices(INPUT_DEVICE, 'input')['default_samplerate'])
-# fs = 16000
-print(f"→ Using device #{INPUT_DEVICE}: '{devices[INPUT_DEVICE]['name']}' @ {fs_native} Hz → model @ 16 kHz")
+# Try to open at DESIRED_SR (works if hardware supports it or ALSA plug-in is set)
+try:
+    sd.check_input_settings(device=INPUT_DEVICE, samplerate=DESIRED_SR)
+    fs_native = DESIRED_SR
+    print(f"→ Stream opened directly at {DESIRED_SR} Hz")
+    need_resample = False
+except sd.PortAudioError:
+    fs_native = int(sd.query_devices(INPUT_DEVICE, 'input')['default_samplerate'])
+    print(f"→ Cannot open at {DESIRED_SR} Hz; streaming at native {fs_native} Hz")
+    need_resample = True
+
+print(f"→ Using device #{INPUT_DEVICE} '{devices[INPUT_DEVICE]['name']}' @ {fs_native} Hz → model @ {DESIRED_SR} Hz")
+
+# only import soxr if we actually need to resample
+if need_resample:
+    try:
+        import soxr
+        HAVE_SOXR = True
+        print("→ soxr available: will use for resampling")
+    except ImportError:
+        HAVE_SOXR = False
+        print("→ soxr NOT available: will use scipy.resample_poly for resampling")
+else:
+    HAVE_SOXR = False  # no resample needed
+
+# compute block sizes
+native_hop_len = int(HOP_SEC * fs_native)
+
 
 # 2. Load class names
 with open(CLASS_CSV) as f:
@@ -86,9 +112,9 @@ else:
     MODEL_INPUT_LEN = int(inp_shape[-1])  # fallback to last dim
     reshape_shape = tuple(inp_shape)
 
-WINDOW_SEC = MODEL_INPUT_LEN / 16000.0
-FRAME_LEN  = int(fs_native * WINDOW_SEC)
-HOP_LEN    = int(HOP_SEC * fs_native)
+WINDOW_SEC = MODEL_INPUT_LEN / 16000.0  # Use the model's sampling rate (16 kHz)
+FRAME_LEN  = int(16000 * WINDOW_SEC)    # Calculate frame length at 16 kHz
+HOP_LEN    = int(HOP_SEC * 16000)       # Calculate hop length at 16 kHz
 
 print(f"Buffering {FRAME_LEN} samples (~{WINDOW_SEC:.3f}s) with {HOP_LEN}-sample hop")
 
@@ -208,7 +234,7 @@ async def consumer(q):
         # if nothing crossed the threshold but DEBUG is on, still print one line
         if DEBUG and not printed:
             i = top_idx[0]
-            print(f"DBG {time.time():.2f}  {db_now:5.1f} dB  "
+            print(f"buggy {time.time():.2f}  {db_now:5.1f} dB  "
                 f"{class_names[i]} {mean_scores[i]*100:.1f}%")
 
 
