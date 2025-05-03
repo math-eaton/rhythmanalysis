@@ -4,21 +4,31 @@ import csv
 import json
 import time
 import asyncio
+from pathlib import Path
+from collections import deque
 
 import numpy as np
-from scipy.signal import resample
+from scipy.signal import resample_poly
 import sounddevice as sd
 import tflite_runtime.interpreter as tflite
 
 # ——— USER SETTINGS ————————————————————————————————————————————————
 INPUT_DEVICE_NAME = "USB PnP Sound Device: Audio (hw:2,0)"  # adjust to match an item in sd.query_devices()
-HOP_SEC           = 0.5    # hop length in seconds (50% overlap)
-THRESHOLD         = 0.333    # min average confidence to log (0–1)
-NUM_THREADS       = 4      # TFLite interpreter threads
+HOP_SEC           = 0.5       # hop length in seconds (50% overlap)
+THRESHOLD         = 0.333     # min average confidence to log (0–1)
+NUM_THREADS       = 4         # TFLite interpreter threads
 OUTPUT_JSON       = "output/classifications.json"
 MODEL_FILE        = "yamnet_waveform.tflite"
 CLASS_CSV         = "yamnet_class_map.csv"
+
+FLUSH_SEC         = 5         # write results to disk every N seconds
+ACCUM_SEC         = 3         # time window over which dominant label is decided
+TOP_K             = 1         # how many labels to report each window
+HP_FC             = 100       # one-pole high-pass corner frequency (Hz)
 # ————————————————————————————————————————————————————————————————
+
+# Make sure the output directory exists (avoids SD-card seek penalty)
+Path(OUTPUT_JSON).parent.mkdir(parents=True, exist_ok=True)
 
 # 1. Select input device & get samplerate
 devices = sd.query_devices()
@@ -34,8 +44,9 @@ if INPUT_DEVICE is None:
     if devices[INPUT_DEVICE]['max_input_channels'] <= 0:
         raise RuntimeError(f"Fallback device index 0 ('{devices[INPUT_DEVICE]['name']}') is not valid for input.")
 
-fs = int(sd.query_devices(INPUT_DEVICE, 'input')['default_samplerate'])
-print(f"→ Using device #{INPUT_DEVICE}: '{devices[INPUT_DEVICE]['name']}' @ {fs} Hz")
+fs_native = int(sd.query_devices(INPUT_DEVICE, 'input')['default_samplerate'])
+fs = 16_000  # ← YAMNet’s native rate; we will resample if mic cannot deliver 16 kHz
+print(f"→ Using device #{INPUT_DEVICE}: '{devices[INPUT_DEVICE]['name']}' @ {fs_native} Hz → model @ 16 kHz")
 
 # 2. Load class names
 with open(CLASS_CSV) as f:
@@ -43,7 +54,10 @@ with open(CLASS_CSV) as f:
     class_names = [row['display_name'] for row in reader]
 
 # 3. Set up the TFLite interpreter
-interpreter = tflite.Interpreter(model_path=MODEL_FILE, num_threads=NUM_THREADS)
+interpreter = tflite.Interpreter(
+        model_path=MODEL_FILE,
+        num_threads=NUM_THREADS,
+        experimental_delegates=[tflite.load_delegate("libtensorflowlite_delegate_xnnpack.so")])
 interpreter.allocate_tensors()
 inp_detail = interpreter.get_input_details()[0]
 out_detail = interpreter.get_output_details()[0]
@@ -57,15 +71,34 @@ elif len(inp_shape) == 1:
     MODEL_INPUT_LEN = inp_shape[0]
     reshape_shape = (MODEL_INPUT_LEN,)
 else:
-    # fallback to last dim
-    MODEL_INPUT_LEN = int(inp_shape[-1])
+    MODEL_INPUT_LEN = int(inp_shape[-1])  # fallback to last dim
     reshape_shape = tuple(inp_shape)
 
 WINDOW_SEC = MODEL_INPUT_LEN / 16000.0
-FRAME_LEN  = int(fs * WINDOW_SEC)
-HOP_LEN    = int(HOP_SEC * fs)
+FRAME_LEN  = int(fs_native * WINDOW_SEC)
+HOP_LEN    = int(HOP_SEC * fs_native)
 
 print(f"Buffering {FRAME_LEN} samples (~{WINDOW_SEC:.3f}s) with {HOP_LEN}-sample hop")
+
+# ——— small helper utilities ————————————————————————————————————————
+def compressor(audio, thr=0.1, ratio=4.0):
+    """Very cheap soft-knee compressor to reduce mic clipping artefacts."""
+    a = np.copy(audio)
+    mask = np.abs(a) > thr
+    a[mask] = np.sign(a[mask]) * (thr + (np.abs(a[mask]) - thr) / ratio)
+    return a
+
+def hipass(x, fs_in, fc=HP_FC):
+    """Single-pole high-pass primarily to nuke traffic rumble < 100 Hz."""
+    if fc <= 0:
+        return x
+    alpha = np.exp(-2.0 * np.pi * fc / fs_in)
+    y = np.empty_like(x)
+    y[0] = x[0]
+    for n in range(1, len(x)):
+        y[n] = alpha * y[n-1] + x[n] - x[n-1]
+    return y
+# ————————————————————————————————————————————————————————————————
 
 async def producer(q):
     loop = asyncio.get_event_loop()
@@ -76,39 +109,38 @@ async def producer(q):
 
     with sd.InputStream(device=INPUT_DEVICE,
                         channels=1,
-                        samplerate=fs,
+                        samplerate=fs_native,
                         dtype='float32',
-                        # blocksize=HOP_LEN,
+                        blocksize=HOP_LEN,
                         callback=callback):
-        await asyncio.Event().wait()
+        await asyncio.Event().wait()  # keep stream alive forever
 
 async def consumer(q):
     buf = np.zeros(FRAME_LEN, dtype='float32')
-
-    def compressor(audio, thr=0.1, ratio=4.0):
-        a = np.copy(audio)
-        mask = np.abs(a) > thr
-        a[mask] = np.sign(a[mask]) * (thr + (np.abs(a[mask]) - thr) / ratio)
-        return a
+    accum = deque()
+    ram_buffer = []
+    last_flush = time.time()
 
     while True:
         chunk = await q.get()
         buf = np.roll(buf, -len(chunk))
         buf[-len(chunk):] = chunk
 
+        # light front-end conditioning
         cmp = compressor(buf)
+        cmp = hipass(cmp, fs_native)
 
-        # Resample/trim/pad to exactly MODEL_INPUT_LEN at 16 kHz
-        if fs != 16000:
-            wf = resample(cmp, MODEL_INPUT_LEN).astype('float32')
+        # Resample/trim/pad to exactly MODEL_INPUT_LEN @ 16 kHz
+        if fs_native != 16000:
+            # Fast rational resampler (e.g. 48 kHz → 16 kHz uses 1/3)
+            wf = resample_poly(cmp, 16000, fs_native).astype('float32')
         else:
-            if cmp.size > MODEL_INPUT_LEN:
-                wf = cmp[-MODEL_INPUT_LEN:]
-            elif cmp.size < MODEL_INPUT_LEN:
-                pad = np.zeros(MODEL_INPUT_LEN - cmp.size, dtype='float32')
-                wf = np.concatenate((pad, cmp))
-            else:
-                wf = cmp.astype('float32')
+            wf = cmp.astype('float32')
+
+        if wf.size > MODEL_INPUT_LEN:
+            wf = wf[-MODEL_INPUT_LEN:]
+        elif wf.size < MODEL_INPUT_LEN:
+            wf = np.pad(wf, (MODEL_INPUT_LEN - wf.size, 0))
 
         # Inference
         interpreter.set_tensor(inp_detail['index'], wf.reshape(reshape_shape))
@@ -116,33 +148,38 @@ async def consumer(q):
         out = interpreter.get_tensor(out_detail['index'])
         scores = out[0] if out.ndim == 3 else out
         avg_scores = np.mean(scores, axis=0)
-        idx = int(np.argmax(avg_scores))
-        conf = float(avg_scores[idx])
 
-        if conf > THRESHOLD:
+        # Accumulate logits for ACCUM_SEC seconds
+        accum.append(avg_scores)
+        if len(accum) * HOP_SEC < ACCUM_SEC:
+            continue
+
+        mean_scores = np.mean(accum, axis=0)
+        top_idx = mean_scores.argsort()[-TOP_K:][::-1]
+        accum.clear()
+
+        for idx in top_idx:
+            conf = float(mean_scores[idx])
+            if conf < THRESHOLD:
+                continue
             ts = time.time()
             entry = {"ts": ts, "cl": class_names[idx], "cf": round(conf * 100, 1)}
             print(f"{ts:.2f} → {entry['cl']} ({entry['cf']}%)")
+            ram_buffer.append(entry)
 
-            if os.path.exists(OUTPUT_JSON):
-                # 1) load
-                try:
-                    with open(OUTPUT_JSON, 'r') as f:
-                        data = json.load(f)
-                except (FileNotFoundError, json.JSONDecodeError):
-                    data = []
-
-                # 2) append to temp
-                data.append(entry)
-
-                # 3) write temp back to permanent
-                tmp_path = OUTPUT_JSON + '.tmp'
-                with open(tmp_path, 'w') as f:
-                    json.dump(data, f, indent=2)
-                os.replace(tmp_path, OUTPUT_JSON)
+        # Periodic, append-only disk write (newline-delimited JSON)
+        now = time.time()
+        if now - last_flush >= FLUSH_SEC and ram_buffer:
+            with open(OUTPUT_JSON, "a") as f:
+                for e in ram_buffer:
+                    f.write(json.dumps(e) + "\n")
+                f.flush()            # push to kernel
+                os.fsync(f.fileno()) # push to SD card
+            ram_buffer.clear()
+            last_flush = now
 
 async def main():
-    q = asyncio.Queue()
+    q = asyncio.Queue(maxsize=4)  # back-pressure if consumer stalls
     print("+++++ LOOPING +++++")
     await asyncio.gather(producer(q), consumer(q))
 
