@@ -12,7 +12,7 @@ HOP_SEC    = 0.5    # hop length in seconds (50% overlap)
 THRESHOLD  = 0.1    # min average confidence to log (0–1)
 NUM_THREADS= 4      # TFLite interpreter threads
 OUTPUT_JSON= "classifications.json"
-MODEL_FILE = "yamnet.tflite"
+MODEL_FILE = "yamnet_waveform.tflite"
 CLASS_CSV  = "yamnet_class_map.csv"
 # ————————————————————————————————————————————————————————————————
 
