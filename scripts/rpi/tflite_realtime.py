@@ -124,15 +124,18 @@ async def consumer(q):
             entry = {"ts": ts, "cl": class_names[idx], "cf": round(conf * 100, 1)}
             print(f"{ts:.2f} → {entry['cl']} ({entry['cf']}%)")
 
-            if os.path.exists(OUTPUT_JSON):
-                with open(OUTPUT_JSON, 'r+') as f:
-                    data = json.load(f)
-                    data.append(entry)
-                    f.seek(0)
-                    json.dump(data, f, indent=2)
-            else:
-                with open(OUTPUT_JSON, 'w') as f:
-                    json.dump([entry], f, indent=2)
+        if os.path.exists(OUTPUT_JSON):
+            # 1) read
+            with open(OUTPUT_JSON, 'r') as f:
+                data = json.load(f)
+            # 2) modify
+            data.append(entry)
+            # 3) overwrite
+            with open(OUTPUT_JSON, 'w') as f:
+                json.dump(data, f, indent=2)
+        else:
+            with open(OUTPUT_JSON, 'w') as f:
+                json.dump([entry], f, indent=2)
 
 async def main():
     q = asyncio.Queue()
