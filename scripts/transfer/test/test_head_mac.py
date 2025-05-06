@@ -1,32 +1,49 @@
-# test_head_mac.py
-import tflite_runtime.interpreter as tflite
+# test_head_mac_litert.py  –  works with ai_edge_litert
+from ai_edge_litert.interpreter import Interpreter
 import numpy as np
 
-yam = tflite.Interpreter('yamnet_int8.tflite')
-yam.allocate_tensors()
-embed_idx = yam.get_output_details()[1]['index']
-e_scale, e_zero = yam.get_output_details()[1]['quantization']
+YAM = '/Users/matthewheaton/.cache/kagglehub/models/google/yamnet/tfLite/tflite/1/1.tflite'
+HEAD = '/Users/matthewheaton/Documents/GitHub/rhythmanalysis/scripts/transfer/datasets/sonyc_head_v3_int8.tflite'
 
-head = tflite.Interpreter('sonyc_head_v2_int8.tflite')
+
+# ── Backbone ─────────────────────────────────────────────
+yam = Interpreter(YAM)
+# resize input from [1] -> [15600]  (vector, no batch dim)
+yam.resize_tensor_input(yam.get_input_details()[0]['index'], [15600], strict=True)
+yam.allocate_tensors()
+
+# locate 1 024-D embedding tensor
+embed = next(d for d in yam.get_output_details() if d['shape'][-1] == 1024)
+e_idx, e_scale, e_zero = embed['index'], *embed['quantization']
+
+# ── Head ─────────────────────────────────────────────────
+head = Interpreter(HEAD)
 head.allocate_tensors()
+print(head.get_input_details()[0])
 h_in  = head.get_input_details()[0]['index']
 h_out = head.get_output_details()[0]['index']
 h_scale, h_zero = head.get_input_details()[0]['quantization']
 
-# 1 sec of pink-noise just to see a number
-dummy = np.random.randn(16000).astype(np.float32)
+# ── Dummy 0.975 s audio frame ───────────────────────────
+frame = np.random.randn(15600).astype(np.float32)  # shape (15600,)
 
-yam.set_tensor(yam.get_input_details()[0]['index'], dummy)
+yam.set_tensor(yam.get_input_details()[0]['index'], frame)
 yam.invoke()
-emb_i8 = yam.get_tensor(embed_idx)[0]           # (1024,) int8
+emb_f32 = yam.get_tensor(e_idx)[0]                 # (1024,) float32
 
-# (re-quant step needed only if scales differ)
-if not np.isclose(e_scale, h_scale):
-    emb_f32 = (emb_i8.astype(np.float32) - e_zero) * e_scale
-    emb_i8  = np.clip(np.round(emb_f32 / h_scale + h_zero), -128, 127).astype(np.int8)
+# quantise to int8 for head
+emb_i8 = np.clip(np.round(emb_f32 / h_scale + h_zero),
+                 -128, 127).astype(np.int8)
+
+# quantise to int8 for head
+emb_i8 = np.clip(np.round(emb_f32 / h_scale + h_zero),
+                 -128, 127).astype(np.int8)
+
+# ←–– reshape to (1, 1024)
+emb_i8 = emb_i8[np.newaxis, :]
 
 head.set_tensor(h_in, emb_i8)
 head.invoke()
-probs_i8 = head.get_tensor(h_out)[0]            # (23,) int8
-probs = (probs_i8.astype(np.float32) - h_zero) * h_scale
-print(np.argsort(-probs)[:5], probs.max())      # top-5 tags + confidence
+p_i8  = head.get_tensor(h_out)[0]
+probs = (p_i8.astype(np.float32) - h_zero) * h_scale
+print("Top-5 tag IDs:", np.argsort(-probs)[:5], "max prob:", probs.max())
