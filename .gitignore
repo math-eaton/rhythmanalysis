@@ -5,7 +5,9 @@ research/
 samples/
 node_modules/
 models/
-config.py
+config.*
+embeddings/
+datasets/
 
 # platformio
 .pio
