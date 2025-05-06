@@ -2,7 +2,7 @@ import numpy as np, sounddevice as sd, queue, time
 import tflite_runtime.interpreter as tflite
 
 # ── Load models ──────────────────────────────────────────
-yam = tflite.Interpreter('scripts/kaggle_models/yamnet/tfLite/tflite/1/1.tflite',
+yam = tflite.Interpreter('scripts/models/yamnet/tfLite/tflite/1/1.tflite',
                          num_threads=4)
 yam.resize_tensor_input(yam.get_input_details()[0]['index'],
                         [15600], strict=True)
