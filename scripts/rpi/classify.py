@@ -45,7 +45,6 @@ if args.device is not None:
     try:
         device_id = int(args.device)
     except ValueError:
-        # substring match
         matches = [i for i,d in enumerate(sd.query_devices())
                    if args.device.lower() in d['name'].lower()
                    and d['max_input_channels'] > 0]
@@ -64,16 +63,18 @@ if need_resample and resample_poly is None:
         "and scipy.signal.resample_poly is not available. "
         "Please install scipy (`pip3 install scipy`).")
 
-print(f"Using input device {device_id or 'default'}: '{device_info['name']}' at {dev_sr} Hz")
-print(f"{'Resampling' if need_resample else 'Direct'} → target {SR} Hz mono")
+print(f"Using input device {device_id or 'default'}: '{device_info['name']}' @ {dev_sr} Hz")
+print(f"{'Resampling' if need_resample else 'Direct'} → {SR} Hz mono\n")
 
 # ── Load models ──────────────────────────────────────────
+print("Loading YAMNet model...")
 yam = tflite.Interpreter(
     'scripts/models/yamnet/tfLite/tflite/1/1.tflite', num_threads=4)
 yam.resize_tensor_input(
     yam.get_input_details()[0]['index'], [15600], strict=True)
 yam.allocate_tensors()
 
+print("Loading SONYC head model...")
 head = tflite.Interpreter(
     'scripts/models/sonyc/sonyc_head_v3_int8.tflite', num_threads=4)
 head.allocate_tensors()
@@ -82,10 +83,13 @@ head.allocate_tensors()
 embed_detail = next(d for d in yam.get_output_details()
                     if d['shape'][-1] == 1024)
 e_idx, e_scale, e_zero = embed_detail['index'], *embed_detail['quantization']
+print(f"YAMNet embed output index={e_idx}, quant=(scale={e_scale}, zero={e_zero})")
 
 h_in  = head.get_input_details()[0]['index']
 h_out = head.get_output_details()[0]['index']
 h_scale, h_zero = head.get_input_details()[0]['quantization']
+print(f"Head input  index={h_in}, quant=(scale={h_scale}, zero={h_zero})")
+print(f"Head output index={h_out}\n")
 
 # ── Audio capture ────────────────────────────────────────
 HOP   = SR        # nominal 1 s hops → 16 000 samples per block
@@ -95,7 +99,7 @@ q_in = queue.Queue(maxsize=10)
 
 def callback(indata, frames, time_info, status):
     if status:
-        print(status, flush=True)
+        print("AUDIO STATUS:", status, flush=True)
     q_in.put(indata.copy())
 
 stream = sd.InputStream(
@@ -106,13 +110,14 @@ stream = sd.InputStream(
     callback=callback)
 stream.start()
 
-# initialize ring buffer
 ring = np.zeros(FRAME, dtype=np.float32)
+print("Listening … Ctrl-C to stop\n")
 
-print("Listening … Ctrl-C to stop")
 try:
     while True:
         block = q_in.get()             # shape = (blocksize, 1)
+        # — diagnostics: incoming block —
+        print(f"[IN ] block.shape={block.shape}, max_amp={np.max(np.abs(block)):.4f}")
 
         # ── resample & mono ──────────────────────────────
         if need_resample:
@@ -120,31 +125,46 @@ try:
         else:
             mono = block[:,0]
         mono = mono.astype(np.float32)
+        # — diagnostics: after resample —
+        print(f"[RES] mono.len={len(mono)}, max={mono.max():.4f}, min={mono.min():.4f}")
 
         # ── maintain exactly FRAME samples ───────────────
         mono_len = len(mono)
         if mono_len >= FRAME:
-            # if block longer than window, take the last FRAME samples
             ring = mono[-FRAME:].copy()
         else:
-            # drop oldest samples, append new ones
             ring = np.concatenate((ring[mono_len:], mono))
+        # — diagnostics: ring buffer —
+        print(f"[RNG] ring.shape={ring.shape}, nan_any={np.isnan(ring).any()}, "
+              f"max={ring.max():.4f}, min={ring.min():.4f}")
 
         # --- run backbone ---
+        print(">>> Feeding YAMNet")
         yam.set_tensor(yam.get_input_details()[0]['index'], ring)
         yam.invoke()
-        emb = yam.get_tensor(e_idx)[0]  # float32, (1024,)
+        out_details = yam.get_output_details()
+        print("YAMNet outputs:", [d['shape'] for d in out_details])
+        emb = yam.get_tensor(e_idx)[0]
+        print(f"[EMB] emb.shape={emb.shape}, dtype={emb.dtype}, "
+              f"min={emb.min():.4f}, max={emb.max():.4f}")
 
         # --- quantise & run head ---
+        print(f"[QIN] head quant: scale={h_scale}, zero={h_zero}")
         emb_i8 = np.clip(
-            np.round(emb / e_scale + e_zero),
+            np.round((emb / h_scale) + h_zero),
             -128, 127).astype(np.int8)[np.newaxis, :]
+        print(f"[QIN] emb_i8.shape={emb_i8.shape}, min={emb_i8.min()}, max={emb_i8.max()}")
+
         head.set_tensor(h_in, emb_i8)
         head.invoke()
-        p_i8   = head.get_tensor(h_out)[0]
-        probs  = (p_i8.astype(np.float32) - h_zero) * h_scale
+        p_i8 = head.get_tensor(h_out)[0]
+        print(f"[OUT] p_i8.shape={p_i8.shape}, dtype={p_i8.dtype}, "
+              f"min={p_i8.min()}, max={p_i8.max()}")
 
-        active = np.where(probs > 0.333)[0]  # threshold
+        probs = (p_i8.astype(np.float32) - h_zero) * h_scale
+        print(f"[PRB] probs.shape={probs.shape}, min={probs.min():.4f}, max={probs.max():.4f}")
+
+        active = np.where(probs > 0.333)[0]
         if active.size:
             ts = time.strftime('%H:%M:%S')
             print(f"{ts}  ➜ tags {active}  max {probs[active].max():.2f}")
