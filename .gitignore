@@ -7,7 +7,11 @@ node_modules/
 models/
 config.*
 embeddings/
-datasets/
+tensorFlow2/
+classification-tflite/
+# datasets/
+.gz
+.h5
 
 # platformio
 .pio
