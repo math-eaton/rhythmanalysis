@@ -34,35 +34,27 @@ if args.list_devices:
     list_input_devices()
     exit(0)
 
-# find a USB mic if no device specified
 def find_usb_mic():
-    devices = sd.query_devices()
-    for idx, dev in enumerate(devices):
+    for idx, dev in enumerate(sd.query_devices()):
         if dev['max_input_channels'] > 0 and 'USB' in dev['name']:
             return idx
-    return None  # fall back to default
+    return None
 
-# resolve args.device to an integer device ID (or None)
-device_id = None
+# resolve device selection
 if args.device is not None:
-    # try as integer first
     try:
         device_id = int(args.device)
     except ValueError:
         # substring match
-        devices = sd.query_devices()
-        matches = [i for i, d in enumerate(devices)
+        matches = [i for i,d in enumerate(sd.query_devices())
                    if args.device.lower() in d['name'].lower()
                    and d['max_input_channels'] > 0]
-        if matches:
-            device_id = matches[0]
-        else:
-            print(f"No input device matching '{args.device}' found, using default.")
-            device_id = None
+        device_id = matches[0] if matches else None
 else:
     device_id = find_usb_mic()
 
-device_info = sd.query_devices(device_id, 'input') if device_id is not None else sd.query_devices(None, 'input')
+device_info = sd.query_devices(device_id, 'input') if device_id is not None \
+              else sd.query_devices(None, 'input')
 dev_sr = int(device_info['default_samplerate'])
 SR = 16_000
 need_resample = (dev_sr != SR)
@@ -70,23 +62,20 @@ if need_resample and resample_poly is None:
     raise RuntimeError(
         f"Device sample rate is {dev_sr} Hz but target is {SR} Hz, "
         "and scipy.signal.resample_poly is not available. "
-        "Please install scipy.")
+        "Please install scipy (`pip3 install scipy`).")
 
 print(f"Using input device {device_id or 'default'}: '{device_info['name']}' at {dev_sr} Hz")
 print(f"{'Resampling' if need_resample else 'Direct'} → target {SR} Hz mono")
 
 # ── Load models ──────────────────────────────────────────
 yam = tflite.Interpreter(
-    'scripts/models/yamnet/tfLite/tflite/1/1.tflite',
-    num_threads=4)
+    'scripts/models/yamnet/tfLite/tflite/1/1.tflite', num_threads=4)
 yam.resize_tensor_input(
-    yam.get_input_details()[0]['index'],
-    [15600], strict=True)
+    yam.get_input_details()[0]['index'], [15600], strict=True)
 yam.allocate_tensors()
 
 head = tflite.Interpreter(
-    'scripts/models/sonyc/sonyc_head_v3_int8.tflite',
-    num_threads=4)
+    'scripts/models/sonyc/sonyc_head_v3_int8.tflite', num_threads=4)
 head.allocate_tensors()
 
 # locate embedding tensor (1 024-D)
@@ -99,8 +88,8 @@ h_out = head.get_output_details()[0]['index']
 h_scale, h_zero = head.get_input_details()[0]['quantization']
 
 # ── Audio capture ────────────────────────────────────────
-HOP = SR                  # 1-second hops
-FRAME = 15600             # 0.975 s (YAMNet window)
+HOP   = SR        # nominal 1 s hops → 16 000 samples per block
+FRAME = 15600     # YAMNet window: 0.975 s @ 16 kHz
 
 q_in = queue.Queue(maxsize=10)
 
@@ -117,32 +106,38 @@ stream = sd.InputStream(
     callback=callback)
 stream.start()
 
+# initialize ring buffer
 ring = np.zeros(FRAME, dtype=np.float32)
 
 print("Listening … Ctrl-C to stop")
 try:
     while True:
-        block = q_in.get()  # shape=(blocksize, 1)
+        block = q_in.get()             # shape = (blocksize, 1)
 
-        # ── ensure 16 kHz mono ───────────────────────────
+        # ── resample & mono ──────────────────────────────
         if need_resample:
             mono = resample_poly(block[:,0], SR, dev_sr)
         else:
             mono = block[:,0]
+        mono = mono.astype(np.float32)
 
-        # keep last 0.975 s of audio
-        ring = np.concatenate((ring[len(mono):], mono.astype(np.float32)))
+        # ── maintain exactly FRAME samples ───────────────
+        mono_len = len(mono)
+        if mono_len >= FRAME:
+            # if block longer than window, take the last FRAME samples
+            ring = mono[-FRAME:].copy()
+        else:
+            # drop oldest samples, append new ones
+            ring = np.concatenate((ring[mono_len:], mono))
 
         # --- run backbone ---
-        yam.set_tensor(
-            yam.get_input_details()[0]['index'],
-            ring)
+        yam.set_tensor(yam.get_input_details()[0]['index'], ring)
         yam.invoke()
         emb = yam.get_tensor(e_idx)[0]  # float32, (1024,)
 
         # --- quantise & run head ---
         emb_i8 = np.clip(
-            np.round(emb / h_scale + e_zero),
+            np.round(emb / e_scale + e_zero),
             -128, 127).astype(np.int8)[np.newaxis, :]
         head.set_tensor(h_in, emb_i8)
         head.invoke()
