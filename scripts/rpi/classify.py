@@ -1,173 +1,172 @@
 #!/usr/bin/env python3
 import argparse
-import numpy as np
-import sounddevice as sd
-import queue
 import time
+import queue
+import warnings
+
+import numpy as np
+import pandas as pd
+import sounddevice as sd
 import tflite_runtime.interpreter as tflite
+from scipy.signal import resample_poly
 
-# ── Optional resampling ─────────────────────────────────
-try:
-    from scipy.signal import resample_poly
-except ImportError:
-    resample_poly = None
+# suppress minor numpy warnings
+warnings.filterwarnings("ignore", message="The value of the smallest subnormal")
 
-# ── Argument parsing & device selection ─────────────────
+# ── USER CONFIGURATION ─────────────────────────────────
+YAMNET_MODEL      = 'scripts/models/yamnet/tfLite/tflite/1/1.tflite'
+CLASS_MAP_CSV     = 'scripts/rpi/yamnet_class_map.csv'
+SONYC_HEAD_MODEL  = 'scripts/models/sonyc/sonyc_head_v3_int8.tflite'  # placeholder
+THRESHOLD         = 0.05
+NUM_THREADS       = 4
+TARGET_SR         = 16_000
+FRAME_LEN         = 15600   # YAMNet window size (0.975 s @16 kHz)
+
+# ── Argument parsing ───────────────────────────────────
 parser = argparse.ArgumentParser(
-    description="Real-time YAMNet + SONYC audio tagging (16 kHz mono)")
+    description="Real-time YAMNet (+ SONYC) audio tagging @16 kHz mono"
+)
 parser.add_argument(
-    '--list-devices', dest='list_devices', action='store_true',
-    help='List all available audio input devices and exit')
+    '--list-devices', action='store_true', help='List audio input devices'
+)
 parser.add_argument(
-    '-d', '--device', metavar='ID|NAME', default=None,
-    help='Input device ID or substring of its name (default: auto-detect USB mic)')
+    '-d', '--device', default=None, help='Device ID or substring'
+)
 args = parser.parse_args()
 
-def list_input_devices():
-    devices = sd.query_devices()
-    print("Available input devices:")
-    for idx, dev in enumerate(devices):
-        if dev['max_input_channels'] > 0:
-            print(f"[{idx}] {dev['name']}  (default SR: {dev['default_samplerate']})")
-
+# ── Handle device listing ───────────────────────────────
 if args.list_devices:
-    list_input_devices()
+    for idx, dev in enumerate(sd.query_devices()):
+        if dev['max_input_channels'] > 0:
+            print(f"[{idx}] {dev['name']} @ {dev['default_samplerate']} Hz")
     exit(0)
 
-def find_usb_mic():
-    for idx, dev in enumerate(sd.query_devices()):
-        if dev['max_input_channels'] > 0 and 'USB' in dev['name']:
+# ── Device selection ────────────────────────────────────
+def find_device(name_or_id=None):
+    devices = sd.query_devices()
+    # explicit ID
+    if name_or_id is not None:
+        try:
+            idx = int(name_or_id)
             return idx
+        except ValueError:
+            # substring match
+            for i, d in enumerate(devices):
+                if (name_or_id.lower() in d['name'].lower()
+                        and d['max_input_channels'] > 0):
+                    return i
+            return None
+    # auto-detect USB mic
+    for i, d in enumerate(devices):
+        if d['max_input_channels'] > 0 and 'USB' in d['name']:
+            return i
     return None
 
-# resolve device selection
-if args.device is not None:
-    try:
-        device_id = int(args.device)
-    except ValueError:
-        matches = [i for i,d in enumerate(sd.query_devices())
-                   if args.device.lower() in d['name'].lower()
-                   and d['max_input_channels'] > 0]
-        device_id = matches[0] if matches else None
+device_id = find_device(args.device)
+if device_id is None:
+    info = sd.query_devices(None, 'input')
 else:
-    device_id = find_usb_mic()
+    info = sd.query_devices(device_id, 'input')
+dev_sr = int(info['default_samplerate'])
+print(f"Using device {device_id or 'default'}: '{info['name']}' @ {dev_sr} Hz")
 
-device_info = sd.query_devices(device_id, 'input') if device_id is not None \
-              else sd.query_devices(None, 'input')
-dev_sr = int(device_info['default_samplerate'])
-SR = 16_000
-need_resample = (dev_sr != SR)
+# ── Resampling check ────────────────────────────────────
+need_resample = (dev_sr != TARGET_SR)
 if need_resample and resample_poly is None:
     raise RuntimeError(
-        f"Device sample rate is {dev_sr} Hz but target is {SR} Hz, "
-        "and scipy.signal.resample_poly is not available. "
-        "Please install scipy (`pip3 install scipy`).")
+        f"Device SR={dev_sr}, target={TARGET_SR}, but scipy missing"
+    )
+print(
+    f"{'Resampling' if need_resample else 'Direct'} → {TARGET_SR} Hz mono"
+)
 
-print(f"Using input device {device_id or 'default'}: '{device_info['name']}' @ {dev_sr} Hz")
-print(f"{'Resampling' if need_resample else 'Direct'} → {SR} Hz mono\n")
+# ── Load class map ──────────────────────────────────────
+class_map = pd.read_csv(CLASS_MAP_CSV)
+labels    = class_map['display_name'].to_numpy()
 
-# ── Load models ──────────────────────────────────────────
-print("Loading YAMNet model...")
+# ── Load YAMNet ─────────────────────────────────────────
 yam = tflite.Interpreter(
-    'scripts/models/yamnet/tfLite/tflite/1/1.tflite', num_threads=4)
+    model_path=YAMNET_MODEL,
+    num_threads=NUM_THREADS
+)
+inp_detail = yam.get_input_details()[0]
+print(
+    "YAMNet input shape:", inp_detail['shape'],
+    "rank:", len(inp_detail['shape'])
+)
+# model expects 1-D [FRAME_LEN]
 yam.resize_tensor_input(
-    yam.get_input_details()[0]['index'], [15600], strict=True)
+    inp_detail['index'], [FRAME_LEN], strict=True
+)
 yam.allocate_tensors()
+scores_idx = yam.get_output_details()[0]['index']
 
-print("Loading SONYC head model...")
-head = tflite.Interpreter(
-    'scripts/models/sonyc/sonyc_head_v3_int8.tflite', num_threads=4)
-head.allocate_tensors()
+# ── Placeholder for SONYC head (disabled) ──────────────
+# head = tflite.Interpreter(
+#     model_path=SONYC_HEAD_MODEL, num_threads=NUM_THREADS
+# )\# head.allocate_tensors()
+# h_in = head.get_input_details()[0]['index']
+# h_out = head.get_output_details()[0]['index']
+# h_scale, h_zero = head.get_input_details()[0]['quantization']
 
-# locate embedding tensor (1 024-D)
-embed_detail = next(d for d in yam.get_output_details()
-                    if d['shape'][-1] == 1024)
-e_idx, e_scale, e_zero = embed_detail['index'], *embed_detail['quantization']
-print(f"YAMNet embed output index={e_idx}, quant=(scale={e_scale}, zero={e_zero})")
+# ── Audio capture setup ─────────────────────────────────
+HOP_SAMPLES = TARGET_SR       # 1 s hop at target rate
+block_in    = int(HOP_SAMPLES * dev_sr / TARGET_SR)
+q           = queue.Queue(maxsize=10)
 
-h_in  = head.get_input_details()[0]['index']
-h_out = head.get_output_details()[0]['index']
-h_scale, h_zero = head.get_input_details()[0]['quantization']
-print(f"Head input  index={h_in}, quant=(scale={h_scale}, zero={h_zero})")
-print(f"Head output index={h_out}\n")
-
-# ── Audio capture ────────────────────────────────────────
-HOP   = SR        # nominal 1 s hops → 16 000 samples per block
-FRAME = 15600     # YAMNet window: 0.975 s @ 16 kHz
-
-q_in = queue.Queue(maxsize=10)
-
-def callback(indata, frames, time_info, status):
+def audio_callback(indata, frames, time_info, status):
     if status:
-        print("AUDIO STATUS:", status, flush=True)
-    q_in.put(indata.copy())
+        print("Audio status:", status)
+    q.put(indata[:, 0].copy())
 
 stream = sd.InputStream(
     device=device_id,
-    samplerate=(dev_sr if need_resample else SR),
-    channels=1, dtype='float32',
-    blocksize=(dev_sr if need_resample else HOP),
-    callback=callback)
+    samplerate=dev_sr,
+    channels=1,
+    dtype='float32',
+    blocksize=block_in,
+    latency='low',
+    callback=audio_callback
+)
 stream.start()
 
-ring = np.zeros(FRAME, dtype=np.float32)
-print("Listening … Ctrl-C to stop\n")
+ring = np.zeros(FRAME_LEN, dtype=np.float32)
+print("Listening… Ctrl-C to stop")
 
 try:
     while True:
-        block = q_in.get()             # shape = (blocksize, 1)
-        # — diagnostics: incoming block —
-        print(f"[IN ] block.shape={block.shape}, max_amp={np.max(np.abs(block)):.4f}")
-
-        # ── resample & mono ──────────────────────────────
-        if need_resample:
-            mono = resample_poly(block[:,0], SR, dev_sr)
+        block = q.get()
+        # resample to TARGET_SR if needed
+        mono = (
+            resample_poly(block, TARGET_SR, dev_sr)
+            if need_resample else block
+        )
+        # update ring buffer
+        if len(mono) >= FRAME_LEN:
+            ring = mono[-FRAME_LEN:]
         else:
-            mono = block[:,0]
-        mono = mono.astype(np.float32)
-        # — diagnostics: after resample —
-        print(f"[RES] mono.len={len(mono)}, max={mono.max():.4f}, min={mono.min():.4f}")
+            ring = np.concatenate((ring[len(mono):], mono))
 
-        # ── maintain exactly FRAME samples ───────────────
-        mono_len = len(mono)
-        if mono_len >= FRAME:
-            ring = mono[-FRAME:].copy()
-        else:
-            ring = np.concatenate((ring[mono_len:], mono))
-        # — diagnostics: ring buffer —
-        print(f"[RNG] ring.shape={ring.shape}, nan_any={np.isnan(ring).any()}, "
-              f"max={ring.max():.4f}, min={ring.min():.4f}")
-
-        # --- run backbone ---
-        print(">>> Feeding YAMNet")
-        yam.set_tensor(yam.get_input_details()[0]['index'], ring)
+        # run YAMNet
+        yam.set_tensor(
+            inp_detail['index'], ring.astype(np.float32)
+        )
         yam.invoke()
-        out_details = yam.get_output_details()
-        print("YAMNet outputs:", [d['shape'] for d in out_details])
-        emb = yam.get_tensor(e_idx)[0]
-        print(f"[EMB] emb.shape={emb.shape}, dtype={emb.dtype}, "
-              f"min={emb.min():.4f}, max={emb.max():.4f}")
+        scores = yam.get_tensor(scores_idx)[0]
 
-        # --- quantise & run head ---
-        print(f"[QIN] head quant: scale={h_scale}, zero={h_zero}")
-        emb_i8 = np.clip(
-            np.round((emb / h_scale) + h_zero),
-            -128, 127).astype(np.int8)[np.newaxis, :]
-        print(f"[QIN] emb_i8.shape={emb_i8.shape}, min={emb_i8.min()}, max={emb_i8.max()}")
-
-        head.set_tensor(h_in, emb_i8)
-        head.invoke()
-        p_i8 = head.get_tensor(h_out)[0]
-        print(f"[OUT] p_i8.shape={p_i8.shape}, dtype={p_i8.dtype}, "
-              f"min={p_i8.min()}, max={p_i8.max()}")
-
-        probs = (p_i8.astype(np.float32) - h_zero) * h_scale
-        print(f"[PRB] probs.shape={probs.shape}, min={probs.min():.4f}, max={probs.max():.4f}")
-
-        active = np.where(probs > 0.333)[0]
+        # report active classes
+        active = np.where(scores > THRESHOLD)[0]
         if active.size:
             ts = time.strftime('%H:%M:%S')
-            print(f"{ts}  ➜ tags {active}  max {probs[active].max():.2f}")
+            names = labels[active]
+            print(
+                f"{ts} ➜ YAMNet [{active}] → "
+                f"{list(names)}, max={scores[active].max():.2f}"
+            )
+
+        # SONYC head logic (to add later):
+        # emb = yam.get_tensor(<embedding_idx>)[0]
+        # quantize emb -> head input, head.invoke(), get probs, threshold & print
 
 except KeyboardInterrupt:
     stream.stop()
