@@ -10,8 +10,8 @@ embeddings/
 tensorFlow2/
 classification-tflite/
 # datasets/
-.gz
-.h5
+*.gz
+*.h5
 
 # platformio
 .pio
