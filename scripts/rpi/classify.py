@@ -3,6 +3,9 @@ import argparse
 import time
 import queue
 import warnings
+import csv
+import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -17,10 +20,39 @@ warnings.filterwarnings("ignore", message="The value of the smallest subnormal")
 YAMNET_MODEL      = 'scripts/models/yamnet/tfLite/tflite/1/1.tflite'
 CLASS_MAP_CSV     = 'scripts/rpi/yamnet_class_map.csv'
 SONYC_HEAD_MODEL  = 'scripts/models/sonyc/sonyc_head_v3_int8.tflite'  # placeholder
-THRESHOLD         = 0.05
+THRESHOLD         = 0.33
 NUM_THREADS       = 4
 TARGET_SR         = 16_000
 FRAME_LEN         = 15600   # YAMNet window size (0.975 s @16 kHz)
+
+# ── LOG CONFIG ──────────────────────────────────────────
+OUTPUT_CSV = "output/classifications.csv"
+Path(OUTPUT_CSV).parent.mkdir(parents=True, exist_ok=True)
+
+# write a header row if the file doesn't exist yet
+if not Path(OUTPUT_CSV).exists():
+    with open(OUTPUT_CSV, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            "ts",      # unix timestamp
+            "db",      # instantaneous amplitude in dBFS
+            "c1_idx",  # top-1 class index
+            "c1_cf",   # top-1 confidence (%)
+            "c2_idx",  # top-2 class index
+            "c2_cf",   # top-2 confidence (%)
+            "c3_idx",  # top-3 class index
+            "c3_cf",   # top-3 confidence (%)
+        ])
+
+# aggregation & flush params
+ACCUM_SEC   = 3.0              # seconds to accumulate before logging
+HOP_SEC     = 1.0              # since we step 1 s per block
+TOP_K       = 3                # how many class slots to record
+FLUSH_SEC   = 5.0              # flush buffer every N seconds
+
+accum       = []               # list of score arrays
+ram_buffer  = []               # rows waiting to be written
+last_flush  = time.time()
 
 # ── Argument parsing ───────────────────────────────────
 parser = argparse.ArgumentParser(
@@ -44,19 +76,15 @@ if args.list_devices:
 # ── Device selection ────────────────────────────────────
 def find_device(name_or_id=None):
     devices = sd.query_devices()
-    # explicit ID
     if name_or_id is not None:
         try:
-            idx = int(name_or_id)
-            return idx
+            return int(name_or_id)
         except ValueError:
-            # substring match
             for i, d in enumerate(devices):
                 if (name_or_id.lower() in d['name'].lower()
                         and d['max_input_channels'] > 0):
                     return i
             return None
-    # auto-detect USB mic
     for i, d in enumerate(devices):
         if d['max_input_channels'] > 0 and 'USB' in d['name']:
             return i
@@ -94,20 +122,11 @@ print(
     "YAMNet input shape:", inp_detail['shape'],
     "rank:", len(inp_detail['shape'])
 )
-# model expects 1-D [FRAME_LEN]
 yam.resize_tensor_input(
     inp_detail['index'], [FRAME_LEN], strict=True
 )
 yam.allocate_tensors()
 scores_idx = yam.get_output_details()[0]['index']
-
-# ── Placeholder for SONYC head (disabled) ──────────────
-# head = tflite.Interpreter(
-#     model_path=SONYC_HEAD_MODEL, num_threads=NUM_THREADS
-# )\# head.allocate_tensors()
-# h_in = head.get_input_details()[0]['index']
-# h_out = head.get_output_details()[0]['index']
-# h_scale, h_zero = head.get_input_details()[0]['quantization']
 
 # ── Audio capture setup ─────────────────────────────────
 HOP_SAMPLES = TARGET_SR       # 1 s hop at target rate
@@ -141,6 +160,7 @@ try:
             resample_poly(block, TARGET_SR, dev_sr)
             if need_resample else block
         )
+
         # update ring buffer
         if len(mono) >= FRAME_LEN:
             ring = mono[-FRAME_LEN:]
@@ -148,25 +168,51 @@ try:
             ring = np.concatenate((ring[len(mono):], mono))
 
         # run YAMNet
-        yam.set_tensor(
-            inp_detail['index'], ring.astype(np.float32)
-        )
+        yam.set_tensor(inp_detail['index'], ring.astype(np.float32))
         yam.invoke()
         scores = yam.get_tensor(scores_idx)[0]
 
-        # report active classes
-        active = np.where(scores > THRESHOLD)[0]
-        if active.size:
-            ts = time.strftime('%H:%M:%S')
-            names = labels[active]
+        # ── compute instantaneous amplitude (dBFS)
+        rms = np.sqrt(np.mean(ring**2))
+        db_now = 20 * np.log10(rms + 1e-10)
+
+        # ── accumulate & aggregate every ACCUM_SEC
+        accum.append(scores)
+        if len(accum) * HOP_SEC < ACCUM_SEC:
+            continue
+
+        mean_scores = np.mean(accum, axis=0)
+        top_idx     = mean_scores.argsort()[-TOP_K:][::-1]
+        top_conf    = [mean_scores[i] for i in top_idx]
+        accum.clear()
+
+        # ── only log/print if best-confidence crosses threshold
+        if top_conf[0] >= THRESHOLD:
+            ts = time.time()
+            # human‐readable print
+            names = labels[top_idx]
+            confs = [f"{c*100:.1f}%" for c in top_conf]
             print(
-                f"{ts} ➜ YAMNet [{active}] → "
-                f"{list(names)}, max={scores[active].max():.2f}"
+                f"{time.strftime('%H:%M:%S')} → "
+                f"{names[0]} ({confs[0]}) [+{names[1]} ({confs[1]}), "
+                f"{names[2]} ({confs[2]})]  {db_now:.1f} dBFS"
             )
 
-        # SONYC head logic (to add later):
-        # emb = yam.get_tensor(<embedding_idx>)[0]
-        # quantize emb -> head input, head.invoke(), get probs, threshold & print
+            # prepare CSV row: ts, db, idx1, cf1, idx2, cf2, idx3, cf3
+            row = [ts, round(db_now,1)]
+            for idx, c in zip(top_idx, top_conf):
+                row.extend([int(idx), round(c*100,1)])
+            ram_buffer.append(row)
+
+        # ── flush to disk every FLUSH_SEC
+        if time.time() - last_flush >= FLUSH_SEC and ram_buffer:
+            with open(OUTPUT_CSV, "a", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerows(ram_buffer)
+                f.flush()
+                os.fsync(f.fileno())   # ensure SD-card persistence
+            ram_buffer.clear()
+            last_flush = time.time()
 
 except KeyboardInterrupt:
     stream.stop()
