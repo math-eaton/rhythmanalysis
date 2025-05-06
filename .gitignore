@@ -4,7 +4,7 @@ misc/
 research/
 samples/
 node_modules/
-models/
+# models/
 config.*
 embeddings/
 tensorFlow2/
