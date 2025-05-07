@@ -9,7 +9,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import sounddevice as sd
-import tflite_runtime.interpreter as tflite
+try:
+    from tflite_runtime.interpreter import Interpreter
+    HAS_NUM_THREADS_ARG = True
+except ImportError:
+    from tensorflow.lite.python.interpreter import Interpreter
+    HAS_NUM_THREADS_ARG = False
 from scipy.signal import resample_poly
 
 # ── USER CONFIGURATION ─────────────────────────────────
@@ -43,7 +48,11 @@ labels    = class_map['display_name'].to_numpy()
 print(f"[DEBUG] {len(labels)} labels loaded")
 
 print(f"[DEBUG] Loading TFLite model from {YAMNET_MODEL} with {NUM_THREADS} threads")
-yam = tflite.Interpreter(model_path=YAMNET_MODEL, num_threads=NUM_THREADS)
+if HAS_NUM_THREADS_ARG:
+    yam = Interpreter(model_path=YAMNET_MODEL, num_threads=NUM_THREADS)
+else:
+    yam = Interpreter(model_path=YAMNET_MODEL)
+    # yam.experimental_set_num_threads(NUM_THREADS)
 inp_detail = yam.get_input_details()[0]
 print(f"[DEBUG] Original input shape: {inp_detail['shape']}")
 yam.resize_tensor_input(inp_detail['index'], [FRAME_LEN], strict=True)
