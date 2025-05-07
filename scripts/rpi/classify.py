@@ -18,8 +18,8 @@ from scipy.signal import resample_poly
 
 # ── USER CONFIGURATION ─────────────────────────────────
 YAMNET_MODEL      = 'scripts/models/yamnet/tfLite/tflite/1/1.tflite'
-CLASS_MAP_CSV     = 'scripts/rpi/yamnet_class_map.csv'
-SONYC_HEAD_MODEL  = 'scripts/models/sonyc/sonyc_head_v3_int8.tflite'  # placeholder
+CLASS_MAP_CSV     = 'scripts/models/yamnet/yamnet_class_map.csv'
+# SONYC_HEAD_MODEL  = 'scripts/models/sonyc/sonyc_head_v3_int8.tflite'  # placeholder
 THRESHOLD         = 0.33
 NUM_THREADS       = 4
 TARGET_SR         = 16_000
