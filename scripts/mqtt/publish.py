@@ -53,10 +53,13 @@ CREATE TABLE IF NOT EXISTS audio_logs (
   db          DOUBLE PRECISION,
   c1_idx      DOUBLE PRECISION,
   c1_cf       DOUBLE PRECISION,
+  c1_name     TEXT,
   c2_idx      DOUBLE PRECISION,
   c2_cf       DOUBLE PRECISION,
+  c2_name     TEXT,
   c3_idx      DOUBLE PRECISION,
   c3_cf       DOUBLE PRECISION,
+  c3_name     TEXT,
   raw_json    JSONB          NOT NULL,
   created_at  TIMESTAMPTZ    DEFAULT NOW()
 );
@@ -65,8 +68,8 @@ CREATE TABLE IF NOT EXISTS audio_logs (
 # Prepare INSERT
 insert_sql = """
 INSERT INTO audio_logs 
-  (ts, db, c1_idx, c1_cf, c2_idx, c2_cf, c3_idx, c3_cf, raw_json)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+  (ts, db, c1_idx, c1_cf, c1_name, c2_idx, c2_cf, c2_name, c3_idx, c3_cf, c3_name, raw_json)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
 """
 
 data = pd.read_csv(csv_path)
@@ -90,14 +93,17 @@ try:
         db     = obj.get("db")
         c1_idx = obj.get("c1_idx")
         c1_cf  = obj.get("c1_cf")
+        c1_name = obj.get("c1_name")
         c2_idx = obj.get("c2_idx")
         c2_cf  = obj.get("c2_cf")
+        c2_name = obj.get("c2_name")
         c3_idx = obj.get("c3_idx")
         c3_cf  = obj.get("c3_cf")
+        c3_name = obj.get("c3_name")
 
         cur.execute(
             insert_sql,
-            (ts, db, c1_idx, c1_cf, c2_idx, c2_cf, c3_idx, c3_cf, json.dumps(obj))
+            (ts, db, c1_idx, c1_cf, c1_name, c2_idx, c2_cf, c2_name, c3_idx, c3_cf, c3_name, json.dumps(obj))
         )
         print("  → Stored to Postgres")
 
