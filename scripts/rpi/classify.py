@@ -14,7 +14,7 @@ import tflite_runtime.interpreter as tflite
 from scipy.signal import resample_poly
 
 # suppress minor numpy warnings
-warnings.filterwarnings("ignore", message="The value of the smallest subnormal")
+# warnings.filterwarnings("ignore", message="The value of the smallest subnormal")
 
 # ── USER CONFIGURATION ─────────────────────────────────
 YAMNET_MODEL      = 'scripts/models/yamnet/tfLite/tflite/1/1.tflite'
