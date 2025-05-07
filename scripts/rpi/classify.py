@@ -39,7 +39,7 @@ Path(OUTPUT_CSV).parent.mkdir(parents=True, exist_ok=True)
 if not Path(OUTPUT_CSV).exists():
     with open(OUTPUT_CSV, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["ts","db","c1_idx","c1_cf","c2_idx","c2_cf","c3_idx","c3_cf"])
+        writer.writerow(["ts", "db", "c1_idx", "c1_cf", "c1_name", "c2_idx", "c2_cf", "c2_name", "c3_idx", "c3_cf", "c3_name"])
 
 # ── LOAD MODEL & LABELS ──────────────────────────────
 print(f"[DEBUG] Loading labels from {CLASS_MAP_CSV}")
@@ -179,9 +179,9 @@ try:
             print(f"{time.strftime('%H:%M:%S',time.localtime(ts))} → "
                   f"{names[0]} ({confs[0]}) [+{names[1]} ({confs[1]}), "
                   f"{names[2]} ({confs[2]})]  {db_now:.1f} dBFS")
-            row = [ts, round(db_now,1)]
+            row = [ts, round(db_now, 1)]
             for idx, c in zip(top_idx, top_conf):
-                row.extend([int(idx), round(c*100,1)])
+                row.extend([int(idx), round(c*100, 1), labels[idx]])
             ram_buffer.append(row)
 
         # 5) flush
