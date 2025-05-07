@@ -142,7 +142,7 @@ try:
         chunk_buffer = chunk_buffer[CHUNK_SAMPLES:]
         num_windows = 1 + (CHUNK_SAMPLES - FRAME_LEN) // HOP_SAMPLES
         # print(f"[DEBUG] Processing chunk: {CHUNK_SEC}s → {num_windows} windows "
-              f"(frame={FRAME_LEN}, hop={HOP_SAMPLES})")
+        #       f"(frame={FRAME_LEN}, hop={HOP_SAMPLES})")
 
         # single inference per chunk (last 0.975 s slice)
         window = chunk[-FRAME_LEN:].astype(np.float32)
