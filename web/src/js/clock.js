@@ -14,7 +14,7 @@ export function clockGraph(containerId, config = {}) {
   // Ensure the legend container exists
   let legendContainer = container.select(".legend");
   if (legendContainer.empty()) {
-    legendContainer = container.append("div").attr("class", "legend");
+    legendContainer = container.append("div").attr("cl", "legend");
   }
   legendContainer
     .style("overflow-y", "auto")
@@ -25,7 +25,7 @@ export function clockGraph(containerId, config = {}) {
   const tooltip = d3
     .select("body")
     .append("div")
-    .attr("class", "tooltip")
+    .attr("cl", "tooltip")
     .style("position", "absolute")
     .style("top", "10px")
     .style("left", "10px")
@@ -176,7 +176,7 @@ export function clockGraph(containerId, config = {}) {
         .selectAll(".item")
         .data(legendClasses)
         .join("div")
-        .attr("class", "item")
+        .attr("cl", "item")
         .style("margin-bottom", "4px");
 
       item
