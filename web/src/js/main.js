@@ -3,8 +3,8 @@ import { clockGraph } from "./clock.js";
 
 const config = {
   DATA_URL: "https://rhythmanalysis.onrender.com/api/audio_logs",
-  INNER_R: 180,
-  OUTER_R: 220,
+  INNER_R: 25,
+  OUTER_R: 350,
 };
 
 clockGraph("simpleGraphContainer", config);

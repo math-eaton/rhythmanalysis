@@ -8,12 +8,40 @@ export function clockGraph(containerId, config = {}) {
     OUTER_R = 240,
   } = config;
 
-  const container = d3.select(`#${containerId}`).node();
+  const container = d3.select(`#${containerId}`);
+  container.style("display", "flex").style("align-items", "center");
+
+  // Ensure the legend container exists
+  let legendContainer = container.select(".legend");
+  if (legendContainer.empty()) {
+    legendContainer = container.append("div").attr("class", "legend");
+  }
+  legendContainer
+    .style("overflow-y", "auto")
+    .style("max-height", "100vh")
+    .style("margin-left", "16px");
+
+  // Create a tooltip element
+  const tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("top", "10px")
+    .style("left", "10px")
+    .style("padding", "5px 10px")
+    .style("background", "rgba(0, 0, 0, 0.7)")
+    .style("color", "#fff")
+    .style("border-radius", "4px")
+    .style("font-size", "12px")
+    .style("pointer-events", "none")
+    .style("visibility", "hidden");
 
   function render() {
-    const w = container.clientWidth;
-    const h = w;
-    const svg = d3.select(`#${containerId} svg`)
+    const w = window.innerWidth * 0.75; // 75% of the viewport width for the SVG
+    const h = window.innerHeight; // Full viewport height
+    const svg = container
+      .select("svg")
       .attr("width", w)
       .attr("height", h);
 
@@ -21,67 +49,145 @@ export function clockGraph(containerId, config = {}) {
 
     const cx = w / 2, cy = h / 2;
 
-    d3.json(DATA_URL).then(raw => {
+    d3.json(DATA_URL).then((raw) => {
       // parse and sort
-      const data = raw.map(d => ({ ts: +d.ts, class: d.class }))
-                      .sort((a, b) => a.ts - b.ts);
+      const data = raw
+        .map((d) => ({ ts: +d.ts, class: d.class }))
+        .sort((a, b) => a.ts - b.ts);
       if (!data.length) {
         console.warn("no data");
         return;
       }
 
       const t0 = data[0].ts,
-            t1 = data[data.length - 1].ts;
+        t1 = data[data.length - 1].ts;
 
       // map [t0…t1] → [–π/2…3π/2]
       const angle = d3.scaleLinear()
         .domain([t0, t1])
-        .range([-Math.PI/2, Math.PI * 3/2]);
+        .range([-Math.PI / 2, (Math.PI * 3) / 2]);
 
-      // classes → colors
-      const classes = Array.from(new Set(data.map(d => d.class))).sort();
+      // Calculate class frequencies
+      const classCounts = d3.rollup(
+        data,
+        (v) => v.length,
+        (d) => d.class
+      );
+
+      const classes = Array.from(classCounts.entries())
+        .sort((a, b) => a[1] - b[1]) 
+        .map((d) => d[0]);
+
       const color = d3.scaleOrdinal(classes, d3.schemeCategory10);
 
-      // draw an outer circle
-      svg.append("circle")
+      const ringScale = d3.scaleLinear()
+        .domain([0, classes.length - 1])
+        .range([INNER_R, OUTER_R]);
+
+      svg
+        .append("circle")
         .attr("cx", cx)
         .attr("cy", cy)
-        .attr("r", (INNER_R + OUTER_R) / 2)
+        .attr("r", OUTER_R)
         .style("fill", "none")
-        .style("stroke", "#ccc");
+        .style("stroke", "#f0");
 
-      // draw ticks
-      const g = svg.append("g")
-        .attr("transform", `translate(${cx},${cy})`);
+      const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
 
-      g.selectAll("line")
-        .data(data)
-        .join("line")
-          .attr("x1", d => INNER_R * Math.cos(angle(d.ts)))
-          .attr("y1", d => INNER_R * Math.sin(angle(d.ts)))
-          .attr("x2", d => OUTER_R * Math.cos(angle(d.ts)))
-          .attr("y2", d => OUTER_R * Math.sin(angle(d.ts)))
-          .attr("stroke", d => color(d.class))
-          .attr("stroke-width", 1);
+      classes.forEach((cls, i) => {
+        const radius = ringScale(i);
 
-      // legend
-      const legend = d3.select(`#${containerId} .legend`);
-      legend.selectAll("*").remove();
-      const item = legend.selectAll(".item")
-        .data(classes)
+        g.append("circle")
+          .attr("r", radius)
+          .style("fill", "none")
+          .style("stroke", "#4d4d4d");
+
+        g.selectAll(`line.class-${i}`)
+          .data(data.filter((d) => d.class === cls))
+          .join("line")
+          .attr("x1", (d) => radius * Math.cos(angle(d.ts)))
+          .attr("y1", (d) => radius * Math.sin(angle(d.ts)))
+          .attr("x2", (d) => (radius + 10) * Math.cos(angle(d.ts)))
+          .attr("y2", (d) => (radius + 10) * Math.sin(angle(d.ts)))
+          .attr("stroke", color(cls))
+          .attr("stroke-width", 1)
+          .on("mouseover", (event, d) => {
+            const timestamp = new Date(d.ts * 1000).toLocaleString("en-US", {
+              timeZone: "America/New_York",
+            });
+            tooltip
+              .style("visibility", "visible")
+              .text(`${d.class}, ${timestamp}`);
+          })
+          .on("mousemove", (event) => {
+            tooltip
+              .style("top", `${event.pageY + 10}px`)
+              .style("left", `${event.pageX + 10}px`);
+          })
+          .on("mouseout", () => {
+            tooltip.style("visibility", "hidden");
+          });
+      });
+
+      // Add timestamp labels at 12, 3, 6, and 9 o'clock positions
+      const labelPositions = [
+        { angle: -Math.PI / 2, label: "12 o'clock" }, // 12 o'clock
+        { angle: 0, label: "3 o'clock" },            // 3 o'clock
+        { angle: Math.PI / 2, label: "6 o'clock" },  // 6 o'clock
+        { angle: Math.PI, label: "9 o'clock" },      // 9 o'clock
+      ];
+
+      // Use the inverse of the angle scale to calculate timestamps
+      const inverseAngle = d3.scaleLinear()
+        .domain(angle.range()) // [-π/2, 3π/2]
+        .range(angle.domain()); // [t0, t1]
+
+      labelPositions.forEach(({ angle: posAngle, label }) => {
+        const timestamp = new Date(inverseAngle(posAngle) * 1000) // Convert to milliseconds
+          .toLocaleString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone: "America/New_York",
+          });
+
+        svg
+          .append("text")
+          .attr(
+            "x",
+            cx + (OUTER_R + 45) * Math.cos(posAngle) // Offset slightly from the outer ring
+          )
+          .attr(
+            "y",
+            cy + (OUTER_R + 25) * Math.sin(posAngle)
+          )
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .style("font-size", "10px")
+          .style("fill", "#969696")
+          .text(timestamp);
+      });
+
+      const legendClasses = Array.from(classCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map((d) => d[0]);
+
+      legendContainer.selectAll("*").remove();
+      const item = legendContainer
+        .selectAll(".item")
+        .data(legendClasses)
         .join("div")
-          .attr("class", "item")
-          .style("margin-bottom", "4px");
+        .attr("class", "item")
+        .style("margin-bottom", "4px");
 
-      item.append("span")
-          .style("display", "inline-block")
-          .style("width", "12px")
-          .style("height", "12px")
-          .style("margin-right", "6px")
-          .style("background-color", d => color(d));
+      item
+        .append("span")
+        .style("display", "inline-block")
+        .style("width", "12px")
+        .style("height", "12px")
+        .style("margin-right", "6px")
+        .style("background-color", (d) => color(d));
 
-      item.append("span")
-          .text(d => d);
+      item.append("span").text((d) => `${d} (${classCounts.get(d)})`);
     });
   }
 
