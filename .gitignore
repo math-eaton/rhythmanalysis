@@ -12,6 +12,7 @@ classification-tflite/
 # datasets/
 *.gz
 *.h5
+dbconfig.*
 backups/
 
 # platformio
