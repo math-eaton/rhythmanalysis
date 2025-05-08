@@ -3,7 +3,9 @@ import argparse
 import time
 import queue
 import csv
+import json
 import os
+import ssl
 from pathlib import Path
 
 import numpy as np
@@ -16,6 +18,7 @@ except ImportError:
     from tensorflow.lite.python.interpreter import Interpreter
     HAS_NUM_THREADS_ARG = False # full TF ie we are running in a computer context
 from scipy.signal import resample_poly
+import paho.mqtt.client as mqtt
 
 # === config ================================================─
 YAMNET_MODEL      = 'scripts/models/yamnet/tfLite/tflite/1/1.tflite'
@@ -40,6 +43,23 @@ if not Path(OUTPUT_CSV).exists():
     with open(OUTPUT_CSV, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["ts", "db", "c1_idx", "c1_cf", "c1_name", "c2_idx", "c2_cf", "c2_name", "c3_idx", "c3_cf", "c3_name"])
+
+# === mqtt config ===================================================─
+cfg_path = Path(__file__).parent.parent / "config.json"
+with open(cfg_path, "r") as f:
+    cfg = json.load(f)
+broker   = cfg["hiveMQ_broker"]
+port     = cfg["hiveMQ_port"]
+username = cfg["hiveMQ_username"]
+password = cfg["hiveMQ_password"]
+topic    = cfg["topic"]
+
+# === init + connect mqtt ===================================================─
+mqtt_client = mqtt.Client()
+mqtt_client.username_pw_set(username, password)
+mqtt_client.tls_set(tls_version=ssl.PROTOCOL_TLSv1_2)
+mqtt_client.connect(broker, port)
+mqtt_client.loop_start()
 
 # === load model + labels =============================================
 print(f"[DEBUG] Loading labels from {CLASS_MAP_CSV}")
@@ -199,6 +219,17 @@ try:
                     row.extend([None, None, None])
 
                 ram_buffer.append(row)
+
+                payload = {
+                    "ts": ts,
+                    "db": round(db_now,1),
+                    "c1_idx": top_idx[0], "c1_cf": round(top_conf[0]*100,1), "c1_name": names[0],
+                    "c2_idx": top_idx[1], "c2_cf": round(top_conf[1]*100,1), "c2_name": names[1],
+                    "c3_idx": top_idx[2], "c3_cf": round(top_conf[2]*100,1), "c3_name": names[2]
+                    }
+                
+                mqtt_client.publish(topic, json.dumps(payload), qos=1)
+
 
         # 5) flush buffer to disk every FLUSH_SEC
         if time.time() - last_flush >= FLUSH_SEC and ram_buffer:
