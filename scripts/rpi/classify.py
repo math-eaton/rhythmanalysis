@@ -45,7 +45,7 @@ if not Path(OUTPUT_CSV).exists():
         writer.writerow(["ts", "db", "c1_idx", "c1_cf", "c1_name", "c2_idx", "c2_cf", "c2_name", "c3_idx", "c3_cf", "c3_name"])
 
 # === mqtt config ===================================================─
-cfg_path = Path(__file__).parent.parent / "config.json"
+cfg_path = Path(__file__).parent / "config.json"
 with open(cfg_path, "r") as f:
     cfg = json.load(f)
 broker   = cfg["hiveMQ_broker"]
