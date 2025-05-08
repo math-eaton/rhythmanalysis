@@ -7,16 +7,18 @@ import json
 import os
 import ssl
 from pathlib import Path
+from datetime import datetime
+import pytz
 
 import numpy as np
 import pandas as pd
 import sounddevice as sd
 try:
-    from tflite_runtime.interpreter import Interpreter
-    HAS_NUM_THREADS_ARG = True # liteRT ie we are running on raspberry pi
+    from ai_edge_litert.interpreter import Interpreter
+    HAS_NUM_THREADS_ARG = True  # liteRT ie we are running on a raspberry pi
 except ImportError:
     from tensorflow.lite.python.interpreter import Interpreter
-    HAS_NUM_THREADS_ARG = False # full TF ie we are running in a computer context
+    HAS_NUM_THREADS_ARG = False  # full TF ie we are running on a computer
 from scipy.signal import resample_poly
 import paho.mqtt.client as mqtt
 
@@ -51,6 +53,7 @@ config_path = PROJECT_ROOT / "dbconfig.json"
 
 with open(config_path, "r") as f:
     cfg = json.load(f)
+
 broker   = cfg["hiveMQ_broker"]
 port     = cfg["hiveMQ_port"]
 username = cfg["hiveMQ_username"]
@@ -59,6 +62,24 @@ topic    = cfg["topic"]
 
 # === init + connect mqtt ===================================================─
 mqtt_client = mqtt.Client()
+
+# Set up callbacks for connection, message, and log events
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("[MQTT] Connected successfully")
+    else:
+        print(f"[MQTT] Connection failed with code {rc}")
+
+def on_disconnect(client, userdata, rc):
+    print(f"[MQTT] Disconnected with code {rc}")
+
+# def on_publish(client, userdata, mid):
+#     print(f"[MQTT] Message {mid} published")
+
+mqtt_client.on_connect = on_connect
+mqtt_client.on_disconnect = on_disconnect
+# mqtt_client.on_publish = on_publish
+
 mqtt_client.username_pw_set(username, password)
 mqtt_client.tls_set(tls_version=ssl.PROTOCOL_TLSv1_2)
 mqtt_client.connect(broker, port)
@@ -193,7 +214,7 @@ try:
 
             # if above threshold, record it
             if top_conf[0] >= THRESHOLD:
-                ts    = time.time()
+                ts = datetime.now(pytz.UTC).timestamp()  # Use pytz to get the current UTC timestamp
                 names = labels[top_idx]
                 confs = [f"{c*100:.1f}%" for c in top_conf]
 
@@ -209,7 +230,8 @@ try:
                     extras = [f"{n} ({cf})" for n, cf in zip(names[1:], confs[1:])]
                     msg += " +[" + ", ".join(extras) + "]"
 
-                print(f"{time.strftime('%H:%M:%S', time.localtime(ts))} -> {msg}  {db_now:.1f} dB")
+                # Format the timestamp using UTC
+                print(f"{datetime.fromtimestamp(ts, pytz.UTC).strftime('%H:%M:%S')} -> {msg}  {db_now:.1f} dB")
 
                 # build the row
                 row = [ts, round(db_now, 1)]
