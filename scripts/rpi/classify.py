@@ -174,6 +174,10 @@ try:
                 names = labels[top_idx]
                 confs = [f"{c*100:.1f}%" for c in top_conf]
 
+                # Skip if the primary label is "Silence"
+                if names[0] == "Silence":
+                    continue
+
                 # append highest cf labels
                 msg = f"{names[0]} ({confs[0]})"
 
