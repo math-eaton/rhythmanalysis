@@ -44,9 +44,12 @@ if not Path(OUTPUT_CSV).exists():
         writer = csv.writer(f)
         writer.writerow(["ts", "db", "c1_idx", "c1_cf", "c1_name", "c2_idx", "c2_cf", "c2_name", "c3_idx", "c3_cf", "c3_name"])
 
-# === mqtt config ===================================================─
-cfg_path = Path(__file__).parent / "config.json"
-with open(cfg_path, "r") as f:
+# === mqtt config ===================================================
+SCRIPT_DIR   = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parents[1]
+config_path = PROJECT_ROOT / "dbconfig.json"
+
+with open(config_path, "r") as f:
     cfg = json.load(f)
 broker   = cfg["hiveMQ_broker"]
 port     = cfg["hiveMQ_port"]
@@ -213,25 +216,26 @@ try:
                 for idx, c in zip(top_idx, top_conf):
                     row.extend([int(idx), round(c*100, 1), labels[idx]])
 
-                # pad out any missing slots to preserve schema size
+                # pad out any missing columns to preserve schema size (top_k will never exceed 3)
                 pad_slots = 3 - len(top_idx)  # e.g. TOP_K=2 -> pad_slots=1
                 for _ in range(pad_slots):
                     row.extend([None, None, None])
 
                 ram_buffer.append(row)
 
+                # build the payload with padding if needed
                 payload = {
                     "ts":        float(ts),
-                    "db":        float(round(db_now,1)),
-                    "c1_idx":    int(top_idx[0]), 
-                    "c1_cf":     float(round(top_conf[0]*100,1)), 
-                    "c1_name":   names[0],
-                    "c2_idx":    int(top_idx[1]), 
-                    "c2_cf":     float(round(top_conf[1]*100,1)), 
-                    "c2_name":   names[1],
-                    "c3_idx":    int(top_idx[2]), 
-                    "c3_cf":     float(round(top_conf[2]*100,1)), 
-                    "c3_name":   names[2],
+                    "db":        float(round(db_now, 1)),
+                    "c1_idx":    int(top_idx[0]) if len(top_idx) > 0 else None,
+                    "c1_cf":     float(round(top_conf[0] * 100, 1)) if len(top_conf) > 0 else None,
+                    "c1_name":   names[0] if len(names) > 0 else None,
+                    "c2_idx":    int(top_idx[1]) if len(top_idx) > 1 else None,
+                    "c2_cf":     float(round(top_conf[1] * 100, 1)) if len(top_conf) > 1 else None,
+                    "c2_name":   names[1] if len(names) > 1 else None,
+                    "c3_idx":    int(top_idx[2]) if len(top_idx) > 2 else None,
+                    "c3_cf":     float(round(top_conf[2] * 100, 1)) if len(top_conf) > 2 else None,
+                    "c3_name":   names[2] if len(names) > 2 else None,
                 }
                 
                 mqtt_client.publish(topic, json.dumps(payload), qos=1)

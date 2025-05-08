@@ -13,12 +13,10 @@ import psycopg2.extras
 # paths
 SCRIPT_DIR   = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parents[1]
-config_path = PROJECT_ROOT / "config.json"
-csv_path    = PROJECT_ROOT / "output" / "classifications.csv"
-
+config_path = PROJECT_ROOT / "dbconfig.json"
+# csv_path    = PROJECT_ROOT / "output" / "classifications.csv"
 
 # load config
-config_path = Path(__file__).parent.parent / "config.json"
 with open(config_path, "r") as f:
     cfg = json.load(f)
 
