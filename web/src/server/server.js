@@ -10,12 +10,16 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 app.get("/api/audio_logs", async (req, res) => {
   try {
     const { rows } = await pool.query(`
-        SELECT EXTRACT(EPOCH FROM ts) AS ts, c1_name AS class
-        FROM audio_logs
-        ORDER BY ts DESC
-    `);
-    res.json(rows);
-  } catch (err) {
+            SELECT
+            EXTRACT(EPOCH FROM ts)     AS ts,
+            c1_name                    AS cl,
+            c1_cf                      AS cf, 
+            db                         AS dB 
+            FROM audio_logs
+            ORDER BY ts ASC
+            `);
+            res.json(rows);
+          } catch (err) {
     console.error(err);
     res.status(500).json({ error: "db error" });
   }
