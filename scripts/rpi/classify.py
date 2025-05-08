@@ -221,12 +221,18 @@ try:
                 ram_buffer.append(row)
 
                 payload = {
-                    "ts": ts,
-                    "db": round(db_now,1),
-                    "c1_idx": top_idx[0], "c1_cf": round(top_conf[0]*100,1), "c1_name": names[0],
-                    "c2_idx": top_idx[1], "c2_cf": round(top_conf[1]*100,1), "c2_name": names[1],
-                    "c3_idx": top_idx[2], "c3_cf": round(top_conf[2]*100,1), "c3_name": names[2]
-                    }
+                    "ts":        float(ts),
+                    "db":        float(round(db_now,1)),
+                    "c1_idx":    int(top_idx[0]), 
+                    "c1_cf":     float(round(top_conf[0]*100,1)), 
+                    "c1_name":   names[0],
+                    "c2_idx":    int(top_idx[1]), 
+                    "c2_cf":     float(round(top_conf[1]*100,1)), 
+                    "c2_name":   names[1],
+                    "c3_idx":    int(top_idx[2]), 
+                    "c3_cf":     float(round(top_conf[2]*100,1)), 
+                    "c3_name":   names[2],
+                }
                 
                 mqtt_client.publish(topic, json.dumps(payload), qos=1)
 
