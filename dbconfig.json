@@ -1,0 +1,10 @@
+{
+    "hiveMQ_username": "mjh2241",
+    "hiveMQ_password": "E4yJQWxny@R6NCG",
+    "hiveMQ_broker": "da4d9e3f60b64829a30c582ab75cb3eb.s1.eu.hivemq.cloud",
+    "hiveMQ_port": 8883,
+    "interval_seconds": 3,
+    "topic": "mjh2241/audio/logs",
+    "postgres_url": "postgresql://mjh2241:NhJF5nbex43eeFstnILtykbSl637eOVE@dpg-d0dpis24d50c7381vi60-a.virginia-postgres.render.com/rhythmanalysis"
+    
+}

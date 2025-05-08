@@ -30,8 +30,8 @@ CHUNK_SAMPLES     = int(CHUNK_SEC * TARGET_SR)
 HOP_SEC           = 0.5
 HOP_SAMPLES       = int(HOP_SEC * TARGET_SR)
 
-TOP_K             = 3
-FLUSH_SEC         = 5.0
+TOP_K             = 1
+FLUSH_SEC         = 30
 OUTPUT_CSV        = "output/classifications.csv"
 
 # === prep output csv ===================================================─
@@ -202,7 +202,7 @@ try:
 
         # 5) flush buffer to disk every FLUSH_SEC
         if time.time() - last_flush >= FLUSH_SEC and ram_buffer:
-            print(f"[DEBUG] Flushing {len(ram_buffer)} rows to CSV")
+            # print(f"[DEBUG] Flushing {len(ram_buffer)} rows to CSV")
             with open(OUTPUT_CSV, "a", newline="") as f:
                 writer = csv.writer(f)
                 writer.writerows(ram_buffer)
