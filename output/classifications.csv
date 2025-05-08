@@ -1,6 +1,721 @@
 ts,db,c1_idx,c1_cf,c1_name,c2_idx,c2_cf,c2_name,c3_idx,c3_cf,c3_name
-1746656313.9287271,-38.6,0,98.5,Speech,2,4.4,Conversation,3,3.2,"Narration, monologue"
-1746656316.914805,-37.1,0,98.6,Speech,3,0.5,"Narration, monologue",2,0.4,Conversation
-1746656319.909643,-36.5,0,99.6,Speech,2,6.7,Conversation,500,1.7,"Inside, small room"
-1746656322.897054,-36.9,0,98.1,Speech,3,7.5,"Narration, monologue",2,1.4,Conversation
-1746656328.868348,-36.0,0,99.0,Speech,3,0.9,"Narration, monologue",500,0.4,"Inside, small room"
+1746657088.565686,-37.3,0,98.9,Speech,2,3.2,Conversation,3,2.1,"Narration, monologue"
+1746657091.55347,-38.0,0,99.7,Speech,500,0.6,"Inside, small room",3,0.3,"Narration, monologue"
+1746657094.537237,-34.8,0,96.9,Speech,3,1.8,"Narration, monologue",501,0.4,"Inside, large room or hall"
+1746657097.5256672,-41.3,0,99.9,Speech,3,1.2,"Narration, monologue",500,0.1,"Inside, small room"
+1746657103.502382,-40.1,0,91.7,Speech,501,2.4,"Inside, large room or hall",500,2.2,"Inside, small room"
+1746657106.5723891,-43.2,0,98.3,Speech,3,1.5,"Narration, monologue",500,0.6,"Inside, small room"
+1746657109.5599291,-45.6,0,90.6,Speech,3,1.7,"Narration, monologue",500,1.5,"Inside, small room"
+1746657112.541816,-37.0,0,100.0,Speech,3,0.6,"Narration, monologue",500,0.2,"Inside, small room"
+1746657115.528522,-37.0,0,99.9,Speech,3,1.3,"Narration, monologue",500,0.1,"Inside, small room"
+1746657118.521437,-39.0,0,100.0,Speech,3,0.5,"Narration, monologue",500,0.0,"Inside, small room"
+1746657121.501802,-43.8,0,99.7,Speech,500,2.1,"Inside, small room",3,0.5,"Narration, monologue"
+1746657124.575868,-38.7,0,99.5,Speech,3,2.2,"Narration, monologue",2,1.0,Conversation
+1746657127.564637,-43.3,0,99.7,Speech,3,1.0,"Narration, monologue",500,0.1,"Inside, small room"
+1746657140.689517,-39.7,0,96.8,Speech,500,2.7,"Inside, small room",501,0.9,"Inside, large room or hall"
+1746657143.676599,-41.3,0,99.2,Speech,3,5.1,"Narration, monologue",501,0.3,"Inside, large room or hall"
+1746657146.663632,-42.1,0,99.7,Speech,500,0.9,"Inside, small room",3,0.5,"Narration, monologue"
+1746657149.652308,-40.0,0,98.3,Speech,3,0.6,"Narration, monologue",500,0.5,"Inside, small room"
+1746657152.6346319,-38.9,0,100.0,Speech,3,1.7,"Narration, monologue",500,0.2,"Inside, small room"
+1746657155.6201642,-40.9,0,99.6,Speech,3,0.5,"Narration, monologue",500,0.1,"Inside, small room"
+1746657161.682705,-41.1,0,97.9,Speech,3,2.2,"Narration, monologue",501,1.0,"Inside, large room or hall"
+1746657164.6694689,-41.4,0,97.0,Speech,3,2.0,"Narration, monologue",500,1.8,"Inside, small room"
+1746657167.655912,-41.1,0,99.8,Speech,2,1.9,Conversation,500,1.5,"Inside, small room"
+1746657170.64223,-38.9,0,99.8,Speech,3,1.6,"Narration, monologue",500,0.2,"Inside, small room"
+1746657173.625412,-40.5,0,97.3,Speech,500,1.7,"Inside, small room",3,0.5,"Narration, monologue"
+1746657176.700473,-41.2,0,99.1,Speech,500,1.7,"Inside, small room",3,0.7,"Narration, monologue"
+1746657179.689116,-43.9,0,76.5,Speech,500,5.8,"Inside, small room",381,1.3,Writing
+1746657228.143222,-98.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746657231.128651,-53.6,0,80.6,Speech,494,1.5,Silence,500,0.9,"Inside, small room"
+1746657234.116482,-51.9,0,57.9,Speech,494,5.8,Silence,500,2.7,"Inside, small room"
+1746657237.101501,-42.1,0,98.9,Speech,3,0.3,"Narration, monologue",500,0.3,"Inside, small room"
+1746657240.0869398,-35.7,0,96.9,Speech,500,0.4,"Inside, small room",3,0.4,"Narration, monologue"
+1746657243.161243,-26.4,0,99.2,Speech,500,0.9,"Inside, small room",501,0.3,"Inside, large room or hall"
+1746657246.1471272,-31.1,0,99.9,Speech,3,0.8,"Narration, monologue",500,0.1,"Inside, small room"
+1746657249.1338189,-32.4,0,99.8,Speech,3,0.2,"Narration, monologue",500,0.1,"Inside, small room"
+1746657252.1145012,-29.7,0,99.8,Speech,500,0.2,"Inside, small room",3,0.1,"Narration, monologue"
+1746657255.109797,-32.2,0,98.0,Speech,500,5.8,"Inside, small room",2,0.4,Conversation
+1746657258.093554,-38.9,0,99.5,Speech,132,1.1,Music,3,0.4,"Narration, monologue"
+1746657261.166216,-23.6,0,99.2,Speech,2,4.2,Conversation,3,0.9,"Narration, monologue"
+1746657267.1425788,-39.2,0,99.8,Speech,3,6.2,"Narration, monologue",501,0.2,"Inside, large room or hall"
+1746657270.121818,-42.4,0,96.2,Speech,3,2.6,"Narration, monologue",501,1.1,"Inside, large room or hall"
+1746657273.113445,-42.8,500,41.1,"Inside, small room",348,16.8,Door,351,15.6,Sliding door
+1746657276.101984,-33.9,0,97.0,Speech,500,4.6,"Inside, small room",381,2.7,Writing
+1746657279.085929,-38.5,0,99.7,Speech,500,0.9,"Inside, small room",3,0.6,"Narration, monologue"
+1746657282.157763,-34.2,0,100.0,Speech,500,1.1,"Inside, small room",3,0.2,"Narration, monologue"
+1746657285.143918,-36.6,0,99.9,Speech,3,0.6,"Narration, monologue",500,0.2,"Inside, small room"
+1746657288.1242518,-34.3,0,99.0,Speech,500,3.0,"Inside, small room",3,0.2,"Narration, monologue"
+1746657291.119711,-33.0,0,99.5,Speech,500,2.3,"Inside, small room",3,0.9,"Narration, monologue"
+1746657294.105209,-35.3,0,99.6,Speech,500,0.9,"Inside, small room",3,0.3,"Narration, monologue"
+1746657297.091427,-37.9,0,99.0,Speech,3,2.5,"Narration, monologue",500,0.3,"Inside, small room"
+1746657300.16321,-30.3,0,100.0,Speech,3,0.2,"Narration, monologue",500,0.1,"Inside, small room"
+1746657303.149791,-33.1,0,100.0,Speech,3,0.2,"Narration, monologue",500,0.2,"Inside, small room"
+1746657306.129986,-30.9,0,99.7,Speech,3,1.4,"Narration, monologue",500,0.7,"Inside, small room"
+1746657309.125834,-38.5,0,100.0,Speech,3,1.5,"Narration, monologue",500,0.7,"Inside, small room"
+1746657312.109086,-33.5,0,100.0,Speech,500,0.3,"Inside, small room",3,0.0,"Narration, monologue"
+1746657315.093506,-34.8,0,99.7,Speech,500,2.1,"Inside, small room",3,0.7,"Narration, monologue"
+1746657321.1551628,-45.4,120,50.7,Patter,118,49.8,"Rodents, rats, mice",49,25.4,"Chewing, mastication"
+1746657324.135634,-29.7,0,100.0,Speech,500,0.4,"Inside, small room",3,0.1,"Narration, monologue"
+1746657327.128326,-37.0,0,99.4,Speech,500,0.6,"Inside, small room",3,0.2,"Narration, monologue"
+1746657330.1147552,-31.9,0,100.0,Speech,500,0.7,"Inside, small room",3,0.3,"Narration, monologue"
+1746657333.102242,-47.0,494,66.7,Silence,0,5.9,Speech,500,0.8,"Inside, small room"
+1746657336.088507,-29.9,0,99.9,Speech,500,0.9,"Inside, small room",3,0.0,"Narration, monologue"
+1746657339.160578,-36.3,0,99.9,Speech,500,1.1,"Inside, small room",3,0.0,"Narration, monologue"
+1746657342.141084,-31.7,0,100.0,Speech,500,5.3,"Inside, small room",3,0.4,"Narration, monologue"
+1746657345.134047,-33.6,0,100.0,Speech,500,0.8,"Inside, small room",3,0.3,"Narration, monologue"
+1746657348.1191192,-34.9,0,98.5,Speech,500,2.6,"Inside, small room",3,0.3,"Narration, monologue"
+1746657351.106024,-38.3,0,99.6,Speech,500,3.9,"Inside, small room",3,0.1,"Narration, monologue"
+1746657354.090352,-35.1,0,99.4,Speech,500,2.1,"Inside, small room",3,0.2,"Narration, monologue"
+1746657357.1618528,-33.1,0,99.6,Speech,500,1.5,"Inside, small room",132,1.0,Music
+1746657360.155616,-35.9,0,98.8,Speech,500,1.7,"Inside, small room",378,0.7,Typing
+1746657363.1383522,-33.1,0,98.0,Speech,500,1.2,"Inside, small room",3,0.2,"Narration, monologue"
+1746657366.128116,-38.6,0,87.4,Speech,500,4.7,"Inside, small room",381,1.0,Writing
+1746657369.109112,-35.8,0,83.2,Speech,500,4.2,"Inside, small room",377,2.6,Shuffling cards
+1746657372.094858,-47.8,494,92.4,Silence,500,0.9,"Inside, small room",0,0.6,Speech
+1746657375.078773,-32.2,0,98.7,Speech,500,1.8,"Inside, small room",3,0.1,"Narration, monologue"
+1746657378.150645,-37.3,0,99.1,Speech,500,1.9,"Inside, small room",3,0.8,"Narration, monologue"
+1746657381.143695,-30.9,0,100.0,Speech,3,4.0,"Narration, monologue",500,0.1,"Inside, small room"
+1746657384.131871,-34.6,0,99.8,Speech,500,0.6,"Inside, small room",3,0.5,"Narration, monologue"
+1746657387.1175601,-34.6,0,99.3,Speech,500,1.6,"Inside, small room",3,0.1,"Narration, monologue"
+1746657390.104408,-24.8,0,97.2,Speech,500,1.3,"Inside, small room",3,0.6,"Narration, monologue"
+1746657393.0920398,-29.3,0,98.0,Speech,500,2.1,"Inside, small room",501,0.2,"Inside, large room or hall"
+1746657396.157136,-30.3,0,98.4,Speech,3,0.2,"Narration, monologue",500,0.2,"Inside, small room"
+1746657399.152035,-46.2,0,41.7,Speech,500,5.9,"Inside, small room",494,5.8,Silence
+1746657402.137109,-33.3,0,99.1,Speech,500,5.5,"Inside, small room",2,0.6,Conversation
+1746657405.123032,-29.7,0,99.9,Speech,500,0.5,"Inside, small room",3,0.4,"Narration, monologue"
+1746657408.1076632,-30.8,0,99.4,Speech,3,0.3,"Narration, monologue",500,0.2,"Inside, small room"
+1746657411.0894668,-30.0,0,100.0,Speech,500,0.1,"Inside, small room",3,0.1,"Narration, monologue"
+1746657414.1697001,-35.9,0,99.6,Speech,500,0.8,"Inside, small room",3,0.1,"Narration, monologue"
+1746657417.154999,-39.2,0,98.1,Speech,500,0.6,"Inside, small room",378,0.3,Typing
+1746657420.1413372,-34.3,0,99.7,Speech,3,0.2,"Narration, monologue",500,0.1,"Inside, small room"
+1746657423.1280031,-38.5,0,98.2,Speech,500,0.5,"Inside, small room",3,0.2,"Narration, monologue"
+1746657426.115084,-37.6,0,99.4,Speech,132,21.2,Music,3,0.1,"Narration, monologue"
+1746657429.1017542,-29.2,0,98.6,Speech,500,0.6,"Inside, small room",3,0.2,"Narration, monologue"
+1746657432.081383,-28.5,0,100.0,Speech,3,0.3,"Narration, monologue",500,0.1,"Inside, small room"
+1746657435.160227,-34.0,0,96.8,Speech,500,1.6,"Inside, small room",2,1.1,Conversation
+1746657438.146019,-36.0,0,99.4,Speech,3,1.7,"Narration, monologue",500,1.4,"Inside, small room"
+1746657441.134934,-30.6,0,98.1,Speech,3,2.0,"Narration, monologue",500,0.7,"Inside, small room"
+1746657444.120022,-38.8,0,99.9,Speech,3,0.7,"Narration, monologue",500,0.2,"Inside, small room"
+1746657447.107021,-43.1,0,98.9,Speech,500,0.7,"Inside, small room",3,0.6,"Narration, monologue"
+1746657450.093836,-29.7,0,100.0,Speech,500,0.5,"Inside, small room",3,0.2,"Narration, monologue"
+1746657453.1586208,-33.1,0,99.8,Speech,3,0.5,"Narration, monologue",500,0.1,"Inside, small room"
+1746657456.1527412,-32.1,0,100.0,Speech,500,0.2,"Inside, small room",3,0.0,"Narration, monologue"
+1746657459.1401331,-27.1,0,99.9,Speech,2,1.7,Conversation,500,0.9,"Inside, small room"
+1746657462.127336,-30.7,0,99.8,Speech,500,0.4,"Inside, small room",3,0.1,"Narration, monologue"
+1746657465.112214,-32.3,0,99.8,Speech,500,3.1,"Inside, small room",501,0.0,"Inside, large room or hall"
+1746657468.098592,-32.9,0,99.8,Speech,500,1.9,"Inside, small room",2,0.2,Conversation
+1746657471.078538,-33.1,0,100.0,Speech,3,1.0,"Narration, monologue",500,0.1,"Inside, small room"
+1746657474.158145,-35.2,0,97.1,Speech,500,1.7,"Inside, small room",132,0.2,Music
+1746657477.144609,-28.9,0,98.7,Speech,3,0.3,"Narration, monologue",500,0.3,"Inside, small room"
+1746657480.1319091,-33.8,0,99.1,Speech,3,1.4,"Narration, monologue",500,0.4,"Inside, small room"
+1746657483.118098,-33.8,0,99.8,Speech,500,1.4,"Inside, small room",3,0.1,"Narration, monologue"
+1746657486.1044412,-29.1,0,97.2,Speech,500,0.5,"Inside, small room",132,0.4,Music
+1746657489.08778,-33.5,0,99.9,Speech,3,0.6,"Narration, monologue",500,0.5,"Inside, small room"
+1746657492.1559439,-36.6,0,97.5,Speech,500,0.8,"Inside, small room",3,0.2,"Narration, monologue"
+1746657495.146888,-32.1,0,99.9,Speech,500,0.4,"Inside, small room",3,0.3,"Narration, monologue"
+1746657498.138985,-36.3,0,100.0,Speech,3,1.4,"Narration, monologue",500,0.2,"Inside, small room"
+1746657501.123314,-37.2,0,100.0,Speech,500,4.4,"Inside, small room",3,0.1,"Narration, monologue"
+1746657504.109966,-35.5,0,99.9,Speech,500,1.6,"Inside, small room",3,1.1,"Narration, monologue"
+1746657507.095426,-33.7,0,99.9,Speech,500,0.4,"Inside, small room",3,0.2,"Narration, monologue"
+1746657510.162279,-37.8,0,99.0,Speech,500,3.1,"Inside, small room",2,3.0,Conversation
+1746657513.147846,-33.0,0,99.9,Speech,3,1.5,"Narration, monologue",500,0.4,"Inside, small room"
+1746657516.142457,-34.9,0,100.0,Speech,500,1.5,"Inside, small room",501,0.4,"Inside, large room or hall"
+1746657519.129899,-39.1,0,99.4,Speech,3,0.7,"Narration, monologue",2,0.2,Conversation
+1746657522.117512,-29.9,0,100.0,Speech,500,1.2,"Inside, small room",3,0.1,"Narration, monologue"
+1746657525.101763,-33.9,0,95.2,Speech,132,2.2,Music,500,0.4,"Inside, small room"
+1746657528.088414,-26.6,0,98.5,Speech,2,1.2,Conversation,500,1.1,"Inside, small room"
+1746657531.1533701,-36.0,0,99.4,Speech,500,1.6,"Inside, small room",378,0.3,Typing
+1746657534.147024,-31.1,0,99.5,Speech,3,0.8,"Narration, monologue",500,0.2,"Inside, small room"
+1746657537.1363819,-38.1,0,99.9,Speech,3,0.3,"Narration, monologue",500,0.1,"Inside, small room"
+1746657540.122405,-30.8,0,100.0,Speech,500,0.6,"Inside, small room",501,0.0,"Inside, large room or hall"
+1746657543.107038,-37.4,0,99.7,Speech,3,0.6,"Narration, monologue",500,0.4,"Inside, small room"
+1746657546.0905201,-32.7,0,99.9,Speech,3,0.4,"Narration, monologue",500,0.1,"Inside, small room"
+1746657549.15848,-41.2,0,81.8,Speech,378,8.4,Typing,380,6.1,Computer keyboard
+1746657552.151913,-26.9,0,99.5,Speech,3,0.1,"Narration, monologue",500,0.0,"Inside, small room"
+1746657555.141108,-32.9,0,94.1,Speech,132,9.1,Music,3,0.4,"Narration, monologue"
+1746657558.119997,-31.5,0,99.9,Speech,3,0.3,"Narration, monologue",500,0.1,"Inside, small room"
+1746657561.1130722,-37.1,0,97.2,Speech,500,3.0,"Inside, small room",381,0.2,Writing
+1746657564.0985339,-31.2,0,99.8,Speech,500,1.1,"Inside, small room",2,0.9,Conversation
+1746657567.078517,-37.0,0,99.2,Speech,500,2.9,"Inside, small room",3,0.1,"Narration, monologue"
+1746657570.155772,-38.8,0,99.1,Speech,485,2.3,Clicking,3,1.5,"Narration, monologue"
+1746657573.1407108,-41.0,0,99.6,Speech,3,1.3,"Narration, monologue",500,0.7,"Inside, small room"
+1746657576.1263459,-40.5,0,96.1,Speech,378,2.6,Typing,380,1.9,Computer keyboard
+1746657579.1171641,-37.4,0,98.1,Speech,3,0.5,"Narration, monologue",378,0.4,Typing
+1746657582.104248,-40.0,0,65.5,Speech,378,45.3,Typing,380,35.6,Computer keyboard
+1746657588.1558661,-33.2,0,98.2,Speech,500,0.3,"Inside, small room",3,0.2,"Narration, monologue"
+1746657591.142853,-34.3,0,87.7,Speech,500,0.6,"Inside, small room",378,0.5,Typing
+1746657594.1332512,-38.0,0,99.7,Speech,3,0.3,"Narration, monologue",500,0.3,"Inside, small room"
+1746657597.122265,-37.2,0,94.3,Speech,132,2.4,Music,500,0.4,"Inside, small room"
+1746657600.1056058,-30.2,0,99.9,Speech,3,0.5,"Narration, monologue",500,0.2,"Inside, small room"
+1746657603.096087,-37.0,0,99.8,Speech,3,0.6,"Narration, monologue",500,0.3,"Inside, small room"
+1746657606.161265,-31.7,0,99.6,Speech,3,0.8,"Narration, monologue",2,0.3,Conversation
+1746657609.152986,-32.1,0,99.7,Speech,500,1.9,"Inside, small room",3,0.7,"Narration, monologue"
+1746657612.143444,-39.5,0,99.9,Speech,500,2.6,"Inside, small room",3,0.4,"Narration, monologue"
+1746657615.1313012,-37.2,0,96.2,Speech,500,5.2,"Inside, small room",381,4.5,Writing
+1746657618.114801,-37.6,0,99.8,Speech,500,2.0,"Inside, small room",3,0.4,"Narration, monologue"
+1746657630.139746,-39.8,0,78.4,Speech,500,5.5,"Inside, small room",48,2.3,"Walk, footsteps"
+1746657633.136302,-39.3,0,76.1,Speech,348,3.3,Door,501,3.0,"Inside, large room or hall"
+1746657636.12353,-44.2,0,97.6,Speech,3,1.6,"Narration, monologue",500,1.0,"Inside, small room"
+1746657639.106153,-44.1,0,87.1,Speech,3,1.7,"Narration, monologue",500,1.1,"Inside, small room"
+1746657642.093337,-41.5,0,59.7,Speech,3,0.9,"Narration, monologue",501,0.9,"Inside, large room or hall"
+1746657645.164754,-34.0,0,98.2,Speech,500,2.4,"Inside, small room",3,1.5,"Narration, monologue"
+1746657648.14518,-39.1,0,98.1,Speech,3,5.2,"Narration, monologue",501,0.3,"Inside, large room or hall"
+1746657651.138836,-30.9,0,99.9,Speech,500,0.7,"Inside, small room",3,0.0,"Narration, monologue"
+1746657654.12842,-33.2,0,99.2,Speech,500,2.4,"Inside, small room",2,0.3,Conversation
+1746657657.111618,-36.6,0,99.5,Speech,3,2.1,"Narration, monologue",500,0.9,"Inside, small room"
+1746657660.091736,-29.5,0,100.0,Speech,3,0.1,"Narration, monologue",500,0.1,"Inside, small room"
+1746657663.07823,-42.9,0,98.4,Speech,500,1.6,"Inside, small room",378,0.5,Typing
+1746657666.161416,-34.7,0,99.8,Speech,500,0.4,"Inside, small room",3,0.1,"Narration, monologue"
+1746657669.146626,-32.1,0,99.9,Speech,500,1.0,"Inside, small room",3,0.0,"Narration, monologue"
+1746657672.134065,-35.0,0,99.6,Speech,500,0.8,"Inside, small room",3,0.1,"Narration, monologue"
+1746657675.117467,-35.2,0,99.9,Speech,3,1.2,"Narration, monologue",500,0.1,"Inside, small room"
+1746657678.1051662,-31.8,0,100.0,Speech,500,0.2,"Inside, small room",3,0.0,"Narration, monologue"
+1746657681.083843,-36.8,0,99.5,Speech,3,1.8,"Narration, monologue",500,0.9,"Inside, small room"
+1746657684.155848,-33.6,0,99.5,Speech,500,0.4,"Inside, small room",3,0.1,"Narration, monologue"
+1746657687.147378,-33.6,0,99.1,Speech,500,0.3,"Inside, small room",3,0.2,"Narration, monologue"
+1746657690.137103,-35.4,0,99.9,Speech,3,0.3,"Narration, monologue",500,0.2,"Inside, small room"
+1746657693.123405,-31.7,0,99.1,Speech,3,1.5,"Narration, monologue",500,1.2,"Inside, small room"
+1746657696.110461,-31.2,0,99.8,Speech,3,0.6,"Narration, monologue",500,0.3,"Inside, small room"
+1746657699.09615,-38.6,0,98.8,Speech,500,2.7,"Inside, small room",3,0.3,"Narration, monologue"
+1746657702.166212,-38.3,0,98.9,Speech,3,0.6,"Narration, monologue",500,0.2,"Inside, small room"
+1746657705.156608,-36.2,0,98.7,Speech,2,2.4,Conversation,3,1.8,"Narration, monologue"
+1746657708.1399639,-45.7,0,92.2,Speech,3,1.7,"Narration, monologue",494,0.8,Silence
+1746657711.121883,-39.2,0,99.9,Speech,3,1.3,"Narration, monologue",500,0.7,"Inside, small room"
+1746657714.11416,-43.6,0,96.3,Speech,3,4.5,"Narration, monologue",501,0.3,"Inside, large room or hall"
+1746657717.10129,-39.5,0,99.8,Speech,3,2.1,"Narration, monologue",500,0.2,"Inside, small room"
+1746657720.0890298,-35.9,0,98.8,Speech,3,11.0,"Narration, monologue",501,0.5,"Inside, large room or hall"
+1746657723.1529841,-44.6,0,95.6,Speech,3,4.3,"Narration, monologue",2,0.3,Conversation
+1746657726.146533,-42.7,0,99.0,Speech,500,0.8,"Inside, small room",3,0.6,"Narration, monologue"
+1746657729.13306,-46.1,0,44.9,Speech,494,11.8,Silence,3,2.5,"Narration, monologue"
+1746657732.121557,-41.9,0,99.8,Speech,3,3.1,"Narration, monologue",500,1.3,"Inside, small room"
+1746657735.106139,-34.3,0,99.7,Speech,3,1.8,"Narration, monologue",500,1.2,"Inside, small room"
+1746657738.093638,-40.2,0,96.5,Speech,3,2.6,"Narration, monologue",500,1.2,"Inside, small room"
+1746657741.158201,-42.8,0,45.6,Speech,132,41.8,Music,500,1.2,"Inside, small room"
+1746657744.1491451,-37.3,0,99.0,Speech,3,0.3,"Narration, monologue",500,0.2,"Inside, small room"
+1746657747.1396742,-37.3,0,99.9,Speech,3,0.5,"Narration, monologue",500,0.4,"Inside, small room"
+1746657750.127614,-36.2,0,98.5,Speech,500,1.6,"Inside, small room",2,1.2,Conversation
+1746657753.106304,-39.2,0,97.6,Speech,500,4.1,"Inside, small room",501,0.5,"Inside, large room or hall"
+1746657756.095928,-36.3,0,97.3,Speech,500,1.9,"Inside, small room",378,0.9,Typing
+1746657759.086561,-36.5,0,99.4,Speech,500,2.8,"Inside, small room",2,1.3,Conversation
+1746657762.154851,-37.1,0,99.8,Speech,3,0.6,"Narration, monologue",500,0.1,"Inside, small room"
+1746657765.143808,-41.9,0,96.9,Speech,500,5.3,"Inside, small room",501,1.7,"Inside, large room or hall"
+1746657768.1311119,-34.6,0,92.2,Speech,500,2.7,"Inside, small room",132,2.6,Music
+1746671073.23423,-200.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671076.194129,-200.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671079.178595,-200.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671082.251104,-200.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671085.2393239,-200.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671088.223131,-200.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671091.213562,-200.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671094.208171,-64.2,494,100.0,Silence,0,0.1,Speech,132,0.0,Music
+1746671097.186185,-49.9,500,62.1,"Inside, small room",473,49.7,"Crumpling, crinkling",293,20.9,Crackle
+1746671100.257289,-49.7,500,51.8,"Inside, small room",473,41.6,"Crumpling, crinkling",374,32.9,Coin (dropping)
+1746671103.2448971,-51.7,494,98.0,Silence,500,0.2,"Inside, small room",0,0.2,Speech
+1746671106.231485,-56.5,494,91.0,Silence,500,3.5,"Inside, small room",0,0.2,Speech
+1746671109.218046,-43.5,348,39.1,Door,351,23.1,Sliding door,500,19.5,"Inside, small room"
+1746671112.204886,-54.1,494,63.2,Silence,500,14.9,"Inside, small room",381,14.6,Writing
+1746671115.191566,-55.3,494,99.9,Silence,0,0.0,Speech,132,0.0,Music
+1746671124.2358458,-48.5,494,53.1,Silence,398,4.3,Mechanisms,406,3.3,Mechanical fan
+1746671127.2231622,-49.2,494,78.8,Silence,500,4.1,"Inside, small room",485,0.5,Clicking
+1746671130.209898,-55.6,494,83.1,Silence,0,1.9,Speech,500,1.7,"Inside, small room"
+1746671133.193716,-45.0,500,35.8,"Inside, small room",501,10.4,"Inside, large room or hall",348,8.9,Door
+1746671136.183132,-45.9,500,52.2,"Inside, small room",501,3.7,"Inside, large room or hall",348,3.6,Door
+1746671139.2538052,-50.9,500,43.1,"Inside, small room",68,22.4,"Domestic animals, pets",67,16.2,Animal
+1746671142.242197,-56.3,494,99.9,Silence,0,0.1,Speech,132,0.0,Music
+1746671145.228802,-43.4,500,65.3,"Inside, small room",357,11.5,Drawer open or close,501,7.9,"Inside, large room or hall"
+1746671148.212414,-52.6,348,39.7,Door,352,39.6,Slam,452,26.4,Arrow
+1746671151.201926,-58.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671154.188833,-51.8,0,68.6,Speech,500,3.6,"Inside, small room",485,2.7,Clicking
+1746671163.233241,-56.0,494,96.5,Silence,500,1.0,"Inside, small room",0,0.3,Speech
+1746671166.218869,-53.4,500,35.5,"Inside, small room",494,12.9,Silence,501,4.1,"Inside, large room or hall"
+1746671169.208628,-44.6,0,42.2,Speech,500,10.0,"Inside, small room",36,8.7,Breathing
+1746671172.193595,-44.0,67,86.9,Animal,103,80.5,Wild animals,106,79.8,Bird
+1746671175.179274,-41.4,500,53.0,"Inside, small room",501,7.7,"Inside, large room or hall",348,4.5,Door
+1746671178.2528782,-54.4,494,71.0,Silence,500,3.9,"Inside, small room",68,1.8,"Domestic animals, pets"
+1746671184.225507,-52.7,500,46.4,"Inside, small room",348,14.4,Door,357,12.0,Drawer open or close
+1746671187.2096572,-46.3,500,50.3,"Inside, small room",381,4.4,Writing,470,3.7,Rub
+1746671190.199069,-32.7,500,67.4,"Inside, small room",501,5.6,"Inside, large room or hall",470,4.4,Rub
+1746671199.248745,-42.3,500,61.5,"Inside, small room",501,6.6,"Inside, large room or hall",357,3.0,Drawer open or close
+1746671202.231502,-51.4,500,36.6,"Inside, small room",68,13.0,"Domestic animals, pets",381,11.9,Writing
+1746671208.207065,-52.4,494,42.8,Silence,500,14.8,"Inside, small room",501,1.9,"Inside, large room or hall"
+1746671211.196533,-52.5,494,39.4,Silence,500,11.9,"Inside, small room",68,4.5,"Domestic animals, pets"
+1746671214.178383,-49.8,500,53.2,"Inside, small room",357,15.3,Drawer open or close,348,10.1,Door
+1746671217.2529652,-53.9,494,93.1,Silence,500,2.1,"Inside, small room",485,0.3,Clicking
+1746671220.235148,-56.9,494,95.6,Silence,500,1.5,"Inside, small room",501,0.1,"Inside, large room or hall"
+1746671223.2246091,-54.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671226.2117472,-55.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671229.197261,-52.9,494,75.5,Silence,500,2.2,"Inside, small room",36,1.8,Breathing
+1746671235.253008,-54.3,494,100.0,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746671241.228665,-37.9,500,67.7,"Inside, small room",357,6.7,Drawer open or close,501,4.0,"Inside, large room or hall"
+1746671244.214858,-27.7,500,41.8,"Inside, small room",156,5.5,Percussion,159,4.5,Drum
+1746671250.194579,-47.7,500,77.6,"Inside, small room",375,21.4,Scissors,358,2.8,"Dishes, pots, and pans"
+1746671253.1750422,-50.4,500,42.5,"Inside, small room",357,16.7,Drawer open or close,351,13.3,Sliding door
+1746671259.233809,-32.8,0,38.5,Speech,500,7.2,"Inside, small room",412,0.5,Tools
+1746671262.220043,-19.2,425,97.7,Cap gun,421,89.5,"Gunshot, gunfire",420,78.8,Explosion
+1746671265.207082,-54.6,494,67.9,Silence,504,2.3,"Outside, rural or natural",0,1.2,Speech
+1746671268.194518,-52.8,438,33.1,Liquid,282,28.2,Water,364,17.2,"Water tap, faucet"
+1746671271.182716,-55.9,494,98.6,Silence,0,0.1,Speech,500,0.1,"Inside, small room"
+1746671280.222757,-49.5,500,52.3,"Inside, small room",375,51.6,Scissors,381,43.2,Writing
+1746671289.184187,-44.9,0,78.2,Speech,500,6.7,"Inside, small room",3,0.2,"Narration, monologue"
+1746671313.2705112,-47.3,494,56.8,Silence,500,16.4,"Inside, small room",381,3.9,Writing
+1746671316.264987,-42.5,378,85.6,Typing,380,75.4,Computer keyboard,500,5.4,"Inside, small room"
+1746671319.253951,-47.7,494,88.8,Silence,500,1.1,"Inside, small room",485,0.6,Clicking
+1746671322.246576,-48.5,494,96.6,Silence,500,0.9,"Inside, small room",485,0.3,Clicking
+1746671331.285164,-49.3,494,58.5,Silence,500,7.3,"Inside, small room",485,3.8,Clicking
+1746671337.264519,-37.4,431,74.5,Wood,432,56.3,Chop,413,48.3,Hammer
+1746671340.2554922,-48.9,434,67.8,Crack,464,46.0,Breaking,353,24.7,Knock
+1746671343.239924,-56.4,494,43.5,Silence,500,5.9,"Inside, small room",0,2.3,Speech
+1746671346.227715,-55.4,494,83.1,Silence,500,7.1,"Inside, small room",381,1.1,Writing
+1746671349.208961,-48.1,0,46.9,Speech,500,6.4,"Inside, small room",485,2.2,Clicking
+1746671352.2888188,-55.9,494,47.3,Silence,0,6.5,Speech,500,1.8,"Inside, small room"
+1746671355.277139,-56.4,494,97.0,Silence,0,0.3,Speech,500,0.2,"Inside, small room"
+1746671358.267425,-55.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671361.253359,-56.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671364.238292,-56.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671367.2219079,-57.1,494,98.4,Silence,500,0.2,"Inside, small room",0,0.1,Speech
+1746671370.291809,-55.3,494,95.7,Silence,381,2.1,Writing,500,1.7,"Inside, small room"
+1746671373.2742121,-55.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671376.2678661,-57.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671379.251988,-53.9,494,99.5,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746671388.296813,-46.3,378,96.2,Typing,380,90.8,Computer keyboard,485,2.5,Clicking
+1746671391.285388,-56.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671397.260903,-47.2,500,39.1,"Inside, small room",118,8.9,"Rodents, rats, mice",402,7.9,Tick-tock
+1746671400.2399309,-54.6,494,77.5,Silence,500,6.7,"Inside, small room",485,3.3,Clicking
+1746671406.2182138,-54.2,494,60.5,Silence,500,12.6,"Inside, small room",381,2.6,Writing
+1746671412.2786639,-55.4,494,87.5,Silence,500,2.5,"Inside, small room",485,1.3,Clicking
+1746671415.2641559,-56.6,494,99.3,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746671418.254339,-55.8,378,56.0,Typing,380,41.4,Computer keyboard,500,25.3,"Inside, small room"
+1746671421.238513,-54.3,494,99.9,Silence,0,0.0,Speech,132,0.0,Music
+1746671424.226227,-56.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671427.2905128,-56.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671430.2820659,-56.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671436.250159,-55.7,494,100.0,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746671439.246099,-47.0,0,50.5,Speech,500,6.8,"Inside, small room",485,3.4,Clicking
+1746671442.2288692,-56.2,494,100.0,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746671445.215826,-56.0,494,98.9,Silence,500,0.2,"Inside, small room",0,0.0,Speech
+1746671448.28981,-57.4,494,100.0,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746671451.275558,-56.9,494,100.0,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746671454.260971,-56.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671457.2444348,-57.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671460.229333,-47.4,357,60.3,Drawer open or close,356,48.0,Cupboard open or close,500,44.4,"Inside, small room"
+1746671463.221879,-56.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671466.293868,-56.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671469.28177,-56.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671472.269063,-55.3,494,95.0,Silence,500,1.0,"Inside, small room",0,0.2,Speech
+1746671475.2550359,-48.0,357,52.1,Drawer open or close,356,32.4,Cupboard open or close,500,30.2,"Inside, small room"
+1746671481.221519,-51.3,494,36.7,Silence,0,2.8,Speech,485,2.1,Clicking
+1746671484.2943401,-49.2,494,91.3,Silence,500,0.4,"Inside, small room",103,0.3,Wild animals
+1746671487.28033,-47.3,410,33.3,Camera,411,24.2,Single-lens reflex camera,398,24.1,Mechanisms
+1746671496.2435598,-55.0,494,99.6,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746671499.2264562,-51.6,500,37.2,"Inside, small room",494,9.7,Silence,381,6.1,Writing
+1746671502.21591,-45.4,36,51.1,Breathing,41,21.9,Snort,38,13.4,Snoring
+1746671505.2937322,-55.1,494,54.8,Silence,500,9.6,"Inside, small room",378,2.6,Typing
+1746671508.274254,-55.8,378,36.4,Typing,380,33.9,Computer keyboard,500,21.8,"Inside, small room"
+1746671514.2486458,-57.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671517.23264,-56.4,494,99.8,Silence,500,0.0,"Inside, small room",0,0.0,Speech
+1746671520.2261271,-57.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671523.29114,-56.5,494,54.4,Silence,500,12.5,"Inside, small room",485,5.9,Clicking
+1746671526.285826,-49.8,378,88.4,Typing,380,75.8,Computer keyboard,379,31.3,Typewriter
+1746671529.2693188,-56.4,494,99.8,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746671532.2559512,-54.7,494,89.5,Silence,500,2.9,"Inside, small room",485,1.0,Clicking
+1746671535.247039,-57.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671538.225673,-49.0,374,58.6,Coin (dropping),500,37.4,"Inside, small room",373,32.6,Keys jangling
+1746671541.210633,-55.7,378,67.6,Typing,380,53.0,Computer keyboard,500,9.2,"Inside, small room"
+1746671547.2744188,-48.0,500,55.1,"Inside, small room",378,20.8,Typing,380,17.4,Computer keyboard
+1746671550.256408,-55.5,500,38.6,"Inside, small room",49,11.4,"Chewing, mastication",485,8.8,Clicking
+1746671553.24235,-46.6,378,99.0,Typing,380,90.2,Computer keyboard,500,0.4,"Inside, small room"
+1746671556.229583,-46.8,378,99.7,Typing,380,96.3,Computer keyboard,500,0.2,"Inside, small room"
+1746671559.2231722,-49.8,378,99.8,Typing,380,95.1,Computer keyboard,498,0.2,Sound effect
+1746671562.289522,-51.4,378,98.6,Typing,380,94.2,Computer keyboard,500,0.8,"Inside, small room"
+1746671565.2746391,-46.5,378,99.7,Typing,380,95.9,Computer keyboard,494,0.3,Silence
+1746671568.261292,-43.7,378,99.9,Typing,380,97.2,Computer keyboard,498,0.1,Sound effect
+1746671571.252515,-55.9,494,36.0,Silence,500,14.6,"Inside, small room",378,12.6,Typing
+1746671574.237654,-42.4,378,100.0,Typing,380,97.5,Computer keyboard,498,0.1,Sound effect
+1746671577.225399,-49.5,378,94.5,Typing,380,83.7,Computer keyboard,500,7.5,"Inside, small room"
+1746671580.298021,-44.5,378,98.6,Typing,380,93.2,Computer keyboard,500,1.3,"Inside, small room"
+1746671583.2804108,-56.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671586.2672799,-45.0,378,99.5,Typing,380,95.4,Computer keyboard,379,1.6,Typewriter
+1746671589.26252,-53.9,494,99.9,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746671592.249846,-54.9,494,99.3,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746671595.23507,-50.9,494,88.9,Silence,0,1.2,Speech,500,0.7,"Inside, small room"
+1746671598.2156029,-45.5,378,96.2,Typing,380,90.9,Computer keyboard,500,7.0,"Inside, small room"
+1746671601.2935,-54.8,494,93.3,Silence,500,1.9,"Inside, small room",0,0.6,Speech
+1746671604.275102,-51.0,378,59.5,Typing,380,48.3,Computer keyboard,500,29.7,"Inside, small room"
+1746671607.2589629,-55.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671610.251194,-54.9,500,37.7,"Inside, small room",494,9.4,Silence,375,5.9,Scissors
+1746671613.236882,-47.7,378,92.3,Typing,380,82.2,Computer keyboard,379,7.8,Typewriter
+1746671616.2246761,-55.6,378,62.1,Typing,380,48.8,Computer keyboard,500,20.8,"Inside, small room"
+1746671619.296563,-50.7,500,36.8,"Inside, small room",49,29.9,"Chewing, mastication",375,15.9,Scissors
+1746671622.283123,-52.2,500,51.5,"Inside, small room",375,49.1,Scissors,377,16.0,Shuffling cards
+1746671625.272492,-56.0,494,35.4,Silence,500,12.4,"Inside, small room",401,7.6,Tick
+1746671628.257409,-56.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671631.237628,-57.8,494,99.7,Silence,0,0.1,Speech,132,0.0,Music
+1746671634.228687,-52.3,378,86.4,Typing,380,79.7,Computer keyboard,500,13.1,"Inside, small room"
+1746671637.220375,-57.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671640.2858949,-49.7,500,48.2,"Inside, small room",378,36.1,Typing,380,33.5,Computer keyboard
+1746671643.281481,-52.3,378,69.4,Typing,380,56.1,Computer keyboard,500,11.0,"Inside, small room"
+1746671646.263624,-56.0,378,50.7,Typing,380,40.1,Computer keyboard,485,22.5,Clicking
+1746671652.2297978,-55.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671655.216257,-51.7,494,62.5,Silence,500,13.1,"Inside, small room",38,4.2,Snoring
+1746671658.3000069,-56.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671667.248491,-42.8,378,100.0,Typing,380,97.3,Computer keyboard,494,0.0,Silence
+1746671670.239114,-42.9,378,99.8,Typing,380,97.7,Computer keyboard,379,0.8,Typewriter
+1746671673.2297962,-54.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671676.29375,-41.9,378,96.8,Typing,380,91.7,Computer keyboard,473,7.0,"Crumpling, crinkling"
+1746671679.2855759,-54.1,494,92.7,Silence,500,1.7,"Inside, small room",378,1.1,Typing
+1746671682.276233,-56.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671685.2539709,-41.9,378,55.9,Typing,380,48.5,Computer keyboard,373,20.3,Keys jangling
+1746671688.241119,-57.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671691.2271318,-56.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671694.215349,-56.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671697.289408,-46.8,378,100.0,Typing,380,96.3,Computer keyboard,494,0.1,Silence
+1746671700.272584,-44.9,378,100.0,Typing,380,96.9,Computer keyboard,498,0.1,Sound effect
+1746671703.2671108,-54.7,378,71.4,Typing,494,69.6,Silence,380,45.1,Computer keyboard
+1746671706.2527308,-45.7,378,99.9,Typing,380,96.7,Computer keyboard,498,0.2,Sound effect
+1746671709.235857,-56.4,494,99.9,Silence,0,0.2,Speech,132,0.0,Music
+1746671712.219956,-49.9,378,82.5,Typing,380,75.9,Computer keyboard,500,14.6,"Inside, small room"
+1746671715.297361,-45.1,378,99.9,Typing,380,95.5,Computer keyboard,498,0.2,Sound effect
+1746671721.264496,-53.8,378,97.9,Typing,380,89.9,Computer keyboard,485,3.6,Clicking
+1746671724.2518919,-47.2,378,99.9,Typing,380,97.6,Computer keyboard,379,0.3,Typewriter
+1746671727.241533,-55.9,494,99.8,Silence,0,0.0,Speech,132,0.0,Music
+1746671733.213116,-39.1,500,34.6,"Inside, small room",45,31.7,Sniff,41,22.0,Snort
+1746671736.283255,-55.7,494,97.5,Silence,0,0.4,Speech,500,0.2,"Inside, small room"
+1746671745.2510478,-54.7,494,97.6,Silence,498,0.2,Sound effect,504,0.2,"Outside, rural or natural"
+1746671748.2367308,-43.7,500,48.1,"Inside, small room",358,6.5,"Dishes, pots, and pans",156,5.8,Percussion
+1746671751.216514,-56.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671754.295582,-57.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671757.2825139,-56.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671760.261919,-56.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671763.2534752,-56.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671769.222469,-26.9,500,33.6,"Inside, small room",431,5.5,Wood,358,4.6,"Dishes, pots, and pans"
+1746671772.2959208,-46.5,494,71.5,Silence,0,4.1,Speech,500,1.3,"Inside, small room"
+1746671778.2722912,-51.1,378,90.8,Typing,380,73.9,Computer keyboard,500,4.5,"Inside, small room"
+1746671781.259166,-55.3,494,86.3,Silence,500,6.1,"Inside, small room",378,0.4,Typing
+1746671784.240715,-55.6,500,49.7,"Inside, small room",375,17.2,Scissors,49,10.1,"Chewing, mastication"
+1746671787.233482,-56.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671790.22315,-56.1,378,86.2,Typing,380,63.7,Computer keyboard,494,24.1,Silence
+1746671793.297854,-55.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671799.269658,-46.0,500,53.3,"Inside, small room",501,9.0,"Inside, large room or hall",0,4.2,Speech
+1746671802.2534459,-55.6,494,99.7,Silence,500,0.1,"Inside, small room",0,0.0,Speech
+1746671805.2448692,-55.7,494,94.1,Silence,500,6.9,"Inside, small room",485,0.2,Clicking
+1746671808.226966,-56.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671811.292237,-56.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671814.287167,-56.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671817.272187,-57.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671820.258454,-56.7,494,99.9,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746671823.246957,-56.3,494,77.3,Silence,500,7.7,"Inside, small room",485,4.3,Clicking
+1746671826.2323909,-56.2,494,98.4,Silence,500,0.7,"Inside, small room",0,0.3,Speech
+1746671829.211539,-57.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671835.2773561,-57.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671838.266773,-58.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671841.2521331,-57.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671844.239619,-56.0,494,59.1,Silence,378,13.5,Typing,485,10.9,Clicking
+1746671847.226339,-57.7,494,99.9,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746671850.2962718,-56.8,494,84.3,Silence,485,5.9,Clicking,500,3.3,"Inside, small room"
+1746671853.2763698,-58.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671856.26259,-57.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671859.256138,-58.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671862.240299,-58.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671865.229578,-54.0,44,68.6,Sneeze,36,42.2,Breathing,41,8.8,Snort
+1746671868.303956,-57.0,494,99.9,Silence,500,0.0,"Inside, small room",0,0.0,Speech
+1746671871.2890959,-58.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671874.2735949,-57.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671877.254573,-56.1,378,57.3,Typing,380,55.1,Computer keyboard,485,26.7,Clicking
+1746671883.240343,-57.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671886.222382,-58.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671889.293949,-57.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671892.2841542,-55.7,378,81.2,Typing,380,59.2,Computer keyboard,118,12.4,"Rodents, rats, mice"
+1746671898.246866,-57.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671901.2400799,-54.0,378,93.8,Typing,380,78.0,Computer keyboard,494,8.3,Silence
+1746671904.230679,-56.0,500,35.3,"Inside, small room",378,12.7,Typing,380,10.1,Computer keyboard
+1746671907.297183,-56.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671910.287518,-55.6,494,85.1,Silence,500,3.9,"Inside, small room",485,1.2,Clicking
+1746671913.271801,-56.9,494,63.2,Silence,500,20.6,"Inside, small room",485,7.6,Clicking
+1746671916.252296,-56.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671928.291063,-55.6,494,87.0,Silence,500,2.5,"Inside, small room",485,1.0,Clicking
+1746671931.2784598,-58.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671934.2635021,-37.1,353,41.2,Knock,500,26.2,"Inside, small room",348,16.5,Door
+1746671937.246662,-54.9,49,49.1,"Chewing, mastication",500,35.8,"Inside, small room",50,14.6,Biting
+1746671940.237441,-43.9,378,99.8,Typing,380,96.3,Computer keyboard,498,0.6,Sound effect
+1746671943.224289,-44.4,378,99.0,Typing,380,94.5,Computer keyboard,379,1.2,Typewriter
+1746671946.2953641,-51.7,494,95.4,Silence,500,5.5,"Inside, small room",381,1.1,Writing
+1746671949.2842932,-52.6,494,38.2,Silence,500,29.3,"Inside, small room",381,1.4,Writing
+1746671955.2649431,-58.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671958.2437499,-55.7,494,98.8,Silence,0,0.1,Speech,500,0.0,"Inside, small room"
+1746671961.2250838,-57.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671964.294924,-59.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671967.289591,-56.3,494,80.3,Silence,500,2.5,"Inside, small room",0,1.3,Speech
+1746671970.273252,-56.3,378,48.8,Typing,380,36.4,Computer keyboard,485,7.5,Clicking
+1746671973.25952,-45.1,41,49.8,Snort,36,46.8,Breathing,44,33.2,Sneeze
+1746671976.246506,-41.7,39,43.4,Gasp,23,36.4,Sigh,41,34.4,Snort
+1746671979.234402,-53.3,494,61.5,Silence,504,2.9,"Outside, rural or natural",500,2.0,"Inside, small room"
+1746671985.287553,-57.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746671988.274268,-39.8,353,63.9,Knock,455,28.9,Thunk,348,23.8,Door
+1746671994.256707,-58.4,494,92.0,Silence,485,1.9,Clicking,500,1.5,"Inside, small room"
+1746671997.238014,-55.4,494,98.6,Silence,500,0.0,"Inside, small room",498,0.0,Sound effect
+1746672000.226272,-50.9,494,52.6,Silence,500,2.8,"Inside, small room",398,1.0,Mechanisms
+1746672003.2994392,-56.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672006.288844,-55.9,378,51.7,Typing,380,34.7,Computer keyboard,485,9.9,Clicking
+1746672009.266536,-48.1,378,85.7,Typing,380,72.4,Computer keyboard,500,6.5,"Inside, small room"
+1746672012.252851,-56.1,494,99.9,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746672015.239307,-56.3,494,89.9,Silence,500,0.6,"Inside, small room",0,0.4,Speech
+1746672018.2328708,-49.4,500,46.3,"Inside, small room",375,23.6,Scissors,377,23.0,Shuffling cards
+1746672021.218185,-45.1,494,49.9,Silence,277,4.9,Wind,279,2.5,Wind noise (microphone)
+1746672027.277811,-55.4,494,97.0,Silence,498,0.1,Sound effect,0,0.0,Speech
+1746672030.258195,-55.2,494,98.9,Silence,500,0.0,"Inside, small room",0,0.0,Speech
+1746672033.251925,-47.8,378,99.8,Typing,380,97.2,Computer keyboard,483,0.2,Clatter
+1746672036.241458,-55.3,494,90.9,Silence,500,1.5,"Inside, small room",0,0.4,Speech
+1746672039.2252429,-42.4,378,34.9,Typing,380,21.3,Computer keyboard,485,8.3,Clicking
+1746672042.2902431,-41.0,378,99.7,Typing,380,95.6,Computer keyboard,498,0.1,Sound effect
+1746672054.2406342,-23.3,294,78.8,Vehicle,301,46.6,Car,300,42.8,Motor vehicle (road)
+1746672057.2295082,-31.3,398,42.7,Mechanisms,400,27.6,Clock,402,24.1,Tick-tock
+1746672072.242048,-53.9,494,97.5,Silence,500,0.1,"Inside, small room",3,0.0,"Narration, monologue"
+1746672075.235142,-56.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672078.224951,-49.4,378,62.7,Typing,380,47.1,Computer keyboard,500,36.2,"Inside, small room"
+1746672081.297937,-42.6,378,99.7,Typing,380,97.2,Computer keyboard,379,0.3,Typewriter
+1746672084.284875,-50.2,378,73.9,Typing,380,62.2,Computer keyboard,485,7.4,Clicking
+1746672087.270028,-55.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672090.253269,-57.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672093.233875,-57.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672096.231167,-49.8,378,95.5,Typing,380,87.3,Computer keyboard,379,6.3,Typewriter
+1746672099.300778,-51.7,500,70.3,"Inside, small room",375,7.4,Scissors,0,2.0,Speech
+1746672102.286955,-46.2,494,36.4,Silence,0,5.9,Speech,500,3.5,"Inside, small room"
+1746672105.272925,-58.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672108.260478,-51.1,500,33.1,"Inside, small room",400,24.0,Clock,402,23.4,Tick-tock
+1746672111.249989,-57.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672114.2343528,-57.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672117.219786,-56.2,494,45.0,Silence,378,22.7,Typing,380,16.1,Computer keyboard
+1746672120.2902741,-55.5,494,99.7,Silence,0,0.1,Speech,500,0.0,"Inside, small room"
+1746672123.272369,-55.4,494,93.4,Silence,500,1.0,"Inside, small room",0,0.3,Speech
+1746672126.261439,-56.5,494,84.0,Silence,500,5.8,"Inside, small room",381,1.2,Writing
+1746672129.244761,-56.9,500,40.1,"Inside, small room",375,32.0,Scissors,410,17.8,Camera
+1746672132.23229,-56.4,494,99.8,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746672135.2181618,-57.5,494,93.0,Silence,500,2.5,"Inside, small room",485,1.1,Clicking
+1746672141.279695,-55.2,500,49.8,"Inside, small room",378,13.4,Typing,380,12.1,Computer keyboard
+1746672144.263853,-56.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672147.263498,-57.5,494,73.8,Silence,485,6.2,Clicking,500,4.1,"Inside, small room"
+1746672150.236801,-56.9,494,86.0,Silence,500,3.6,"Inside, small room",485,2.7,Clicking
+1746672153.231394,-56.0,494,75.6,Silence,500,8.6,"Inside, small room",68,2.4,"Domestic animals, pets"
+1746672156.3065019,-57.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672159.294235,-57.3,494,86.1,Silence,500,4.5,"Inside, small room",485,2.1,Clicking
+1746672162.275924,-58.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672165.262555,-56.6,500,35.5,"Inside, small room",435,23.0,Glass,359,21.2,"Cutlery, silverware"
+1746672168.248928,-54.8,500,37.3,"Inside, small room",49,12.6,"Chewing, mastication",485,11.3,Clicking
+1746672174.222395,-56.3,378,45.0,Typing,380,40.8,Computer keyboard,500,18.4,"Inside, small room"
+1746672177.287681,-57.5,494,52.9,Silence,485,6.3,Clicking,500,5.2,"Inside, small room"
+1746672180.280405,-57.7,378,35.8,Typing,380,27.2,Computer keyboard,485,26.9,Clicking
+1746672183.260753,-54.3,500,39.5,"Inside, small room",494,11.6,Silence,381,4.7,Writing
+1746672186.255771,-56.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672192.225735,-48.4,500,36.7,"Inside, small room",401,16.0,Tick,485,13.8,Clicking
+1746672198.2863538,-53.2,494,68.7,Silence,277,1.1,Wind,504,1.1,"Outside, rural or natural"
+1746672201.2743838,-56.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672204.254003,-52.8,378,92.0,Typing,380,83.3,Computer keyboard,500,8.8,"Inside, small room"
+1746672207.250016,-55.7,494,96.7,Silence,500,1.6,"Inside, small room",485,0.5,Clicking
+1746672210.2297978,-54.0,500,44.2,"Inside, small room",438,9.5,Liquid,485,8.7,Clicking
+1746672213.21355,-56.1,494,99.9,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746672216.292085,-50.2,378,65.4,Typing,380,59.0,Computer keyboard,500,11.9,"Inside, small room"
+1746672219.279768,-55.8,494,54.1,Silence,500,7.5,"Inside, small room",378,3.3,Typing
+1746672222.265242,-52.5,378,64.9,Typing,380,50.8,Computer keyboard,500,8.2,"Inside, small room"
+1746672225.245635,-44.3,378,99.8,Typing,380,96.3,Computer keyboard,379,1.1,Typewriter
+1746672228.240101,-44.8,378,99.6,Typing,380,96.3,Computer keyboard,485,0.4,Clicking
+1746672231.2192252,-44.9,378,99.9,Typing,380,97.5,Computer keyboard,379,0.3,Typewriter
+1746672234.2904708,-47.9,378,99.5,Typing,380,95.3,Computer keyboard,494,1.0,Silence
+1746672237.285454,-49.3,378,99.2,Typing,380,94.9,Computer keyboard,485,2.7,Clicking
+1746672240.265475,-57.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672243.250488,-54.0,494,96.7,Silence,500,0.6,"Inside, small room",0,0.2,Speech
+1746672246.242144,-40.3,500,47.2,"Inside, small room",441,4.0,Squish,501,2.3,"Inside, large room or hall"
+1746672249.2328918,-53.1,378,94.5,Typing,380,79.9,Computer keyboard,494,2.1,Silence
+1746672252.3069959,-51.0,378,60.9,Typing,380,46.4,Computer keyboard,485,9.7,Clicking
+1746672255.290406,-47.8,49,90.3,"Chewing, mastication",50,72.0,Biting,493,67.7,Crunch
+1746672258.2766762,-56.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672261.267701,-56.8,494,96.6,Silence,500,1.9,"Inside, small room",381,0.4,Writing
+1746672264.252127,-57.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672267.238338,-53.4,378,91.4,Typing,380,74.6,Computer keyboard,494,5.8,Silence
+1746672270.217962,-45.7,378,98.9,Typing,380,93.7,Computer keyboard,498,0.9,Sound effect
+1746672273.2907689,-41.8,378,90.6,Typing,380,83.2,Computer keyboard,379,9.3,Typewriter
+1746672276.2745652,-54.9,378,53.3,Typing,380,42.3,Computer keyboard,500,12.4,"Inside, small room"
+1746672279.264961,-58.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672282.2561631,-57.1,494,75.3,Silence,500,10.8,"Inside, small room",402,1.4,Tick-tock
+1746672285.2357929,-58.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672288.2286232,-55.2,378,80.4,Typing,380,59.8,Computer keyboard,494,16.8,Silence
+1746672291.300735,-51.3,378,99.7,Typing,380,95.3,Computer keyboard,498,0.7,Sound effect
+1746672294.29022,-49.1,378,91.8,Typing,380,77.9,Computer keyboard,500,5.4,"Inside, small room"
+1746672297.2756019,-49.4,494,66.9,Silence,500,15.5,"Inside, small room",381,1.1,Writing
+1746672300.2577448,-46.1,378,99.9,Typing,380,96.4,Computer keyboard,498,0.2,Sound effect
+1746672303.247234,-58.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672306.2313862,-58.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672309.221815,-58.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672312.2921238,-42.3,378,99.9,Typing,380,97.5,Computer keyboard,498,0.2,Sound effect
+1746672318.259128,-59.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672321.250195,-51.1,378,51.4,Typing,380,39.0,Computer keyboard,500,12.6,"Inside, small room"
+1746672327.2264478,-47.2,378,99.3,Typing,380,94.5,Computer keyboard,500,1.0,"Inside, small room"
+1746672330.2957282,-42.9,378,99.2,Typing,380,96.3,Computer keyboard,379,5.7,Typewriter
+1746672333.27916,-59.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672336.272706,-58.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672339.2610078,-53.6,378,84.7,Typing,380,75.8,Computer keyboard,500,14.9,"Inside, small room"
+1746672345.224271,-46.7,378,99.6,Typing,380,97.2,Computer keyboard,379,0.3,Typewriter
+1746672348.3067882,-46.8,378,99.9,Typing,380,97.1,Computer keyboard,498,0.2,Sound effect
+1746672351.28791,-49.8,378,98.4,Typing,380,90.6,Computer keyboard,485,1.1,Clicking
+1746672354.2750158,-43.1,378,99.8,Typing,380,96.2,Computer keyboard,379,0.8,Typewriter
+1746672357.2561011,-44.1,378,99.7,Typing,380,94.1,Computer keyboard,498,0.2,Sound effect
+1746672360.245307,-43.6,378,99.8,Typing,380,96.6,Computer keyboard,498,0.2,Sound effect
+1746672363.238178,-56.2,485,34.9,Clicking,494,32.0,Silence,500,8.5,"Inside, small room"
+1746672366.2233589,-50.3,378,48.3,Typing,380,40.1,Computer keyboard,485,35.0,Clicking
+1746672369.294025,-45.7,378,99.6,Typing,380,94.0,Computer keyboard,494,0.8,Silence
+1746672375.264354,-35.5,500,47.3,"Inside, small room",431,28.4,Wood,358,13.7,"Dishes, pots, and pans"
+1746672381.235018,-54.2,494,45.8,Silence,500,12.5,"Inside, small room",378,10.3,Typing
+1746672384.227633,-51.3,378,79.7,Typing,380,72.0,Computer keyboard,485,17.6,Clicking
+1746672387.2948859,-55.5,49,37.5,"Chewing, mastication",50,34.0,Biting,500,25.7,"Inside, small room"
+1746672393.278095,-39.8,378,99.9,Typing,380,96.0,Computer keyboard,379,0.1,Typewriter
+1746672396.25883,-50.6,500,44.4,"Inside, small room",378,28.9,Typing,379,28.0,Typewriter
+1746672399.247896,-50.0,36,33.2,Breathing,500,27.1,"Inside, small room",41,23.5,Snort
+1746672402.235423,-58.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672405.224701,-57.8,494,99.5,Silence,0,0.1,Speech,500,0.0,"Inside, small room"
+1746672408.2874281,-57.7,494,53.7,Silence,485,13.9,Clicking,500,10.9,"Inside, small room"
+1746672411.278948,-46.5,500,35.6,"Inside, small room",348,11.0,Door,351,8.8,Sliding door
+1746672414.265965,-45.4,381,40.3,Writing,500,28.1,"Inside, small room",36,11.2,Breathing
+1746672417.2522602,-54.9,494,87.9,Silence,500,10.5,"Inside, small room",0,0.8,Speech
+1746672429.278412,-53.8,494,94.1,Silence,500,0.7,"Inside, small room",0,0.2,Speech
+1746672435.2536478,-54.9,494,33.0,Silence,500,6.8,"Inside, small room",501,1.8,"Inside, large room or hall"
+1746672438.246593,-57.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672441.235824,-56.1,494,99.0,Silence,500,0.1,"Inside, small room",0,0.1,Speech
+1746672444.296871,-57.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672447.290765,-57.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672450.272622,-57.0,494,96.3,Silence,0,0.5,Speech,132,0.0,Music
+1746672456.2502542,-54.5,494,66.1,Silence,500,4.2,"Inside, small room",0,0.5,Speech
+1746672465.291072,-54.4,494,78.1,Silence,500,6.1,"Inside, small room",0,1.2,Speech
+1746672468.282628,-50.2,41,56.2,Snort,36,54.8,Breathing,40,52.5,Pant
+1746672474.248645,-49.2,500,46.3,"Inside, small room",348,9.2,Door,501,4.5,"Inside, large room or hall"
+1746672480.224517,-50.1,494,56.9,Silence,500,4.0,"Inside, small room",67,1.9,Animal
+1746672483.300769,-43.6,500,55.7,"Inside, small room",357,5.8,Drawer open or close,501,3.7,"Inside, large room or hall"
+1746672486.287199,-46.2,378,94.4,Typing,380,87.7,Computer keyboard,379,2.5,Typewriter
+1746672489.2767282,-51.5,500,34.5,"Inside, small room",381,10.3,Writing,375,6.1,Scissors
+1746672492.2577028,-56.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672495.241871,-55.3,494,61.9,Silence,500,2.5,"Inside, small room",12,2.0,Whispering
+1746672498.235554,-40.4,500,42.2,"Inside, small room",357,19.7,Drawer open or close,348,17.0,Door
+1746672501.219976,-57.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672504.293123,-57.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672507.279505,-53.6,494,96.3,Silence,0,0.3,Speech,3,0.0,"Narration, monologue"
+1746672510.265496,-56.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672513.2529888,-56.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672516.244589,-58.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672519.22556,-57.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672522.295671,-49.6,494,56.9,Silence,500,6.5,"Inside, small room",0,0.6,Speech
+1746672531.2521338,-42.3,378,99.9,Typing,380,97.9,Computer keyboard,498,0.3,Sound effect
+1746672534.238392,-58.7,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672537.224745,-57.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672540.297476,-47.4,500,50.1,"Inside, small room",358,13.7,"Dishes, pots, and pans",359,10.4,"Cutlery, silverware"
+1746672543.289967,-55.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672546.277745,-38.5,44,34.5,Sneeze,500,14.8,"Inside, small room",36,14.8,Breathing
+1746672549.273039,-44.6,36,75.9,Breathing,41,40.4,Snort,38,39.9,Snoring
+1746672552.250458,-59.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672555.234946,-45.2,378,99.2,Typing,380,94.2,Computer keyboard,498,0.4,Sound effect
+1746672558.2222028,-50.7,378,94.9,Typing,380,89.4,Computer keyboard,485,2.7,Clicking
+1746672561.301286,-45.7,378,99.8,Typing,380,94.7,Computer keyboard,498,0.3,Sound effect
+1746672564.27563,-49.2,378,99.1,Typing,380,93.1,Computer keyboard,494,2.3,Silence
+1746672567.267786,-56.2,494,99.9,Silence,0,0.0,Speech,132,0.0,Music
+1746672570.257088,-44.6,378,99.0,Typing,380,94.1,Computer keyboard,500,0.7,"Inside, small room"
+1746672573.239479,-56.3,494,49.9,Silence,485,10.5,Clicking,378,6.6,Typing
+1746672576.231065,-46.7,378,99.9,Typing,380,96.2,Computer keyboard,498,0.1,Sound effect
+1746672579.2982981,-55.8,494,86.1,Silence,500,2.1,"Inside, small room",0,0.4,Speech
+1746672582.286093,-55.6,494,78.1,Silence,500,3.7,"Inside, small room",0,1.1,Speech
+1746672585.274679,-57.6,494,99.8,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746672588.265219,-47.0,378,99.6,Typing,380,95.1,Computer keyboard,485,0.9,Clicking
+1746672591.242288,-56.2,494,99.3,Silence,500,0.1,"Inside, small room",0,0.0,Speech
+1746672594.231798,-56.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672597.222424,-56.9,494,99.6,Silence,0,0.0,Speech,132,0.0,Music
+1746672600.292127,-57.0,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672603.280576,-50.0,500,52.6,"Inside, small room",501,3.7,"Inside, large room or hall",348,3.4,Door
+1746672609.255054,-57.4,494,99.2,Silence,500,0.2,"Inside, small room",0,0.1,Speech
+1746672612.2428281,-34.3,500,43.4,"Inside, small room",213,10.7,Beatboxing,55,8.8,Fart
+1746672615.225444,-56.9,494,99.7,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746672618.298663,-59.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672621.285428,-58.0,494,91.0,Silence,500,4.1,"Inside, small room",0,0.9,Speech
+1746672624.265095,-59.4,494,82.4,Silence,500,5.1,"Inside, small room",485,1.5,Clicking
+1746672627.2592099,-57.5,494,98.4,Silence,500,0.6,"Inside, small room",0,0.3,Speech
+1746672630.2455401,-58.2,494,96.0,Silence,500,0.4,"Inside, small room",0,0.1,Speech
+1746672633.232373,-58.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672636.304427,-42.3,378,99.8,Typing,380,96.2,Computer keyboard,379,4.0,Typewriter
+1746672642.270593,-46.8,378,99.2,Typing,380,93.5,Computer keyboard,500,0.5,"Inside, small room"
+1746672645.26411,-44.2,378,99.7,Typing,380,95.4,Computer keyboard,498,0.2,Sound effect
+1746672648.249818,-43.7,378,99.8,Typing,380,96.0,Computer keyboard,494,0.1,Silence
+1746672651.237115,-52.1,500,43.7,"Inside, small room",381,9.0,Writing,494,5.0,Silence
+1746672654.2225459,-57.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672657.294522,-59.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672660.283843,-59.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672663.271501,-59.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672666.2596211,-58.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672669.2433238,-57.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672672.23018,-56.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672675.301302,-53.9,378,59.7,Typing,380,49.7,Computer keyboard,500,15.0,"Inside, small room"
+1746672678.2898188,-54.3,500,39.7,"Inside, small room",441,5.4,Squish,410,5.3,Camera
+1746672681.275187,-55.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672684.2651331,-46.1,378,95.4,Typing,380,89.5,Computer keyboard,379,37.9,Typewriter
+1746672690.2342951,-54.5,494,58.3,Silence,500,9.3,"Inside, small room",485,2.3,Clicking
+1746672693.221591,-53.1,378,57.5,Typing,380,48.2,Computer keyboard,500,13.1,"Inside, small room"
+1746672696.291847,-50.8,378,92.3,Typing,380,77.4,Computer keyboard,500,6.9,"Inside, small room"
+1746672699.278624,-43.7,378,99.9,Typing,380,97.2,Computer keyboard,498,0.3,Sound effect
+1746672702.2673962,-60.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672705.254873,-49.6,500,43.6,"Inside, small room",36,2.2,Breathing,0,1.7,Speech
+1746672708.243826,-54.3,402,37.5,Tick-tock,400,36.1,Clock,401,33.8,Tick
+1746672711.221424,-59.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672714.296507,-58.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672717.2854521,-59.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672720.272196,-58.4,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672723.257816,-57.4,500,39.8,"Inside, small room",401,19.1,Tick,400,16.0,Clock
+1746672726.246888,-56.5,494,99.6,Silence,500,0.2,"Inside, small room",0,0.0,Speech
+1746672729.2303958,-37.9,431,43.1,Wood,432,33.1,Chop,500,26.3,"Inside, small room"
+1746672732.3045042,-57.5,494,99.5,Silence,500,0.2,"Inside, small room",0,0.0,Speech
+1746672735.289439,-57.6,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672738.27933,-55.4,494,97.0,Silence,500,0.4,"Inside, small room",0,0.3,Speech
+1746672741.2679198,-43.0,358,68.9,"Dishes, pots, and pans",359,68.3,"Cutlery, silverware",500,16.1,"Inside, small room"
+1746672744.249737,-57.1,494,66.5,Silence,500,6.0,"Inside, small room",36,1.9,Breathing
+1746672747.244066,-48.5,378,42.2,Typing,380,40.9,Computer keyboard,500,21.0,"Inside, small room"
+1746672750.218894,-59.1,494,99.9,Silence,0,0.1,Speech,3,0.0,"Narration, monologue"
+1746672753.290872,-51.2,378,98.5,Typing,380,92.3,Computer keyboard,500,0.7,"Inside, small room"
+1746672756.2829309,-45.7,378,98.6,Typing,380,92.7,Computer keyboard,500,0.9,"Inside, small room"
+1746672759.270238,-49.5,378,93.5,Typing,380,83.3,Computer keyboard,500,4.0,"Inside, small room"
+1746672765.245247,-48.3,378,99.4,Typing,380,95.2,Computer keyboard,500,0.2,"Inside, small room"
+1746672768.234133,-55.0,494,92.4,Silence,0,0.8,Speech,485,0.2,Clicking
+1746672771.301422,-45.3,378,93.3,Typing,380,82.6,Computer keyboard,379,4.1,Typewriter
+1746672774.290379,-47.9,380,33.7,Computer keyboard,378,30.6,Typing,485,12.6,Clicking
+1746672777.268322,-53.2,378,98.9,Typing,380,92.4,Computer keyboard,494,1.8,Silence
+1746672780.26638,-59.1,494,99.6,Silence,500,0.0,"Inside, small room",0,0.0,Speech
+1746672783.246557,-57.9,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672786.235996,-48.0,378,78.3,Typing,380,69.9,Computer keyboard,500,8.4,"Inside, small room"
+1746672789.220642,-44.8,378,95.6,Typing,380,87.5,Computer keyboard,379,9.2,Typewriter
+1746672792.291233,-52.4,378,40.7,Typing,380,36.0,Computer keyboard,485,26.2,Clicking
+1746672795.27875,-51.4,378,94.8,Typing,380,87.8,Computer keyboard,485,3.3,Clicking
+1746672798.2692192,-56.6,378,58.3,Typing,380,49.5,Computer keyboard,494,13.6,Silence
+1746672801.253611,-58.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672804.2339342,-47.2,378,94.9,Typing,380,85.3,Computer keyboard,379,49.9,Typewriter
+1746672807.226582,-57.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672813.286858,-57.3,494,95.2,Silence,500,0.8,"Inside, small room",38,0.5,Snoring
+1746672816.265615,-57.4,494,81.8,Silence,500,2.9,"Inside, small room",0,0.9,Speech
+1746672819.252598,-46.6,378,99.8,Typing,380,97.9,Computer keyboard,498,0.4,Sound effect
+1746672822.246544,-49.4,378,98.3,Typing,380,89.0,Computer keyboard,485,1.6,Clicking
+1746672825.232085,-56.1,378,74.1,Typing,380,68.6,Computer keyboard,500,21.9,"Inside, small room"
+1746672828.305645,-58.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672834.276631,-56.6,494,100.0,Silence,0,0.0,Speech,500,0.0,"Inside, small room"
+1746672837.263765,-54.3,500,33.3,"Inside, small room",494,17.6,Silence,381,9.9,Writing
+1746672840.249794,-57.2,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672843.2390568,-56.7,494,98.1,Silence,0,0.5,Speech,500,0.3,"Inside, small room"
+1746672846.225099,-58.1,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672849.3012888,-57.4,494,99.9,Silence,0,0.0,Speech,3,0.0,"Narration, monologue"
+1746672852.28388,-55.6,494,98.4,Silence,500,0.3,"Inside, small room",0,0.1,Speech
+1746672855.270258,-58.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672858.2567492,-55.3,494,97.2,Silence,500,0.1,"Inside, small room",0,0.1,Speech
+1746672861.241428,-53.1,494,45.8,Silence,500,7.5,"Inside, small room",0,6.1,Speech
+1746672867.301255,-44.6,494,78.1,Silence,500,4.9,"Inside, small room",485,2.9,Clicking
+1746672870.2907772,-57.8,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672873.275875,-58.3,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672876.263716,-57.7,494,99.9,Silence,0,0.2,Speech,132,0.0,Music
+1746672879.24704,-56.4,494,96.0,Silence,500,2.1,"Inside, small room",485,0.5,Clicking
+1746672885.220562,-47.0,378,87.5,Typing,380,75.5,Computer keyboard,500,7.8,"Inside, small room"
+1746672888.297875,-58.8,494,97.7,Silence,500,0.7,"Inside, small room",0,0.3,Speech
+1746672894.267454,-58.5,494,100.0,Silence,0,0.0,Speech,132,0.0,Music
+1746672897.2492049,-57.7,378,37.7,Typing,380,33.2,Computer keyboard,500,19.7,"Inside, small room"
+1746672900.2386298,-57.2,500,41.1,"Inside, small room",401,21.7,Tick,375,15.9,Scissors
+1746672903.2279081,-52.9,500,38.6,"Inside, small room",401,30.6,Tick,400,28.7,Clock
+1746672906.298999,-54.9,500,37.8,"Inside, small room",494,17.1,Silence,381,7.2,Writing
+1746672909.284857,-58.0,494,99.8,Silence,500,0.0,"Inside, small room",0,0.0,Speech
