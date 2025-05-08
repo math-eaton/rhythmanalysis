@@ -173,9 +173,16 @@ try:
                 ts    = time.time()
                 names = labels[top_idx]
                 confs = [f"{c*100:.1f}%" for c in top_conf]
-                print(f"{time.strftime('%H:%M:%S', time.localtime(ts))} → "
-                    f"{names[0]} ({confs[0]}) [+{names[1]} ({confs[1]}), "
-                    f"{names[2]} ({confs[2]})]  {db_now:.1f} dBFS")
+
+                # append highest cf labels
+                msg = f"{names[0]} ({confs[0]})"
+
+                # extras, if any
+                if len(names) > 1:
+                    extras = [f"{n} ({cf})" for n, cf in zip(names[1:], confs[1:])]
+                    msg += " +[" + ", ".join(extras) + "]"
+
+                print(f"{time.strftime('%H:%M:%S', time.localtime(ts))} -> {msg}  {db_now:.1f} dB")
 
                 # build the row
                 row = [ts, round(db_now, 1)]
