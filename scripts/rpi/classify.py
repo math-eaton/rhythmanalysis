@@ -11,13 +11,13 @@ import pandas as pd
 import sounddevice as sd
 try:
     from tflite_runtime.interpreter import Interpreter
-    HAS_NUM_THREADS_ARG = True
+    HAS_NUM_THREADS_ARG = True # liteRT ie we are running on raspberry pi
 except ImportError:
     from tensorflow.lite.python.interpreter import Interpreter
-    HAS_NUM_THREADS_ARG = False
+    HAS_NUM_THREADS_ARG = False # full TF ie we are running in a computer context
 from scipy.signal import resample_poly
 
-# ── USER CONFIGURATION ─────────────────────────────────
+# === config ================================================─
 YAMNET_MODEL      = 'scripts/models/yamnet/tfLite/tflite/1/1.tflite'
 CLASS_MAP_CSV     = 'scripts/models/yamnet/yamnet_class_map.csv'
 THRESHOLD         = 0.33
@@ -34,14 +34,14 @@ TOP_K             = 3
 FLUSH_SEC         = 5.0
 OUTPUT_CSV        = "output/classifications.csv"
 
-# ── PREPARE OUTPUT ───────────────────────────────────
+# === prep output csv ===================================================─
 Path(OUTPUT_CSV).parent.mkdir(parents=True, exist_ok=True)
 if not Path(OUTPUT_CSV).exists():
     with open(OUTPUT_CSV, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["ts", "db", "c1_idx", "c1_cf", "c1_name", "c2_idx", "c2_cf", "c2_name", "c3_idx", "c3_cf", "c3_name"])
 
-# ── LOAD MODEL & LABELS ──────────────────────────────
+# === load model + labels =============================================
 print(f"[DEBUG] Loading labels from {CLASS_MAP_CSV}")
 class_map = pd.read_csv(CLASS_MAP_CSV)
 labels    = class_map['display_name'].to_numpy()
@@ -52,13 +52,12 @@ if HAS_NUM_THREADS_ARG:
     yam = Interpreter(model_path=YAMNET_MODEL, num_threads=NUM_THREADS)
 else:
     yam = Interpreter(model_path=YAMNET_MODEL)
-    # yam.experimental_set_num_threads(NUM_THREADS)
 inp_detail = yam.get_input_details()[0]
 print(f"[DEBUG] Original input shape: {inp_detail['shape']}")
 yam.resize_tensor_input(inp_detail['index'], [FRAME_LEN], strict=True)
 yam.allocate_tensors()
 
-# ── WARM-UP ──────────────────────────────────────────────
+# === warm up model brrr =====================================================================
 print("[DEBUG] Warming up interpreter with a dummy frame…")
 dummy = np.zeros((FRAME_LEN,), dtype=np.float32)
 yam.set_tensor(inp_detail['index'], dummy)
@@ -71,7 +70,7 @@ print(f"[DEBUG]  → warm-up invoke: {t1-t0:.3f}s")
 scores_idx = yam.get_output_details()[0]['index']
 print(f"[DEBUG] Model ready with fixed input length {FRAME_LEN}")
 
-# ── ARG PARSING ──────────────────────────────────────
+# === parse args from config =========================================================
 parser = argparse.ArgumentParser()
 parser.add_argument('--list-devices', action='store_true')
 parser.add_argument('-d','--device', default=None)
@@ -82,7 +81,7 @@ if args.list_devices:
             print(f"[DEV] [{i}] {d['name']} @ {d['default_samplerate']}")
     exit(0)
 
-# ── SELECT DEVICE ────────────────────────────────────
+# === set audio input device ======================================================
 def find_device(name_or_id):
     try:
         return int(name_or_id)
@@ -102,7 +101,7 @@ dev_sr = int(info['default_samplerate'])
 print(f"[DEBUG] Using input '{info['name']}' @ {dev_sr} Hz → target {TARGET_SR} Hz")
 need_resample = (dev_sr != TARGET_SR)
 
-# ── AUDIO CALLBACK SETUP ─────────────────────────────
+# === audio callback ==========================================─
 blocksize = int(HOP_SAMPLES * dev_sr / TARGET_SR)
 print(f"[DEBUG] Audio callback blocksize={blocksize} frames (~{blocksize/dev_sr:.3f}s)  queue size=100")
 q = queue.Queue(maxsize=100)
@@ -127,7 +126,7 @@ stream = sd.InputStream(
 stream.start()
 print("Listening… Ctrl-C to stop")
 
-# ── MAIN LOOP ────────────────────────────────────────
+# === MAIN LOOP ============================================================
 chunk_buffer = np.zeros((0,), dtype=np.float32)
 ram_buffer   = []
 last_flush   = time.time()
