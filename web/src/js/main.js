@@ -1,14 +1,11 @@
-import { simpleGraph } from "./simpleGraph.js";
+// src/js/main.js
+import { clockGraph } from "./clock.js";
 
-// Configuration for the graph
 const config = {
-  TIMESPAN: 120, // in mins
-  CONFIDENCE_THRESHOLD: 40,
-  JSON_PATH: "classifications_yamnet.json",
-  MAX_MARKER_RADIUS: 5,
-  JITTER_RADIAL_FACTOR: 0.4,
-  JITTER_ANG_SEC: 0.5,
+  // if your API is hosted elsewhere:
+  // DATA_URL: "https://your-domain.com/api/audio_logs",
+  INNER_R: 180,
+  OUTER_R: 220,
 };
 
-// Draw the graph in the container with ID "simpleGraphContainer"
-simpleGraph("simpleGraphContainer", config);
+clockGraph("simpleGraphContainer", config);
