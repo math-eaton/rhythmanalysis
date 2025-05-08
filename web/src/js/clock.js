@@ -14,7 +14,7 @@ export function clockGraph(containerId, config = {}) {
   // Ensure the legend container exists
   let legendContainer = container.select(".legend");
   if (legendContainer.empty()) {
-    legendContainer = container.append("div").attr("cl", "legend");
+    legendContainer = container.append("div").attr("class", "legend");
   }
   legendContainer
     .style("overflow-y", "auto")
@@ -50,32 +50,42 @@ export function clockGraph(containerId, config = {}) {
     const cx = w / 2, cy = h / 2;
 
     d3.json(DATA_URL).then((raw) => {
-      // parse and sort
+      // Parse and sort
       const data = raw
-        .map((d) => ({ ts: +d.ts, class: d.class }))
-        .sort((a, b) => a.ts - b.ts);
-      if (!data.length) {
+      .map((d) => {
+        const rawTs = +d.ts;                    
+        const offsetSec = new Date(rawTs * 1000) 
+                             .getTimezoneOffset() 
+                           * 60;               
+        return {
+          ts: rawTs + offsetSec,            
+          class: d.cl,
+          cf: +d.cf
+        };
+      })
+      .sort((a, b) => a.ts - b.ts);
+          if (!data.length) {
         console.warn("no data");
         return;
       }
 
       const t0 = data[0].ts,
-        t1 = data[data.length - 1].ts;
+      t1 = data[data.length - 1].ts;
 
       // map [t0…t1] → [–π/2…3π/2]
       const angle = d3.scaleLinear()
-        .domain([t0, t1])
-        .range([-Math.PI / 2, (Math.PI * 3) / 2]);
-
+      .domain([t0, t1])
+      .range([-Math.PI/2, 3*Math.PI/2]);
+    
       // Calculate class frequencies
       const classCounts = d3.rollup(
         data,
         (v) => v.length,
-        (d) => d.class
+        (d) => d.class // Use "class" (mapped from "cl")
       );
 
       const classes = Array.from(classCounts.entries())
-        .sort((a, b) => a[1] - b[1]) 
+        .sort((a, b) => a[1] - b[1])
         .map((d) => d[0]);
 
       const color = d3.scaleOrdinal(classes, d3.schemeCategory10);
@@ -111,15 +121,23 @@ export function clockGraph(containerId, config = {}) {
           .attr("y2", (d) => (radius + 10) * Math.sin(angle(d.ts)))
           .attr("stroke", color(cls))
           .attr("stroke-width", 1)
+          .attr("opacity", (d) => {
+            // Scale opacity based on the "cf" attribute
+            const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);
+            return cfScale(d.cf || 0); // Default to 0 if "cf" is undefined
+          })        
           .on("mouseover", (event, d) => {
-            const timestamp = new Date(d.ts * 1000).toLocaleString("en-US", {
-              timeZone: "America/New_York",
+            const ms = d.ts * 1000;
+            const timestamp = new Date(ms).toLocaleString("en-US", {
+              hour:   "2-digit",
+              minute: "2-digit",
+              timeZone: "America/New_York"
             });
             tooltip
               .style("visibility", "visible")
               .text(`${d.class}, ${timestamp}`);
           })
-          .on("mousemove", (event) => {
+                    .on("mousemove", (event) => {
             tooltip
               .style("top", `${event.pageY + 10}px`)
               .style("left", `${event.pageX + 10}px`);
@@ -142,19 +160,18 @@ export function clockGraph(containerId, config = {}) {
         .domain(angle.range()) // [-π/2, 3π/2]
         .range(angle.domain()); // [t0, t1]
 
-      labelPositions.forEach(({ angle: posAngle, label }) => {
-        const timestamp = new Date(inverseAngle(posAngle) * 1000) // Convert to milliseconds
-          .toLocaleString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "America/New_York",
-          });
-
-        svg
+        labelPositions.forEach(({ angle: posAngle, label }) => {
+            const ms = inverseAngle(posAngle) * 1000;
+            const labelTime = new Date(ms).toLocaleString("en-US", {
+              hour:   "2-digit",
+              minute: "2-digit",
+              timeZone: "America/New_York"
+            });
+                          svg
           .append("text")
           .attr(
             "x",
-            cx + (OUTER_R + 45) * Math.cos(posAngle) // Offset slightly from the outer ring
+            cx + (OUTER_R + 45) * Math.cos(posAngle) 
           )
           .attr(
             "y",
@@ -163,9 +180,9 @@ export function clockGraph(containerId, config = {}) {
           .attr("text-anchor", "middle")
           .attr("alignment-baseline", "middle")
           .style("font-size", "10px")
-          .style("fill", "#969696")
-          .text(timestamp);
-      });
+          .style("fill", "#f5f5f5")
+          .text(labelTime);
+        });
 
       const legendClasses = Array.from(classCounts.entries())
         .sort((a, b) => b[1] - a[1])
@@ -176,7 +193,7 @@ export function clockGraph(containerId, config = {}) {
         .selectAll(".item")
         .data(legendClasses)
         .join("div")
-        .attr("cl", "item")
+        .attr("class", "item")
         .style("margin-bottom", "4px");
 
       item
