@@ -7,8 +7,8 @@ from urllib.parse import urlparse
 from pathlib import Path
 
 import paho.mqtt.client as mqtt
-import pandas as pd
 import psycopg2
+import psycopg2.extras
 
 # paths
 SCRIPT_DIR   = Path(__file__).resolve().parent
@@ -18,9 +18,9 @@ csv_path    = PROJECT_ROOT / "output" / "classifications.csv"
 
 
 # load config
-config_path = os.path.join(os.path.dirname(__file__), "config.json")
-with open(config_path, "r") as cfg_file:
-    cfg = json.load(cfg_file)
+config_path = Path(__file__).parent.parent / "config.json"
+with open(config_path, "r") as f:
+    cfg = json.load(f)
 
 # MQTT settings
 broker   = cfg["hiveMQ_broker"]
@@ -72,47 +72,36 @@ INSERT INTO audio_logs
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
 """
 
-data = pd.read_csv(csv_path)
+buffer = []
+last_flush = time.time()
 
-# ————— MQTT setup —————
+def on_message(client, userdata, msg):
+    global buffer, last_flush
+    obj = json.loads(msg.payload)
+    buffer.append(obj)
+
+    # flush on size or timeout
+    if len(buffer) >= 20 or time.time() - last_flush >= 5.0:
+        args = [(
+            datetime.fromtimestamp(o["ts"]),
+            o["db"], o["c1_idx"], o["c1_cf"], o["c1_name"],
+            o["c2_idx"], o["c2_cf"], o["c2_name"],
+            o["c3_idx"], o["c3_cf"], o["c3_name"],
+            json.dumps(o)
+        ) for o in buffer]
+        psycopg2.extras.execute_values(cur, insert_sql, args)
+        conn.commit()
+        buffer.clear()
+        last_flush = time.time()
+
 client = mqtt.Client()
 client.username_pw_set(username, password)
 client.tls_set(tls_version=ssl.PROTOCOL_TLSv1_2)
 client.connect(broker, port)
 
-try:
-    for _, row in data.iterrows():
-        # 1) Publish to MQTT
-        payload = row.to_json()
-        client.publish(topic, payload)
-        print(f"Published securely to HiveMQ: {payload}")
+client.on_message = on_message
+client.connect(broker, port)
 
-        # 2) Parse JSON and INSERT into Postgres
-        obj = json.loads(payload)
-        ts = datetime.fromtimestamp(obj["ts"])
-        db     = obj.get("db")
-        c1_idx = obj.get("c1_idx")
-        c1_cf  = obj.get("c1_cf")
-        c1_name = obj.get("c1_name")
-        c2_idx = obj.get("c2_idx")
-        c2_cf  = obj.get("c2_cf")
-        c2_name = obj.get("c2_name")
-        c3_idx = obj.get("c3_idx")
-        c3_cf  = obj.get("c3_cf")
-        c3_name = obj.get("c3_name")
+client.subscribe(topic)
 
-        cur.execute(
-            insert_sql,
-            (ts, db, c1_idx, c1_cf, c1_name, c2_idx, c2_cf, c2_name, c3_idx, c3_cf, c3_name, json.dumps(obj))
-        )
-        print("  → Stored to Postgres")
-
-        time.sleep(interval)
-
-except KeyboardInterrupt:
-    print("Terminated by user")
-
-finally:
-    client.disconnect()
-    cur.close()
-    conn.close()
+client.loop_forever()
