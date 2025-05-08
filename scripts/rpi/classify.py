@@ -135,55 +135,61 @@ try:
     while True:
         # 1) pull a block
         block = q.get()
-        # print(f"[DEBUG] Got block: {len(block)} samples; qsize={q.qsize()}")
         mono = resample_poly(block, TARGET_SR, dev_sr) if need_resample else block
-        # print(f"[DEBUG] Resampled to {len(mono)} samples")
 
-        # 2) accumulate
+        # 2) accumulate until we have CHUNK_SAMPLES
         chunk_buffer = np.concatenate((chunk_buffer, mono))
-        # print(f"[DEBUG] Chunk buffer: {len(chunk_buffer)}/{CHUNK_SAMPLES} samples")
         if len(chunk_buffer) < CHUNK_SAMPLES:
             continue
 
-        # 3) process chunk
+        # 3) slice out exactly CHUNK_SAMPLES and leave the rest
         chunk = chunk_buffer[:CHUNK_SAMPLES]
         chunk_buffer = chunk_buffer[CHUNK_SAMPLES:]
+
+        # compute how many windows fit in the chunk
         num_windows = 1 + (CHUNK_SAMPLES - FRAME_LEN) // HOP_SAMPLES
-        # print(f"[DEBUG] Processing chunk: {CHUNK_SEC}s → {num_windows} windows "
-        #       f"(frame={FRAME_LEN}, hop={HOP_SAMPLES})")
 
-        # single inference per chunk (last 0.975 s slice)
-        window = chunk[-FRAME_LEN:].astype(np.float32)
-        t0 = time.monotonic()
-        yam.set_tensor(inp_detail['index'], window)
-        yam.invoke()
-        scores = yam.get_tensor(scores_idx)[0]
-        t1 = time.monotonic()
-        print(f"[PERF] single invoke: {t1-t0:.3f}s")
+        # 4) sliding‐window inference
+        for w in range(num_windows):
+            start = w * HOP_SAMPLES
+            end   = start + FRAME_LEN
+            window = chunk[start:end].astype(np.float32)
 
-        mean_scores = scores
+            # invoke the model
+            yam.set_tensor(inp_detail['index'], window)
+            yam.invoke()
+            scores = yam.get_tensor(scores_idx)[0]
 
+            # pick top‐K
+            top_idx  = scores.argsort()[-TOP_K:][::-1]
+            top_conf = scores[top_idx]
 
-        # 4) aggregate
-        top_idx     = mean_scores.argsort()[-TOP_K:][::-1]
-        top_conf    = [mean_scores[i] for i in top_idx]
+            # estimate loudness
+            rms    = np.sqrt(np.mean(window**2))
+            db_now = 20 * np.log10(rms + 1e-10)
 
-        rms    = np.sqrt(np.mean(window**2))
-        db_now = 20 * np.log10(rms + 1e-10)
+            # if above threshold, record it
+            if top_conf[0] >= THRESHOLD:
+                ts    = time.time()
+                names = labels[top_idx]
+                confs = [f"{c*100:.1f}%" for c in top_conf]
+                print(f"{time.strftime('%H:%M:%S', time.localtime(ts))} → "
+                    f"{names[0]} ({confs[0]}) [+{names[1]} ({confs[1]}), "
+                    f"{names[2]} ({confs[2]})]  {db_now:.1f} dBFS")
 
-        if top_conf[0] >= THRESHOLD:
-            ts = time.time()
-            names = labels[top_idx]
-            confs = [f"{c*100:.1f}%" for c in top_conf]
-            print(f"{time.strftime('%H:%M:%S',time.localtime(ts))} → "
-                  f"{names[0]} ({confs[0]}) [+{names[1]} ({confs[1]}), "
-                  f"{names[2]} ({confs[2]})]  {db_now:.1f} dBFS")
-            row = [ts, round(db_now, 1)]
-            for idx, c in zip(top_idx, top_conf):
-                row.extend([int(idx), round(c*100, 1), labels[idx]])
-            ram_buffer.append(row)
+                # build the row
+                row = [ts, round(db_now, 1)]
+                for idx, c in zip(top_idx, top_conf):
+                    row.extend([int(idx), round(c*100, 1), labels[idx]])
 
-        # 5) flush
+                # pad out any missing slots to preserve schema size
+                pad_slots = 3 - len(top_idx)  # e.g. TOP_K=2 -> pad_slots=1
+                for _ in range(pad_slots):
+                    row.extend([None, None, None])
+
+                ram_buffer.append(row)
+
+        # 5) flush buffer to disk every FLUSH_SEC
         if time.time() - last_flush >= FLUSH_SEC and ram_buffer:
             print(f"[DEBUG] Flushing {len(ram_buffer)} rows to CSV")
             with open(OUTPUT_CSV, "a", newline="") as f:
