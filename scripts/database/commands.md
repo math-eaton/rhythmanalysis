@@ -6,7 +6,11 @@
   RESTART IDENTITY
   CASCADE;
 
-- 
+- count records / check date ranges: SELECT COUNT(*) AS total_rows,
+       MIN(ts)       AS earliest,
+       MAX(ts)       AS latest
+FROM audio_logs;
+
 
 ### other
 

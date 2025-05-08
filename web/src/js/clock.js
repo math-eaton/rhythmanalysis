@@ -1,5 +1,4 @@
 // src/js/clockGraph.js
-// bare-bones polar “clock” with ticks per event, colored by class
 import * as d3 from "d3";
 
 export function clockGraph(containerId, config = {}) {
