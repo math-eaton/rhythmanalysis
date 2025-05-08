@@ -3,7 +3,9 @@ import argparse
 import time
 import queue
 import csv
+import json
 import os
+import ssl
 from pathlib import Path
 
 import numpy as np
@@ -16,6 +18,7 @@ except ImportError:
     from tensorflow.lite.python.interpreter import Interpreter
     HAS_NUM_THREADS_ARG = False # full TF ie we are running in a computer context
 from scipy.signal import resample_poly
+import paho.mqtt.client as mqtt
 
 # === config ================================================─
 YAMNET_MODEL      = 'scripts/models/yamnet/tfLite/tflite/1/1.tflite'
@@ -40,6 +43,26 @@ if not Path(OUTPUT_CSV).exists():
     with open(OUTPUT_CSV, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["ts", "db", "c1_idx", "c1_cf", "c1_name", "c2_idx", "c2_cf", "c2_name", "c3_idx", "c3_cf", "c3_name"])
+
+# === mqtt config ===================================================
+SCRIPT_DIR   = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parents[1]
+config_path = PROJECT_ROOT / "dbconfig.json"
+
+with open(config_path, "r") as f:
+    cfg = json.load(f)
+broker   = cfg["hiveMQ_broker"]
+port     = cfg["hiveMQ_port"]
+username = cfg["hiveMQ_username"]
+password = cfg["hiveMQ_password"]
+topic    = cfg["topic"]
+
+# === init + connect mqtt ===================================================─
+mqtt_client = mqtt.Client()
+mqtt_client.username_pw_set(username, password)
+mqtt_client.tls_set(tls_version=ssl.PROTOCOL_TLSv1_2)
+mqtt_client.connect(broker, port)
+mqtt_client.loop_start()
 
 # === load model + labels =============================================
 print(f"[DEBUG] Loading labels from {CLASS_MAP_CSV}")
@@ -193,12 +216,30 @@ try:
                 for idx, c in zip(top_idx, top_conf):
                     row.extend([int(idx), round(c*100, 1), labels[idx]])
 
-                # pad out any missing slots to preserve schema size
+                # pad out any missing columns to preserve schema size (top_k will never exceed 3)
                 pad_slots = 3 - len(top_idx)  # e.g. TOP_K=2 -> pad_slots=1
                 for _ in range(pad_slots):
                     row.extend([None, None, None])
 
                 ram_buffer.append(row)
+
+                # build the payload with padding if needed
+                payload = {
+                    "ts":        float(ts),
+                    "db":        float(round(db_now, 1)),
+                    "c1_idx":    int(top_idx[0]) if len(top_idx) > 0 else None,
+                    "c1_cf":     float(round(top_conf[0] * 100, 1)) if len(top_conf) > 0 else None,
+                    "c1_name":   names[0] if len(names) > 0 else None,
+                    "c2_idx":    int(top_idx[1]) if len(top_idx) > 1 else None,
+                    "c2_cf":     float(round(top_conf[1] * 100, 1)) if len(top_conf) > 1 else None,
+                    "c2_name":   names[1] if len(names) > 1 else None,
+                    "c3_idx":    int(top_idx[2]) if len(top_idx) > 2 else None,
+                    "c3_cf":     float(round(top_conf[2] * 100, 1)) if len(top_conf) > 2 else None,
+                    "c3_name":   names[2] if len(names) > 2 else None,
+                }
+                
+                mqtt_client.publish(topic, json.dumps(payload), qos=1)
+
 
         # 5) flush buffer to disk every FLUSH_SEC
         if time.time() - last_flush >= FLUSH_SEC and ram_buffer:
