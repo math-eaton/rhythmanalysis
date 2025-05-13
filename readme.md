@@ -48,4 +48,8 @@ Sonically, I was challenged to develop alternate habits of pattern recognition; 
 
 ---
 
-**LLM disclaimer**: *I am a competent-enough but self-taught and unsophisticated programmer with a firm grasp on the fundamentals of digital audio signal processing, an enthusiastic but very much in-progress training in sensors and IoT, middling understanding of good database management practices, and zero technical knowledge of machine learning techniques beyond critical readings. I made extensive use of ChatGPT-4 in-browser and with GitHub Copilot for rapid prototyping of the programs and end-to-end data processing pipelines that constitute this project.*
+
+*Rhythmanalysis was developed as part of Anthony Vanky's Urban Sensing and Data Workshop: ["Embodying Urban Environments"](https://urbandata.me/urbansensing/) course at the Columbia University Graduate School of Architecture, Planning, and Preservation; and Seth Cluett's Sound: Advanced Topics II "Species of Spaces" course at the Columbia University Computer Music Center.*
+
+
+***LLM disclaimer**: I am a competent-enough but self-taught and unsophisticated programmer with a firm grasp on the fundamentals of digital audio signal processing, an enthusiastic but very much in-progress training in sensors and IoT, middling understanding of good database management practices, and zero technical knowledge of machine learning techniques beyond critical readings. I made extensive use of ChatGPT-4 in-browser and with GitHub Copilot for rapid prototyping of the programs and end-to-end data processing pipelines that constitute this project.*
