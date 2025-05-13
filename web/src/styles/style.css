@@ -71,16 +71,10 @@ body { font-family: sans-serif; }
 
 .container { 
   display: flex; 
-  align-items: flex-start; 
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 2rem;
-
-}
-
-#polar-graph {
-
-
+  flex-direction: column; /* Stack legend and clock vertically */
+  align-items: center; 
+  justify-content: flex-start;
+  gap: 1rem;
 }
 
 #clock { 
@@ -107,6 +101,15 @@ body { font-family: sans-serif; }
   margin-right: 0.5rem;
 }
 
+/* Adjust the legend container to fit neatly in one row */
+.legend {
+  max-height: 20vh; /* Limit the height to 20% of the viewport */
+  overflow-y: auto; /* Make it scrollable if content overflows */
+  margin-left: 16px;
+  padding: 8px;
+  border: 1px solid #212121;
+}
+
 #controls {
   margin-bottom: 1rem;
   font-family: sans-serif;
@@ -115,6 +118,21 @@ body { font-family: sans-serif; }
   margin-right: 1rem;
 }
 
+#simpleGraphContainer {
+  display: flex;
+  flex-direction: row; /* Keep clock and legend side by side */
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  width: 100%;
+}
+
+svg {
+  flex: 1;
+  max-width: 75vw; /* Ensure the clock takes up most of the width */
+  height: auto;
+  overflow: visible; /* Allow the clock to overflow its container */
+}
 
 @media (prefers-color-scheme: light) {
   :root {

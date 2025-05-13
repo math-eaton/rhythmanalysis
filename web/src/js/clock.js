@@ -82,8 +82,16 @@ export function clockGraph(containerId, config = {}) {
     .append("select")
     .attr("id", "end-select");
 
-  // load data once, then set up checkbox + initial draw
+  // Define the time range for the last six hours
+  const sixHoursAgo = Math.floor(Date.now() / 1000) - 6 * 60 * 60;
+
+  // Filter data to include only the most recent six hours
   d3.json(DATA_URL).then((raw) => {
+    if (!Array.isArray(raw)) {
+      console.error("Unexpected data format: expected an array");
+      return;
+    }
+
     dataCache = raw
       .map((d) => {
         const rawTs = +d.ts;
@@ -95,6 +103,7 @@ export function clockGraph(containerId, config = {}) {
           cf: +d.cf,
         };
       })
+      .filter((d) => d.ts >= sixHoursAgo) // Filter for the last six hours
       .sort((a, b) => a.ts - b.ts);
 
     if (!dataCache.length) {
@@ -216,7 +225,7 @@ export function clockGraph(containerId, config = {}) {
         .attr("cy", cy)
         .attr("r", OUTER_R)
         .style("fill", "none")
-        .style("stroke", "#f0");
+        .style("stroke", "#aaaaaa");
 
       const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
 
@@ -226,7 +235,7 @@ export function clockGraph(containerId, config = {}) {
         g.append("circle")
           .attr("r", radius)
           .style("fill", "none")
-          .style("stroke", "#4d4d4d");
+          .style("stroke", "#aaaaaa");
 
         g.selectAll(`.line-${i}`)
           .data(data.filter((d) => d.class === cls))
@@ -236,7 +245,7 @@ export function clockGraph(containerId, config = {}) {
           .attr("x2", (d) => (radius + 10) * Math.cos(angle(d.ts)))
           .attr("y2", (d) => (radius + 10) * Math.sin(angle(d.ts)))
           .attr("stroke", color(cls))
-          .attr("stroke-width", 1)
+          .attr("stroke-width", 2)
           .attr("opacity", (d) => {
             const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);
             return cfScale(d.cf || 0);
