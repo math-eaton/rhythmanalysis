@@ -1,4 +1,25 @@
-## [**Rhythmanalysis**](https://github.com/math-eaton/rhythmanalysis)
+## **Instructions**
+
+### Cloning to desktop
+
+### Cloning to raspberry pi
+
+### Configuration files
+
+dbconfig.json
+
+ecosystem.config.js
+
+### Setting up the database
+
+### Visualizing the output
+
+api
+vite config
+
+---
+
+## **Project log**
 
 “Rhythmanalysis” was envisioned as an end-to-end method to implement sensing, interpreting, and logging of environment data as a means of diaristic investigation of a single, hyper-specific spatial context. By situating a sensor in a single fixed position, I wanted to investigate the banal but locally meaningful events that, as a resident of that place, would otherwise wash over me as a series of unremarkable blips, evaporating from my working memory. In effect, I sought to register and log the tidal movements of a place by translating a stream of sound into discrete lexical taxonomies, graphing them to see what patterns emerge over long periods of time.
 
@@ -6,9 +27,9 @@
 
 I was originally inspired by one remarkable blip that appeared outside my window: a pitch-black Dodge Challenger that would noisily accelerate over the speed bump directly in front of my Brooklyn apartment at astonishingly regular intervals. Day in and day out within a few poetic minutes of midnight, this mysterious car would blast down my block loud as can be. Is anything else happening out there with such regularity that doesn’t register quite as obviously as a muscle car? This project was my attempt to find out.
 
-![Another recent attempt to passively collect a "biographical data diary"](https://urbandata.me/urbansensing/wp-content/uploads/2025/05/losssss_12fps.gif)
+![](https://urbandata.me/urbansensing/wp-content/uploads/2025/05/losssss_12fps.gif)
 
-*Pictured: Six months of movement*
+*Another recent attempt to passively collect a "biographical data diary". Pictured: Six months of movement*
 
 This system attempts to listen to a space, classify events that unfold there using machine learning, and map those events’ recurrence across time in order to reveal the rhythmic pulsations of a highly specific place. The title, “Rhythmanalysis,” is borrowed from Henri Lefebvre’s writing on periodicity. Lefebvre asserts that reading phenomena by their situation in time is a useful tool for constructing a space by uncovering emergent patterns and variations on those patterns. Also a recent source of inspiration: the [**periodic motions of the cosmos**](https://math-eaton.github.io/orbital/) invisible to the human eye but intelligible through longitudinal observation.
 
@@ -27,6 +48,7 @@ Once my database grows, the resulting time series may eventually reveal periodic
 My original plan was to situate the field recorder in my bedroom, facing the rear window, in order to temper my concerns about public surveillance. Upon self-reflection, this was more motivated by a narcissistic endeavor to seethe about the construction taking place on either side of my brownstone. Instead, I chose a street-facing position in my apartment’s office space. This offered a more compelling and complete sampling site for logging activity on my block.
 
 ![Sensor in place](https://urbandata.me/urbansensing/wp-content/uploads/2025/05/rhythmanalysis_inPlace-768x1024.jpg)
+*Sensor in place*
 
 ## **The sensor**
 
@@ -38,7 +60,11 @@ Over time, I have inherited bins of discrete electronics, both from my own hobbi
 
 *Measure zero times, solder six.*
 
-## **The computer**
+![A cheap, off-the-shelf alternative was perfectly usable.](https://urbandata.me/urbansensing/wp-content/uploads/2025/05/IMG_6907-1024x768.jpg)
+
+*A cheap, off-the-shelf alternative was perfectly usable.*
+
+## **The model**
 
 ![Top: passive collection, processing, and publishing daemons in operation on the Raspberry Pi. Bottom: cloud database schema. Placeholder columns allow for adding secondary and tertiary inferences per frame, if I choose to upgrade my hardware.](https://urbandata.me/urbansensing/wp-content/uploads/2025/05/Screenshot-2025-05-13-at-2.05.41%E2%80%AFPM-edited-scaled.png)
 
