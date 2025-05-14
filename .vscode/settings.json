@@ -1,0 +1,6 @@
+{
+    "idf.pythonInstallPath": "/usr/local/Caskroom/miniforge/base/bin/python",
+    "files.associations": {
+        "cstdint": "cpp"
+    }
+}
