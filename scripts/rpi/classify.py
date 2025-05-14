@@ -218,8 +218,16 @@ try:
                 names = labels[top_idx]
                 confs = [f"{c*100:.1f}%" for c in top_conf]
 
-                # Skip if the primary label is "Silence"
-                if names[0] == "Silence":
+                # Skip logging for excluded labels
+                excluded_classes = [
+                    "Silence",
+                    "Inside, small room",
+                    "Inside, large room or hall",
+                    "Inside, public space",
+                    "Outside, urban or manmade",
+                    "Outside, rural or natural"
+                ]
+                if names[0] in excluded_classes:
                     continue
 
                 # append highest cf labels
@@ -251,13 +259,10 @@ try:
                     "db":        float(round(db_now, 1)),
                     "c1_idx":    int(top_idx[0]) if len(top_idx) > 0 else None,
                     "c1_cf":     float(round(top_conf[0] * 100, 1)) if len(top_conf) > 0 else None,
-                    "c1_name":   names[0] if len(names) > 0 else None,
                     "c2_idx":    int(top_idx[1]) if len(top_idx) > 1 else None,
                     "c2_cf":     float(round(top_conf[1] * 100, 1)) if len(top_conf) > 1 else None,
-                    "c2_name":   names[1] if len(names) > 1 else None,
                     "c3_idx":    int(top_idx[2]) if len(top_idx) > 2 else None,
                     "c3_cf":     float(round(top_conf[2] * 100, 1)) if len(top_conf) > 2 else None,
-                    "c3_name":   names[2] if len(names) > 2 else None,
                 }
                 
                 mqtt_client.publish(topic, json.dumps(payload), qos=1)

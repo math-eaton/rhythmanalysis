@@ -134,6 +134,24 @@ svg {
   overflow: visible; /* Allow the clock to overflow its container */
 }
 
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#loadingText {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

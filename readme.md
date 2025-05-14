@@ -4,6 +4,8 @@
 
 ### Cloning to raspberry pi
 
+npm modules
+
 ### Configuration files
 
 dbconfig.json
@@ -14,6 +16,7 @@ ecosystem.config.js
 
 ### Visualizing the output
 
+npm
 api
 vite config
 timezone config

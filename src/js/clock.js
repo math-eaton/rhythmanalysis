@@ -3,9 +3,7 @@ import * as d3 from "d3";
 
 export function clockGraph(containerId, config = {}) {
   const {
-    DATA_URL = "/api/audio_logs",
-    INNER_R = 200,
-    OUTER_R = 240,
+    DATA_URL = "https://rhythmanalysis.onrender.com/api/audio_logs",
   } = config;
 
   const container = d3.select(`#${containerId}`);
@@ -92,6 +90,12 @@ export function clockGraph(containerId, config = {}) {
     function draw() {
       const t0 = tsMin;
       const t1 = tsMax;
+
+      // Calculate responsive inner and outer radii
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.2; // 10% of the smaller dimension
+      const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 20% of the smaller dimension
 
       // filter data (or take full cache)
       const data = dataCache.filter((d) => d.ts >= t0 && d.ts <= t1);
@@ -266,6 +270,11 @@ export function clockGraph(containerId, config = {}) {
         .style("margin-right", "6px")
         .style("background-color", (d) => color(d));
       legendItem.append("span").text((d) => `${d} (${classCounts.get(d)})`);
+    }
+
+    // Call the onDataReady callback after the visualization is fully rendered
+    if (typeof config.onDataReady === "function") {
+      config.onDataReady();
     }
   });
 }

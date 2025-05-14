@@ -59,13 +59,10 @@ CREATE TABLE IF NOT EXISTS audio_logs (
   db          DOUBLE PRECISION,
   c1_idx      DOUBLE PRECISION,
   c1_cf       DOUBLE PRECISION,
-  c1_name     TEXT,
   c2_idx      DOUBLE PRECISION,
   c2_cf       DOUBLE PRECISION,
-  c2_name     TEXT,
   c3_idx      DOUBLE PRECISION,
   c3_cf       DOUBLE PRECISION,
-  c3_name     TEXT,
   raw_json    JSONB          NOT NULL,
   created_at  TIMESTAMPTZ    DEFAULT NOW()
 );
@@ -74,7 +71,7 @@ CREATE TABLE IF NOT EXISTS audio_logs (
 # Prepare INSERT
 insert_sql = """
 INSERT INTO audio_logs 
-  (ts, db, c1_idx, c1_cf, c1_name, c2_idx, c2_cf, c2_name, c3_idx, c3_cf, c3_name, raw_json)
+  (ts, db, c1_idx, c1_cf, c2_idx, c2_cf, c3_idx, c3_cf, raw_json)
 VALUES %s;
 """
 
@@ -91,9 +88,9 @@ def on_message(client, userdata, msg):
     if len(buffer) >= 20 or time.time() - last_flush >= 5.0:
         args = [(
             datetime.fromtimestamp(o["ts"]),
-            o["db"], o["c1_idx"], o["c1_cf"], o["c1_name"],
-            o["c2_idx"], o["c2_cf"], o["c2_name"],
-            o["c3_idx"], o["c3_cf"], o["c3_name"],
+            o["db"], o["c1_idx"], o["c1_cf"],
+            o["c2_idx"], o["c2_cf"],
+            o["c3_idx"], o["c3_cf"],
             json.dumps(o)
         ) for o in buffer]
         psycopg2.extras.execute_values(cur, insert_sql, args)
