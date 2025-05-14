@@ -48,7 +48,7 @@ export function clockGraph(containerId, config = {}) {
       tsMax = -Infinity;
 
   // Define the time range for the last N hours for default vis
-  const inputHours = 6; 
+  const inputHours = 12; 
   const nHoursAgo = Math.floor(Date.now() / 1000) - inputHours * 60 * 60;
 
   // map yamnet indices from api to human-readable names
@@ -158,15 +158,17 @@ export function clockGraph(containerId, config = {}) {
           (v) => v.length,
           (d) => d.class
         );
-        const classes = Array.from(classCounts.keys()).sort(
-          (a, b) => classCounts.get(a) - classCounts.get(b)
-        );
+        const sortedClasses = Array.from(classCounts.entries()).sort((a, b) => a[1] - b[1]);
 
-        const color = d3.scaleOrdinal(classes, d3.schemeCategory10);
+        // drop the bottom N% least-frequently occurring classes
+        const cutoffIndex = Math.floor(sortedClasses.length * 0.33);
+        const filteredClasses = sortedClasses.slice(cutoffIndex).map(([cls]) => cls);
+
+        const color = d3.scaleOrdinal(filteredClasses, d3.schemeCategory10);
 
         const ringScale = d3
           .scaleLinear()
-          .domain([0, classes.length - 1])
+          .domain([0, filteredClasses.length - 1])
           .range([INNER_R, OUTER_R]);
 
         // background circle
@@ -176,25 +178,28 @@ export function clockGraph(containerId, config = {}) {
           .attr("cy", cy)
           .attr("r", OUTER_R)
           .style("fill", "none")
-          .style("stroke", "#aaaaaa7a");
+          .style("stroke", "#aaaaaa24");
 
         const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
 
         // draw each class ring and events
-        classes.forEach((cls, i) => {
+        filteredClasses.forEach((cls, i) => {
           const radius = ringScale(i);
           g.append("circle")
             .attr("r", radius)
             .style("fill", "none")
-            .style("stroke", "#aaaaaa7a");
+            .style("stroke", "#aaaaaa24");
+
+          let lineBuffer = 3;
 
           g.selectAll(`.line-${i}`)
             .data(data.filter((d) => d.class === cls))
             .join("line")
             .attr("x1", (d) => radius * Math.cos(angle(d.ts)))
             .attr("y1", (d) => radius * Math.sin(angle(d.ts)))
-            .attr("x2", (d) => (radius + 5) * Math.cos(angle(d.ts)))
-            .attr("y2", (d) => (radius + 5) * Math.sin(angle(d.ts)))
+            // extend the line slightly beyond the radius to make it more visible
+            .attr("x2", (d) => (radius + lineBuffer) * Math.cos(angle(d.ts)))
+            .attr("y2", (d) => (radius + lineBuffer) * Math.sin(angle(d.ts)))
             .attr("stroke", color(cls))
             .attr("stroke-width", 1.5)
             .attr("opacity", (d) => {
@@ -263,6 +268,7 @@ export function clockGraph(containerId, config = {}) {
         // legend
         legendContainer.selectAll("*").remove();
         const items = Array.from(classCounts.entries())
+          .filter(([cls]) => filteredClasses.includes(cls))
           .sort((a, b) => b[1] - a[1])
           .map(([cls, count]) => ({ name: idxToNameMap[cls] || `Unknown (${cls})`, count, cls })); 
 
