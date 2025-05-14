@@ -164,6 +164,7 @@ export function clockGraph(containerId, config = {}) {
         );
 
         const color = d3.scaleOrdinal(classes, d3.schemeCategory10);
+
         const ringScale = d3
           .scaleLinear()
           .domain([0, classes.length - 1])
@@ -264,7 +265,7 @@ export function clockGraph(containerId, config = {}) {
         legendContainer.selectAll("*").remove();
         const items = Array.from(classCounts.entries())
           .sort((a, b) => b[1] - a[1])
-          .map(([cls, count]) => ({ name: idxToNameMap[cls] || `Unknown (${cls})`, count })); // Use human-readable names
+          .map(([cls, count]) => ({ name: idxToNameMap[cls] || `Unknown (${cls})`, count, cls })); 
 
         const legendItem = legendContainer
           .selectAll(".item")
@@ -279,7 +280,7 @@ export function clockGraph(containerId, config = {}) {
           .style("width", "12px")
           .style("height", "12px")
           .style("margin-right", "6px")
-          .style("background-color", (d) => color(d.name));
+          .style("background-color", (d) => color(d.cls)); 
 
         legendItem.append("span").text((d) => `${d.name} (${d.count})`); // Display human-readable names in the legend
       }
