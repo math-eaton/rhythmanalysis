@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: 'web', 
+  // root: 'web', 
+  // base: '/rhythmanalysis/',
   server: {
     host: true, // Allow network access
-    // port: 5173,
+    port: 5173,
   },
 });

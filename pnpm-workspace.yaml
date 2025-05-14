@@ -1,5 +1,0 @@
-packages:
-  - web/**
-  - '!**/test/**'
-ignoredBuiltDependencies:
-  - esbuild
