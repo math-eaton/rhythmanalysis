@@ -12,7 +12,7 @@ app.get("/api/audio_logs", async (req, res) => {
     const { rows } = await pool.query(`
             SELECT
             EXTRACT(EPOCH FROM ts)     AS ts,
-            c1_name                    AS cl,
+            c1_idx                     AS cl,
             c1_cf                      AS cf, 
             db                         AS dB 
             FROM audio_logs
