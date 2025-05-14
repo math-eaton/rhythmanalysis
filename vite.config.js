@@ -1,13 +1,13 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vite'
 
 export default defineConfig({
-  // root: 'web', 
-  // base: '/rhythmanalysis/',
+  base: '/rhythmanalysis/',
+
   build: {
     outDir: 'dist'
   },
   server: {
-    host: true, // Allow network access
+    host: true,
     port: 5173,
   },
-});
+})
