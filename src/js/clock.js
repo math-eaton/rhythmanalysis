@@ -167,7 +167,8 @@ export function clockGraph(containerId, config = {}) {
         const color = d3.scaleOrdinal(filteredClasses, d3.schemeCategory10);
 
         const ringScale = d3
-          .scaleLinear()
+          .scalePow()
+          .exponent(2) // Use an exponent of 2 for exponential scaling
           .domain([0, filteredClasses.length - 1])
           .range([INNER_R, OUTER_R]);
 
@@ -190,13 +191,13 @@ export function clockGraph(containerId, config = {}) {
             .style("fill", "none")
             .style("stroke", "#aaaaaa24");
 
-          let lineBuffer = 3;
+          let lineBuffer = 1.5;
 
           g.selectAll(`.line-${i}`)
             .data(data.filter((d) => d.class === cls))
             .join("line")
-            .attr("x1", (d) => radius * Math.cos(angle(d.ts)))
-            .attr("y1", (d) => radius * Math.sin(angle(d.ts)))
+            .attr("x1", (d) => (radius - lineBuffer) * Math.cos(angle(d.ts)))
+            .attr("y1", (d) => (radius - lineBuffer) * Math.sin(angle(d.ts)))
             // extend the line slightly beyond the radius to make it more visible
             .attr("x2", (d) => (radius + lineBuffer) * Math.cos(angle(d.ts)))
             .attr("y2", (d) => (radius + lineBuffer) * Math.sin(angle(d.ts)))
