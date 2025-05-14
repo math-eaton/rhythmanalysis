@@ -1,4 +1,3 @@
-// src/js/clockGraph.js
 import * as d3 from "d3";
 
 export function clockGraph(containerId, config = {}) {
@@ -49,7 +48,7 @@ export function clockGraph(containerId, config = {}) {
       tsMax = -Infinity;
 
   // Define the time range for the last N hours for default vis
-  const inputHours = 4; 
+  const inputHours = 6; 
   const nHoursAgo = Math.floor(Date.now() / 1000) - inputHours * 60 * 60;
 
   // map yamnet indices from api to human-readable names
@@ -103,8 +102,8 @@ export function clockGraph(containerId, config = {}) {
         // Calculate responsive inner and outer radii
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
-        const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.2; // 10% of the smaller dimension
-        const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 20% of the smaller dimension
+        const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025; // 2.5% of the smaller dimension
+        const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 45% of the smaller dimension
 
         // filter data (or take full cache)
         const data = dataCache.filter((d) => d.ts >= t0 && d.ts <= t1);
@@ -114,7 +113,7 @@ export function clockGraph(containerId, config = {}) {
         }
 
         // SVG sizing
-        const w = window.innerWidth * 0.75;
+        const w = window.innerWidth * 0.85;
         const h = window.innerHeight;
         const svg = container
           .select("svg")
@@ -194,8 +193,8 @@ export function clockGraph(containerId, config = {}) {
             .join("line")
             .attr("x1", (d) => radius * Math.cos(angle(d.ts)))
             .attr("y1", (d) => radius * Math.sin(angle(d.ts)))
-            .attr("x2", (d) => (radius + 10) * Math.cos(angle(d.ts)))
-            .attr("y2", (d) => (radius + 10) * Math.sin(angle(d.ts)))
+            .attr("x2", (d) => (radius + 5) * Math.cos(angle(d.ts)))
+            .attr("y2", (d) => (radius + 5) * Math.sin(angle(d.ts)))
             .attr("stroke", color(cls))
             .attr("stroke-width", 1.5)
             .attr("opacity", (d) => {

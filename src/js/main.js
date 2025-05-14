@@ -1,4 +1,3 @@
-// src/js/main.js
 import { clockGraph } from "./clock.js";
 
 // loading overlay
