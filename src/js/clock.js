@@ -2,12 +2,19 @@ import * as d3 from "d3";
 
 export function clockGraph(containerId, config = {}) {
   const inputHours = config.hours || 24;
+
+  // calculate the most recent local midnight timestamp
+  const now = new Date();
+  const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  now.setHours(0, 0, 0, 0); // set to local midnight
+  const midnightLocal = Math.floor(now.getTime() / 1000);
+  // Fetch enough data to cover from previous midnight to now (24h + time since midnight)
+  const fetchHours = 24 + secondsSinceMidnight / 3600;
+
+  // Use hours param to fetch enough data, fallback to config.dataUrl if provided
   const DATA_URL =
     config.dataUrl ||
-    `https://rhythmanalysis.onrender.com/api/audio_logs?hours=${inputHours}`;
-
-  // Define the time range for the last N hours for default vis
-  const nHoursAgo = Math.floor(Date.now() / 1000) - inputHours * 60 * 60;
+    `https://rhythmanalysis.onrender.com/api/audio_logs?hours=${fetchHours}`;
 
   const container = d3.select(`#${containerId}`);
   container.style("display", "flex").style("align-items", "flex-start");
@@ -121,8 +128,12 @@ export function clockGraph(containerId, config = {}) {
         svg.selectAll("*").remove();
         const cx = w / 2, cy = h / 2;
 
-        // Add a label in the top left corner showing the date of data visualization
-        const visualizationDate = new Date(tsMin * 1000).toISOString().split('T')[0]; // Extract YYYY-MM-DD
+        // Add a label in the top left corner showing the date or date range of data visualization
+        const minDateStr = new Date(tsMin * 1000).toISOString().split('T')[0];
+        const maxDateStr = new Date(tsMax * 1000).toISOString().split('T')[0];
+        const visualizationDate = (minDateStr === maxDateStr)
+          ? minDateStr
+          : `${minDateStr} - ${maxDateStr}`;
 
         const topLeftTextX = 20; // X position for the label
         const topLeftTextY = 20; // Y position for the label
@@ -145,10 +156,15 @@ export function clockGraph(containerId, config = {}) {
           .attr("height", topLeftBBox.height + 4)
           .style("fill", "black");
 
-        // map [t0…t1] → [–π/2…3π/2]
+        // Find the timestamp for midnight (00:00) on the earliest date in the data
+        const minDate = new Date(tsMin * 1000);
+        minDate.setHours(0, 0, 0, 0); // Set to midnight
+        const midnightTs = Math.floor(minDate.getTime() / 1000);
+
+        // map [t0…t1] → [–π/2…3π/2], but rotate so that midnight is at –π/2 (top)
         const angle = d3
           .scaleLinear()
-          .domain([t0, t1])
+          .domain([midnightTs, midnightTs + 24 * 60 * 60])
           .range([-Math.PI / 2, (3 * Math.PI) / 2]);
 
         // class counts
@@ -235,8 +251,10 @@ export function clockGraph(containerId, config = {}) {
           .domain(angle.range())
           .range(angle.domain());
 
-        labelPos.forEach(({ angle: a }) => {
-          const tsMs = invAngle(a) * 1000;
+        labelPos.forEach(({ angle: a }, idx) => {
+          // For 12, 3, 6, 9 o'clock, get the corresponding timestamp in the 24h cycle
+          const ts = invAngle(a);
+          const tsMs = ts * 1000;
           const txt = new Date(tsMs).toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",

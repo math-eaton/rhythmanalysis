@@ -9,21 +9,39 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 app.get("/api/audio_logs", async (req, res) => {
   try {
-    // allow client to override, but default to 24 hours
-    const hours = parseInt(req.query.hours, 10) || 24;
+    // Support start/end (UNIX seconds) or fallback to hours
+    const start = req.query.start ? parseInt(req.query.start, 10) : null;
+    const end = req.query.end ? parseInt(req.query.end, 10) : null;
+    let text, params;
 
-    const text = `
-      SELECT
-        EXTRACT(EPOCH FROM ts)     AS ts,
-        c1_idx                     AS cl,
-        c1_cf                      AS cf,
-        db                         AS dB
-      FROM audio_logs
-      WHERE ts >= NOW() - $1 * INTERVAL '1 hour'
-      ORDER BY ts ASC
-    `;
+    if (start && end) {
+      text = `
+        SELECT
+          EXTRACT(EPOCH FROM ts)     AS ts,
+          c1_idx                     AS cl,
+          c1_cf                      AS cf,
+          db                         AS dB
+        FROM audio_logs
+        WHERE ts >= to_timestamp($1) AND ts < to_timestamp($2)
+        ORDER BY ts ASC
+      `;
+      params = [start, end];
+    } else {
+      const hours = parseInt(req.query.hours, 10) || 24;
+      text = `
+        SELECT
+          EXTRACT(EPOCH FROM ts)     AS ts,
+          c1_idx                     AS cl,
+          c1_cf                      AS cf,
+          db                         AS dB
+        FROM audio_logs
+        WHERE ts >= NOW() - $1 * INTERVAL '1 hour'
+        ORDER BY ts ASC
+      `;
+      params = [hours];
+    }
 
-    const { rows } = await pool.query(text, [hours]);
+    const { rows } = await pool.query(text, params);
     res.json(rows);
   } catch (err) {
     console.error(err);
