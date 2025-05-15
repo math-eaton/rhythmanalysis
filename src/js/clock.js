@@ -1,9 +1,13 @@
 import * as d3 from "d3";
 
 export function clockGraph(containerId, config = {}) {
-  const {
-    DATA_URL = "https://rhythmanalysis.onrender.com/api/audio_logs",
-  } = config;
+  const inputHours = config.hours || 24;
+  const DATA_URL =
+    config.dataUrl ||
+    `https://rhythmanalysis.onrender.com/api/audio_logs?hours=${inputHours}`;
+
+  // Define the time range for the last N hours for default vis
+  const nHoursAgo = Math.floor(Date.now() / 1000) - inputHours * 60 * 60;
 
   const container = d3.select(`#${containerId}`);
   container.style("display", "flex").style("align-items", "flex-start");
@@ -47,15 +51,11 @@ export function clockGraph(containerId, config = {}) {
   let tsMin = Infinity,
       tsMax = -Infinity;
 
-  // Define the time range for the last N hours for default vis
-  const inputHours = 12; 
-  const nHoursAgo = Math.floor(Date.now() / 1000) - inputHours * 60 * 60;
-
   // map yamnet indices from api to human-readable names
-  const MAPPING_URL = "https://raw.githubusercontent.com/math-eaton/rhythmanalysis/refs/heads/main/scripts/models/yamnet/yamnet_class_map.csv";
-
+  const CLASS_MAP = "https://raw.githubusercontent.com/math-eaton/rhythmanalysis/main/scripts/models/yamnet/yamnet_class_map.csv"
+;
   // fetch the mapping csv
-  d3.csv(MAPPING_URL).then((mappingData) => {
+  d3.csv(CLASS_MAP).then((mappingData) => {
     const idxToNameMap = {};
     mappingData.forEach((row) => {
       idxToNameMap[row.index] = row.display_name; // use "index" and "display_name" columns
@@ -78,7 +78,6 @@ export function clockGraph(containerId, config = {}) {
             name: idxToNameMap[d.cl] || `Unknown (${d.cl})`, // Map idx to name dynamically
           };
         })
-        .filter((d) => d.ts >= nHoursAgo) // Filter for the last six hours
         .sort((a, b) => a.ts - b.ts);
 
       if (!dataCache.length) {
@@ -161,7 +160,7 @@ export function clockGraph(containerId, config = {}) {
         const sortedClasses = Array.from(classCounts.entries()).sort((a, b) => a[1] - b[1]);
 
         // drop the bottom N% least-frequently occurring classes
-        const cutoffIndex = Math.floor(sortedClasses.length * 0.33);
+        const cutoffIndex = Math.floor(sortedClasses.length * 0.50);
         const filteredClasses = sortedClasses.slice(cutoffIndex).map(([cls]) => cls);
 
         const color = d3.scaleOrdinal(filteredClasses, d3.schemeCategory10);
