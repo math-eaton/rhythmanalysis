@@ -1,15 +1,15 @@
 import * as d3 from "d3";
 
 export function clockGraph(containerId, config = {}) {
-  const inputHours = config.hours || 24;
+  const inputHours = config.hours || 24; // todo fix for dynamic ranges - only works for 24h rn
 
   // calculate the most recent local midnight timestamp
   const now = new Date();
   const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-  now.setHours(0, 0, 0, 0); // set to local midnight
-  const midnightLocal = Math.floor(now.getTime() / 1000);
-  // Fetch enough data to cover from previous midnight to now (24h + time since midnight)
-  const fetchHours = 24 + secondsSinceMidnight / 3600;
+  // now.setHours(0, 0, 0, 0); // set to local midnight
+  // const midnightLocal = Math.floor(now.getTime() / 1000);
+  // Fetch enough data to cover from previous midnight to now (input param + time since midnight)
+  const fetchHours = inputHours + secondsSinceMidnight / 3600;
 
   // Use hours param to fetch enough data, fallback to config.dataUrl if provided
   const DATA_URL =
@@ -176,7 +176,7 @@ export function clockGraph(containerId, config = {}) {
         const sortedClasses = Array.from(classCounts.entries()).sort((a, b) => a[1] - b[1]);
 
         // drop the bottom N% least-frequently occurring classes
-        const cutoffIndex = Math.floor(sortedClasses.length * 0.50);
+        const cutoffIndex = Math.floor(sortedClasses.length * 0.666);
         const filteredClasses = sortedClasses.slice(cutoffIndex).map(([cls]) => cls);
 
         const color = d3.scaleOrdinal(filteredClasses, d3.schemeCategory10);
@@ -197,6 +197,36 @@ export function clockGraph(containerId, config = {}) {
           .style("stroke", "#aaaaaa24");
 
         const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
+
+        // draw radial at current time
+        let dateline = null;
+        function drawDateline() {
+          // rm previous dateline if it exists
+          if (dateline) dateline.remove();
+          // current time in NY
+          const localTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+          const secondsSinceMidnightNY = localTime.getHours() * 3600 + localTime.getMinutes() * 60 + localTime.getSeconds();
+          // to tick based on input time range
+          const hoursVisible = config.hours || 24;
+          const fractionOfRange = secondsSinceMidnightNY / (hoursVisible * 3600);
+          // angle: start at -π/2, sweep 2π * (hoursVisible/24) for the visible range
+          const angleRange = 2 * Math.PI * (hoursVisible / 24);
+          const dateLineAngle = -Math.PI / 2 + fractionOfRange * angleRange;
+          dateline = svg.append("line")
+            .attr("x1", cx + INNER_R * Math.cos(dateLineAngle))
+            .attr("y1", cy + INNER_R * Math.sin(dateLineAngle))
+            .attr("x2", cx + OUTER_R * Math.cos(dateLineAngle))
+            .attr("y2", cy + OUTER_R * Math.sin(dateLineAngle))
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 0.333)
+        }
+        drawDateline();
+        // tick every N seconds
+        const tickInterval = 3000; // db update time
+        if (window._clockDatelineInterval) clearInterval(window._clockDatelineInterval);
+        window._clockDatelineInterval = setInterval(() => {
+          drawDateline();
+        }, tickInterval);
 
         // draw each class ring and events
         filteredClasses.forEach((cls, i) => {

@@ -23,6 +23,30 @@ timezone config
 
 ---
 
+## todo:
+
+1. Visualization 
+    - event resolution
+        - quantize consecutive events within a threshold to arcs rather than individual svg
+        - map events onto coarser classes for legend display
+    - user interaction
+        - better tooltips. focus class on hover
+        - zoom/pan
+        - legend toggles
+    - standardize color scheme - currently remaps classes on page load
+    - live monitoring. visualize as new records are added
+    - db values currently unused
+    - time zones: should visualize relative to the data collector timezone. database in UTC
+
+2. Database
+    - quickly approaching free storage limits. instead of paid cloud service, host postgreSQL / api locally on home server
+
+3. Model
+    - lots of noise in yamnet ... fine-tunable alternatives?
+
+
+
+
 ## **Project log**
 
 “Rhythmanalysis” was envisioned as an end-to-end method to implement sensing, interpreting, and logging of environment data as a means of diaristic investigation of a single, hyper-specific spatial context. By situating a sensor in a single fixed position, I wanted to investigate the banal but locally meaningful events that, as a resident of that place, would otherwise wash over me as a series of unremarkable blips, evaporating from my working memory. In effect, I sought to register and log the tidal movements of a place by translating a stream of sound into discrete lexical taxonomies, graphing them to see what patterns emerge over long periods of time.
