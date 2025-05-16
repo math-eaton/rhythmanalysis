@@ -59,7 +59,7 @@ export function clockGraph(containerId, config = {}) {
       tsMax = -Infinity;
 
   // map yamnet indices from api to human-readable names
-  const CLASS_MAP_API = (config.classMapUrl || "/api/yamnet_class_map");
+  const CLASS_MAP_API = (config.classMapUrl || "https://rhythmanalysis.onrender.com/api/yamnet_class_map");
   // fetch the mapping json from the API
   d3.json(CLASS_MAP_API).then((mappingData) => {
     const idxToNameMap = {};

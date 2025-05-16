@@ -3,7 +3,10 @@ import cors from "cors";
 import { Pool } from "pg";
 import fs from "fs";
 import path from "path";
-import csvParse from "csv-parse";
+import { parse as csvParse } from "csv-parse";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(cors());
