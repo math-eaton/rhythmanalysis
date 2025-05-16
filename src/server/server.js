@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import { Pool } from "pg";
+import fs from "fs";
+import path from "path";
+import csvParse from "csv-parse";
 
 const app = express();
 app.use(cors());
@@ -58,6 +61,23 @@ app.get("/api/audio_logs/count", async (req, res) => {
     `);
     res.json(rows[0]);
   });
-  
+
+// Serve yamnet_class_map.csv as JSON
+app.get("/api/yamnet_class_map", async (req, res) => {
+  const csvPath = path.join(__dirname, "yamnet_class_map.csv");
+  try {
+    const csvData = fs.readFileSync(csvPath, "utf8");
+    csvParse(csvData, { columns: true }, (err, records) => {
+      if (err) {
+        res.status(500).json({ error: "Failed to parse CSV" });
+      } else {
+        res.json(records);
+      }
+    });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to read CSV" });
+  }
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on :${port}`));

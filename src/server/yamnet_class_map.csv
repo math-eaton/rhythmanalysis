@@ -1,0 +1,401 @@
+index,display_name
+0,Speech
+1,Child speech, kid speaking
+2,Conversation
+3,Narration, monologue
+4,Babbling
+5,Speech synthesizer
+6,Shout
+7,Bellow
+8,Whoop
+9,Yell
+10,Battle cry
+11,Children shouting
+12,Screaming
+13,Whispering
+14,Laughter
+15,Baby laughter
+16,Giggle
+17,Snicker
+18,Belly laugh
+19,Chuckle, chortle
+20,Crying, sobbing
+21,Baby cry, infant cry
+22,Whimper
+23,Wail, moan
+24,Sigh
+25,Singing
+26,Choir
+27,Yodeling
+28,Chant
+29,Mantra
+30,Child singing
+31,Group singing
+32,Rap
+33,Humming
+34,Groan
+35,Grunt
+36,Whistling
+37,Breath
+38,Wheeze
+39,Snoring
+40,Gasp
+41,Pant
+42,Sniff
+43,Cough
+44,Throat clearing
+45,Sneeze
+46,Snort
+47,Hiccup
+48,Burp, eructation
+49,Humming
+50,Cheering
+51,Applause
+52,Chatter
+53,Cheering children
+54,Children playing
+55,Animal
+56,Domestic animals, pets
+57,Dog
+58,Bark
+59,Howl
+60,Whimper (dog)
+61,Cat
+62,Meow
+63,Purr
+64,Horse
+65,Clip-clop
+66,Neigh, whinny
+67,Cattle, bovinae
+68,Moo
+69,Pig
+70,Oink
+71,Goat
+72,Bleat
+73,Sheep
+74,Bleat
+75,Fowl
+76,Chicken, rooster
+77,Cluck
+78,Crow
+79,Turkey
+80,Gobble
+81,Duck
+82,Quack
+83,Goose
+84,Honk
+85,Wild animals
+86,Roar
+87,Growl
+88,Snarl
+89,Squeak
+90,Mouse
+91,Rat
+92,Hamster
+93,Guinea pig
+94,Insect
+95,Cricket
+96,Cicada
+97,Beetle
+98,Fly, housefly
+99,Bee, wasp, etc.
+100,Frog
+101,Croak
+102,Snake
+103,Hiss
+104,Whale vocalization
+105,Click
+106,Dolphin
+107,Seal
+108,Sea lion
+109,Turkey
+110,Chicken, rooster
+111,Cluck
+112,Crow
+113,Turkey
+114,Gobble
+115,Duck
+116,Quack
+117,Goose
+118,Honk
+119,Wild animals
+120,Roar
+121,Growl
+122,Snarl
+123,Squeak
+124,Mouse
+125,Rat
+126,Hamster
+127,Guinea pig
+128,Insect
+129,Cricket
+130,Cicada
+131,Beetle
+132,Fly, housefly
+133,Bee, wasp, etc.
+134,Frog
+135,Croak
+136,Snake
+137,Hiss
+138,Whale vocalization
+139,Click
+140,Dolphin
+141,Seal
+142,Sea lion
+143,Turkey
+144,Chicken, rooster
+145,Cluck
+146,Crow
+147,Turkey
+148,Gobble
+149,Duck
+150,Quack
+151,Goose
+152,Honk
+153,Wild animals
+154,Roar
+155,Growl
+156,Snarl
+157,Squeak
+158,Mouse
+159,Rat
+160,Hamster
+161,Guinea pig
+162,Insect
+163,Cricket
+164,Cicada
+165,Beetle
+166,Fly, housefly
+167,Bee, wasp, etc.
+168,Frog
+169,Croak
+170,Snake
+171,Hiss
+172,Whale vocalization
+173,Click
+174,Dolphin
+175,Seal
+176,Sea lion
+177,Turkey
+178,Chicken, rooster
+179,Cluck
+180,Crow
+181,Turkey
+182,Gobble
+183,Duck
+184,Quack
+185,Goose
+186,Honk
+187,Wild animals
+188,Roar
+189,Growl
+190,Snarl
+191,Squeak
+192,Mouse
+193,Rat
+194,Hamster
+195,Guinea pig
+196,Insect
+197,Cricket
+198,Cicada
+199,Beetle
+200,Fly, housefly
+201,Bee, wasp, etc.
+202,Frog
+203,Croak
+204,Snake
+205,Hiss
+206,Whale vocalization
+207,Click
+208,Dolphin
+209,Seal
+210,Sea lion
+211,Turkey
+212,Chicken, rooster
+213,Cluck
+214,Crow
+215,Turkey
+216,Gobble
+217,Duck
+218,Quack
+219,Goose
+220,Honk
+221,Wild animals
+222,Roar
+223,Growl
+224,Snarl
+225,Squeak
+226,Mouse
+227,Rat
+228,Hamster
+229,Guinea pig
+230,Insect
+231,Cricket
+232,Cicada
+233,Beetle
+234,Fly, housefly
+235,Bee, wasp, etc.
+236,Frog
+237,Croak
+238,Snake
+239,Hiss
+240,Whale vocalization
+241,Click
+242,Dolphin
+243,Seal
+244,Sea lion
+245,Turkey
+246,Chicken, rooster
+247,Cluck
+248,Crow
+249,Turkey
+250,Gobble
+251,Duck
+252,Quack
+253,Goose
+254,Honk
+255,Wild animals
+256,Roar
+257,Growl
+258,Snarl
+259,Squeak
+260,Mouse
+261,Rat
+262,Hamster
+263,Guinea pig
+264,Insect
+265,Cricket
+266,Cicada
+267,Beetle
+268,Fly, housefly
+269,Bee, wasp, etc.
+270,Frog
+271,Croak
+272,Snake
+273,Hiss
+274,Whale vocalization
+275,Click
+276,Dolphin
+277,Seal
+278,Sea lion
+279,Turkey
+280,Chicken, rooster
+281,Cluck
+282,Crow
+283,Turkey
+284,Gobble
+285,Duck
+286,Quack
+287,Goose
+288,Honk
+289,Wild animals
+290,Roar
+291,Growl
+292,Snarl
+293,Squeak
+294,Mouse
+295,Rat
+296,Hamster
+297,Guinea pig
+298,Insect
+299,Cricket
+300,Cicada
+301,Beetle
+302,Fly, housefly
+303,Bee, wasp, etc.
+304,Frog
+305,Croak
+306,Snake
+307,Hiss
+308,Whale vocalization
+309,Click
+310,Dolphin
+311,Seal
+312,Sea lion
+313,Turkey
+314,Chicken, rooster
+315,Cluck
+316,Crow
+317,Turkey
+318,Gobble
+319,Duck
+320,Quack
+321,Goose
+322,Honk
+323,Wild animals
+324,Roar
+325,Growl
+326,Snarl
+327,Squeak
+328,Mouse
+329,Rat
+330,Hamster
+331,Guinea pig
+332,Insect
+333,Cricket
+334,Cicada
+335,Beetle
+336,Fly, housefly
+337,Bee, wasp, etc.
+338,Frog
+339,Croak
+340,Snake
+341,Hiss
+342,Whale vocalization
+343,Click
+344,Dolphin
+345,Seal
+346,Sea lion
+347,Turkey
+348,Chicken, rooster
+349,Cluck
+350,Crow
+351,Turkey
+352,Gobble
+353,Duck
+354,Quack
+355,Goose
+356,Honk
+357,Wild animals
+358,Roar
+359,Growl
+360,Snarl
+361,Squeak
+362,Mouse
+363,Rat
+364,Hamster
+365,Guinea pig
+366,Insect
+367,Cricket
+368,Cicada
+369,Beetle
+370,Fly, housefly
+371,Bee, wasp, etc.
+372,Frog
+373,Croak
+374,Snake
+375,Hiss
+376,Whale vocalization
+377,Click
+378,Dolphin
+379,Seal
+380,Sea lion
+381,Turkey
+382,Chicken, rooster
+383,Cluck
+384,Crow
+385,Turkey
+386,Gobble
+387,Duck
+388,Quack
+389,Goose
+390,Honk
+391,Wild animals
+392,Roar
+393,Growl
+394,Snarl
+395,Squeak
+396,Mouse
+397,Rat
+398,Hamster
+399,Guinea pig

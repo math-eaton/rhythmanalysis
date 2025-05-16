@@ -59,10 +59,9 @@ export function clockGraph(containerId, config = {}) {
       tsMax = -Infinity;
 
   // map yamnet indices from api to human-readable names
-  const CLASS_MAP = "https://raw.githubusercontent.com/math-eaton/rhythmanalysis/main/scripts/models/yamnet/yamnet_class_map.csv"
-;
-  // fetch the mapping csv
-  d3.csv(CLASS_MAP).then((mappingData) => {
+  const CLASS_MAP_API = (config.classMapUrl || "/api/yamnet_class_map");
+  // fetch the mapping json from the API
+  d3.json(CLASS_MAP_API).then((mappingData) => {
     const idxToNameMap = {};
     mappingData.forEach((row) => {
       idxToNameMap[row.index] = row.display_name; // use "index" and "display_name" columns
@@ -200,6 +199,7 @@ export function clockGraph(containerId, config = {}) {
 
         // draw radial at current time
         let dateline = null;
+        let currentDatelineAngle = null; // Store the dateline angle for opacity calculation
         function drawDateline() {
           // rm previous dateline if it exists
           if (dateline) dateline.remove();
@@ -212,6 +212,7 @@ export function clockGraph(containerId, config = {}) {
           // angle: start at -π/2, sweep 2π * (hoursVisible/24) for the visible range
           const angleRange = 2 * Math.PI * (hoursVisible / 24);
           const dateLineAngle = -Math.PI / 2 + fractionOfRange * angleRange;
+          currentDatelineAngle = dateLineAngle; // Save for use in opacity calculation
           dateline = svg.append("line")
             .attr("x1", cx + INNER_R * Math.cos(dateLineAngle))
             .attr("y1", cy + INNER_R * Math.sin(dateLineAngle))
@@ -228,7 +229,7 @@ export function clockGraph(containerId, config = {}) {
           drawDateline();
         }, tickInterval);
 
-        // draw each class ring and events
+        // draw each class ring
         filteredClasses.forEach((cls, i) => {
           const radius = ringScale(i);
           g.append("circle")
@@ -236,8 +237,8 @@ export function clockGraph(containerId, config = {}) {
             .style("fill", "none")
             .style("stroke", "#aaaaaa24");
 
+          // draw classified events
           let lineBuffer = 1.5;
-
           g.selectAll(`.line-${i}`)
             .data(data.filter((d) => d.class === cls))
             .join("line")
@@ -249,8 +250,19 @@ export function clockGraph(containerId, config = {}) {
             .attr("stroke", color(cls))
             .attr("stroke-width", 1.5)
             .attr("opacity", (d) => {
+              // Fade from 1.0 (realtime, near dateline) to 0.5 (oldest), exponential scaling
+              if (currentDatelineAngle === null) return 1.0;
+              const eventAngle = angle(d.ts);
+              // Normalize angular distance to [0, 1] along the circle
+              let delta = (currentDatelineAngle - eventAngle) % (2 * Math.PI);
+              if (delta < 0) delta += 2 * Math.PI;
+              const norm = delta / (2 * Math.PI * (config.hours || 24) / 24); // adjust for visible range
+              // Exponential fade: opacity = 0.5 + 0.5 * Math.exp(-3 * norm)
+              // (steepness can be tuned)
+              const opacity = 0.5 + 0.5 * Math.exp(-3 * norm);
+              // Optionally, modulate by cf as before:
               const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);
-              return cfScale(d.cf || 0);
+              return opacity * cfScale(d.cf || 0);
             })
             .on("mouseover", (event, d) => {
               const tsMs = d.ts * 1000;
@@ -344,6 +356,6 @@ export function clockGraph(containerId, config = {}) {
       }
     });
   }).catch((error) => {
-    console.error("Failed to load the mapping CSV:", error);
+    console.error("Failed to load the mapping JSON:", error);
   });
 }
