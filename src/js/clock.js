@@ -11,10 +11,10 @@ export function clockGraph(containerId, config = {}) {
   // Fetch enough data to cover from previous midnight to now (input param + time since midnight)
   const fetchHours = inputHours + secondsSinceMidnight / 3600;
 
-  // Use hours param to fetch enough data, fallback to config.dataUrl if provided
-  const DATA_URL =
-    config.dataUrl ||
-    `https://rhythmanalysis.onrender.com/api/audio_logs?hours=${fetchHours}`;
+  // Consolidate API endpoints at the top for easier config
+  const API_BASE_URL = config.apiBaseUrl || "https://rhythmanalysis.onrender.com/api";
+  const DATA_URL = config.dataUrl || `${API_BASE_URL}/audio_logs?hours=${fetchHours}`;
+  const CLASS_MAP_API = config.classMapUrl || `${API_BASE_URL}/yamnet_class_map`;
 
   const container = d3.select(`#${containerId}`);
   container.style("display", "flex").style("align-items", "flex-start");
@@ -59,7 +59,6 @@ export function clockGraph(containerId, config = {}) {
       tsMax = -Infinity;
 
   // map yamnet indices from api to human-readable names
-  const CLASS_MAP_API = (config.classMapUrl || "https://rhythmanalysis.onrender.com/api/yamnet_class_map");
   // fetch the mapping json from the API
   d3.json(CLASS_MAP_API).then((mappingData) => {
     const idxToNameMap = {};
@@ -197,6 +196,19 @@ export function clockGraph(containerId, config = {}) {
 
         const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
 
+        function computeOpacity(d, currentDatelineAngle) {
+          if (currentDatelineAngle === null) return 1.0;
+          const eventAngle = angle(d.ts);
+          let delta = (currentDatelineAngle - eventAngle) % (2 * Math.PI);
+          if (delta < 0) delta += 2 * Math.PI;
+          const norm = delta / (2 * Math.PI * (config.hours || 24) / 24); // [0,1]
+          // linear fade from newest to oldest timestamps
+          const minOpacity = 0.33;
+          const opacity = 1 - (1 - minOpacity) * norm;
+          const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);
+          return opacity * cfScale(d.cf || 0);
+        }
+
         // draw radial at current time
         let dateline = null;
         let currentDatelineAngle = null; // Store the dateline angle for opacity calculation
@@ -219,11 +231,15 @@ export function clockGraph(containerId, config = {}) {
             .attr("x2", cx + OUTER_R * Math.cos(dateLineAngle))
             .attr("y2", cy + OUTER_R * Math.sin(dateLineAngle))
             .attr("stroke", "#fff")
-            .attr("stroke-width", 0.333)
+            .attr("stroke-width", 0.333);
+          // Update opacity of all event lines to match new dateline position
+          g.selectAll("line.event-line").attr("opacity", function(d) {
+            return computeOpacity(d, currentDatelineAngle);
+          });
         }
         drawDateline();
         // tick every N seconds
-        const tickInterval = 3000; // db update time
+        const tickInterval = 100000; // db update time - one minute in ms
         if (window._clockDatelineInterval) clearInterval(window._clockDatelineInterval);
         window._clockDatelineInterval = setInterval(() => {
           drawDateline();
@@ -242,28 +258,15 @@ export function clockGraph(containerId, config = {}) {
           g.selectAll(`.line-${i}`)
             .data(data.filter((d) => d.class === cls))
             .join("line")
+            .attr("class", `line-${i} event-line`)
+            // extend the tickmark beyond the radius with a buffer to make it more visible
             .attr("x1", (d) => (radius - lineBuffer) * Math.cos(angle(d.ts)))
             .attr("y1", (d) => (radius - lineBuffer) * Math.sin(angle(d.ts)))
-            // extend the line slightly beyond the radius to make it more visible
             .attr("x2", (d) => (radius + lineBuffer) * Math.cos(angle(d.ts)))
             .attr("y2", (d) => (radius + lineBuffer) * Math.sin(angle(d.ts)))
             .attr("stroke", color(cls))
             .attr("stroke-width", 1.5)
-            .attr("opacity", (d) => {
-              // Fade from 1.0 (realtime, near dateline) to 0.5 (oldest), exponential scaling
-              if (currentDatelineAngle === null) return 1.0;
-              const eventAngle = angle(d.ts);
-              // Normalize angular distance to [0, 1] along the circle
-              let delta = (currentDatelineAngle - eventAngle) % (2 * Math.PI);
-              if (delta < 0) delta += 2 * Math.PI;
-              const norm = delta / (2 * Math.PI * (config.hours || 24) / 24); // adjust for visible range
-              // Exponential fade: opacity = 0.5 + 0.5 * Math.exp(-3 * norm)
-              // (steepness can be tuned)
-              const opacity = 0.5 + 0.5 * Math.exp(-3 * norm);
-              // Optionally, modulate by cf as before:
-              const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);
-              return opacity * cfScale(d.cf || 0);
-            })
+            .attr("opacity", (d) => computeOpacity(d, currentDatelineAngle))
             .on("mouseover", (event, d) => {
               const tsMs = d.ts * 1000;
               const label = new Date(tsMs).toLocaleString("en-US", {
