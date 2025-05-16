@@ -127,8 +127,8 @@ export function clockGraph(containerId, config = {}) {
         const cx = w / 2, cy = h / 2;
 
         // Add a label in the top left corner showing the date or date range of data visualization
-        const minDateStr = new Date(tsMin * 1000).toISOString().split('T')[0];
-        const maxDateStr = new Date(tsMax * 1000).toISOString().split('T')[0];
+        const minDateStr = new Date(tsMin * 1000).toDateString();
+const maxDateStr = new Date(tsMax * 1000).toDateString();
         const visualizationDate = (minDateStr === maxDateStr)
           ? minDateStr
           : `${minDateStr} - ${maxDateStr}`;
@@ -141,8 +141,8 @@ export function clockGraph(containerId, config = {}) {
           .attr("x", topLeftTextX)
           .attr("y", topLeftTextY)
           .attr("text-anchor", "start")
-          .attr("alignment-baseline", "hanging")
-          .style("font-size", "10px")
+          .attr("dominant-baseline", "middle") // vertical centering
+          .style("font-size", "0.75rem") // responsive font size
           .style("fill", "#f5f5f5")
           .text(visualizationDate);
 
@@ -314,8 +314,8 @@ export function clockGraph(containerId, config = {}) {
             .attr("x", textX)
             .attr("y", textY)
             .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "middle")
-            .style("font-size", "10px")
+            .attr("dominant-baseline", "middle") // vertical centering
+            .style("font-size", "0.75rem") // responsive font size
             .style("fill", "#f5f5f5")
             .text(txt);
 
@@ -350,7 +350,9 @@ export function clockGraph(containerId, config = {}) {
           .style("margin-right", "6px")
           .style("background-color", (d) => color(d.cls)); 
 
-        legendItem.append("span").text((d) => `${d.name} (${d.count})`); // Display human-readable names in the legend
+        legendItem.append("span")
+          .style("font-size", "0.85rem") // responsive font size
+          .text((d) => `${d.name} (${d.count})`); // Display human-readable names in the legend
       }
 
       // Call the onDataReady callback after the visualization is fully rendered
