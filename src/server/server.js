@@ -23,14 +23,19 @@ app.use(cors());
 app.get("/api/audio_logs", async (req, res) => {
   try {
     let start, end;
+    let offset = req.query.offsetHours ? parseFloat(req.query.offsetHours) : 0;
     if (req.query.start && req.query.end) {
       start = parseFloat(req.query.start);
       end = parseFloat(req.query.end);
+      if (offset) {
+        start -= offset * 3600;
+        end -= offset * 3600;
+      }
     } else {
       // Always use current UTC time as windowEnd
       const now = DateTime.utc();
-      end = now.toSeconds();
-      start = now.minus({ hours: req.query.hours ? parseFloat(req.query.hours) : 24 }).toSeconds();
+      end = now.toSeconds() - offset * 3600;
+      start = now.minus({ hours: req.query.hours ? parseFloat(req.query.hours) : 24 }).toSeconds() - offset * 3600;
     }
 
     const text = `
@@ -50,7 +55,7 @@ app.get("/api/audio_logs", async (req, res) => {
       ORDER BY ts, id
     `;
     const params = [start, end];
-    console.log("/api/audio_logs SQL:", { start, end, sql: text });
+    console.log("/api/audio_logs SQL:", { start, end, offset, sql: text });
 
     const { rows } = await pool.query(text, params);
     console.log("/api/audio_logs returned rows:", rows.length);

@@ -13,7 +13,10 @@ export function clockGraph(containerId, config = {}) {
 
   // Consolidate API endpoints at the top for easier config
   const API_BASE_URL = config.apiBaseUrl || "https://rhythmanalysis.onrender.com/api";
-  const DATA_URL = config.dataUrl || `${API_BASE_URL}/audio_logs`;
+  let DATA_URL = config.dataUrl || `${API_BASE_URL}/audio_logs`;
+  if (config.offsetHours) {
+    DATA_URL += `?offsetHours=${encodeURIComponent(config.offsetHours)}`;
+  }
   const CLASS_MAP_API = config.classMapUrl || `${API_BASE_URL}/yamnet_class_map`;
 
   const container = d3.select(`#${containerId}`);
