@@ -23,12 +23,12 @@ function animateLoadingText() {
     dotCount = (dotCount + 1);
   }, 250);
 
-  console.log("Loading animation started");
+  // console.log("Loading animation started");
 
   // stop animation when overlay is hidden
   return () => {
     clearInterval(interval);
-    console.log("Loading animation stopped");
+    // console.log("Loading animation stopped");
   };
 }
 
@@ -49,10 +49,11 @@ const onDataReady = () => {
 // Pass the onDataReady callback to the clockGraph function
 clockGraph("simpleGraphContainer", { 
   onDataReady, 
-  // apiBaseUrl: "http://localhost:3000/api",
+  apiBaseUrl: "http://localhost:3000/api",
+  hours: 24,
   offsetHours: 48,
   binSeconds: 30,
-  refresh_interval: 30000, // 30 seconds in ms
+  refresh_interval: 300000, // N seconds in ms
   // Diagnostic: log timing for API fetch and D3 processing
   onApiFetchStart: () => { window._apiFetchStart = performance.now(); console.log('[main.js] API fetch started'); },
   onApiFetchEnd: () => { if (window._apiFetchStart) { console.log('[main.js] API fetch duration:', (performance.now() - window._apiFetchStart).toFixed(2), 'ms'); } },

@@ -87,7 +87,7 @@ export function clockGraph(containerId, config = {}) {
       if (typeof config.onD3Start === "function") config.onD3Start();
       // DEBUG: log first object to inspect available fields
       if (raw.data.length > 0) {
-        console.log('[clock.js] First API object:', raw.data[0]);
+        // console.log('[clock.js] First API object:', raw.data[0]);
       }
       dataCache = raw.data
         .map((d) => ({
@@ -145,12 +145,15 @@ export function clockGraph(containerId, config = {}) {
         const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025; // 2.5% of the smaller dimension
         const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 45% of the smaller dimension
 
+        // Set stroke thicknesses in one place
+        const tickStroke = 0.5; // stroke width for both dateline and event lines
+
         // filter data to 24h window
-        console.log('[clock.js] binnedData.length:', binnedData.length);
+        // console.log('[clock.js] binnedData.length:', binnedData.length);
         if (binnedData.length) {
           const tsVals = binnedData.map(d => d.ts);
-          console.log('[clock.js] binnedData ts min:', Math.min(...tsVals), 'max:', Math.max(...tsVals));
-          console.log('[clock.js] filter window t0:', t0, 't1:', t1);
+          // console.log('[clock.js] binnedData ts min:', Math.min(...tsVals), 'max:', Math.max(...tsVals));
+          // console.log('[clock.js] filter window t0:', t0, 't1:', t1);
         }
         const data = binnedData.filter((d) => d.ts >= t0 && d.ts <= t1);
         if (!data.length) {
@@ -276,7 +279,7 @@ export function clockGraph(containerId, config = {}) {
             .attr("x2", cx + OUTER_R * Math.cos(dateLineAngle))
             .attr("y2", cy + OUTER_R * Math.sin(dateLineAngle))
             .attr("stroke", "#fff")
-            .attr("stroke-width", 0.333);
+            .attr("stroke-width", tickStroke);
           // Update opacity of all event lines to match new dateline position
           g.selectAll("line.event-line").attr("opacity", function(d) {
             return computeOpacity(d, currentDatelineAngle);
@@ -284,7 +287,7 @@ export function clockGraph(containerId, config = {}) {
         }
         drawDateline();
         // tick every N seconds
-        const tickInterval = 100000; // db update time - one minute in ms
+        const tickInterval = config.refresh_interval; // db update time
         if (window._clockDatelineInterval) clearInterval(window._clockDatelineInterval);
         window._clockDatelineInterval = setInterval(() => {
           drawDateline();
@@ -298,7 +301,8 @@ export function clockGraph(containerId, config = {}) {
             .style("fill", "none")
             .style("stroke", "#aaaaaa24");
 
-          // draw classified events
+          const strokeWidth = tickStroke;
+
           let lineBuffer = 2;
           g.selectAll(`.line-${i}`)
             .data(data.filter((d) => d.class === cls))
@@ -310,7 +314,7 @@ export function clockGraph(containerId, config = {}) {
             .attr("x2", (d) => (radius + lineBuffer) * Math.cos(angle(getNYCSecondsSinceMidnight(d.ts))))
             .attr("y2", (d) => (radius + lineBuffer) * Math.sin(angle(getNYCSecondsSinceMidnight(d.ts))))
             .attr("stroke", color(cls))
-            .attr("stroke-width", 1.5)
+            .attr("stroke-width", strokeWidth)
             .attr("opacity", (d) => computeOpacity(d, currentDatelineAngle))
             .on("mouseover", (event, d) => {
               const tsMs = d.ts * 1000;
@@ -327,6 +331,11 @@ export function clockGraph(containerId, config = {}) {
                 .style("left", `${event.pageX + 10}px`);
             })
             .on("mouseout", () => tooltip.style("visibility", "hidden"));
+        });
+
+        // Immediately update opacity after first draw to ensure it's correct
+        g.selectAll("line.event-line").attr("opacity", function(d) {
+          return computeOpacity(d, currentDatelineAngle);
         });
 
         // --- NEW: Fixed time labels at 12am, 6am, 12pm, 6pm ---
@@ -481,13 +490,9 @@ export function clockGraph(containerId, config = {}) {
           const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025; // 2.5% of the smaller dimension
           const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 45% of the smaller dimension
 
+          const tickStroke = 0.5; // stroke width for both dateline and event lines
+
           // filter data to 24h window
-          console.log('[clock.js] binnedData.length:', binnedData.length);
-          if (binnedData.length) {
-            const tsVals = binnedData.map(d => d.ts);
-            console.log('[clock.js] binnedData ts min:', Math.min(...tsVals), 'max:', Math.max(...tsVals));
-            console.log('[clock.js] filter window t0:', t0, 't1:', t1);
-          }
           const data = binnedData.filter((d) => d.ts >= t0 && d.ts <= t1);
           if (!data.length) {
             console.warn("no data in selected range");
@@ -533,20 +538,17 @@ export function clockGraph(containerId, config = {}) {
             .style("fill", "black");
 
           // --- NEW: Fixed time-of-day anchors for the clock ---
-          // Helper: get NYC time-of-day in seconds since midnight
           function getNYCSecondsSinceMidnight(ts) {
             const date = new Date(ts * 1000);
             const nyc = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
             return nyc.getHours() * 3600 + nyc.getMinutes() * 60 + nyc.getSeconds();
           }
 
-          // Angle: 0 seconds (midnight) at -π/2, 6am at 0, 12pm at π/2, 6pm at π, back to midnight at 3π/2
           const angle = d3
             .scaleLinear()
             .domain([0, 24 * 3600])
             .range([-Math.PI / 2, (3 * Math.PI) / 2]);
 
-          // class counts
           const classCounts = d3.rollup(
             data,
             (v) => v.length,
@@ -554,7 +556,6 @@ export function clockGraph(containerId, config = {}) {
           );
           const sortedClasses = Array.from(classCounts.entries()).sort((a, b) => a[1] - b[1]);
 
-          // drop the bottom N% least-frequently occurring classes
           const cutoffIndex = Math.floor(sortedClasses.length * 0.666);
           const filteredClasses = sortedClasses.slice(cutoffIndex).map(([cls]) => cls);
 
@@ -562,11 +563,10 @@ export function clockGraph(containerId, config = {}) {
 
           const ringScale = d3
             .scalePow()
-            .exponent(2) // Use an exponent of 2 for exponential scaling
+            .exponent(2)
             .domain([0, filteredClasses.length - 1])
             .range([INNER_R, OUTER_R]);
 
-          // background circle
           svg
             .append("circle")
             .attr("cx", cx)
@@ -575,58 +575,51 @@ export function clockGraph(containerId, config = {}) {
             .style("fill", "none")
             .style("stroke", "#aaaaaa24");
 
+          let currentDatelineAngle = null;
+          let dateline = null;
           const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
 
-          function computeOpacity(d, currentDatelineAngle) {
+          function computeOpacity(d) {
             if (currentDatelineAngle === null) return 1.0;
             const eventAngle = angle(getNYCSecondsSinceMidnight(d.ts));
             let delta = (currentDatelineAngle - eventAngle) % (2 * Math.PI);
             if (delta < 0) delta += 2 * Math.PI;
-            const norm = delta / (2 * Math.PI * (config.hours || 24) / 24); // [0,1]
-            // linear fade from newest to oldest timestamps
+            const norm = delta / (2 * Math.PI * (config.hours || 24) / 24);
             const minOpacity = 0.33;
             const opacity = 1 - (1 - minOpacity) * norm;
             const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);
             return opacity * cfScale(d.cf || 0);
           }
 
-          // draw radial at current time
-          let dateline = null;
-          let currentDatelineAngle = null; // Store the dateline angle for opacity calculation
-          function drawDateline() {
-            // rm previous dateline if it exists
+          function drawDatelineAndUpdateOpacity() {
             if (dateline) dateline.remove();
-            // current time in NY
             const localTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
             const secondsSinceMidnightNY = localTime.getHours() * 3600 + localTime.getMinutes() * 60 + localTime.getSeconds();
-            // to tick based on input time range
             const hoursVisible = config.hours || 24;
             const fractionOfRange = secondsSinceMidnightNY / (hoursVisible * 3600);
-            // angle: start at -π/2, sweep 2π * (hoursVisible/24) for the visible range
             const angleRange = 2 * Math.PI * (hoursVisible / 24);
             const dateLineAngle = -Math.PI / 2 + fractionOfRange * angleRange;
-            currentDatelineAngle = dateLineAngle; // Save for use in opacity calculation
+            currentDatelineAngle = dateLineAngle;
             dateline = svg.append("line")
               .attr("x1", cx + INNER_R * Math.cos(dateLineAngle))
               .attr("y1", cy + INNER_R * Math.sin(dateLineAngle))
               .attr("x2", cx + OUTER_R * Math.cos(dateLineAngle))
               .attr("y2", cy + OUTER_R * Math.sin(dateLineAngle))
               .attr("stroke", "#fff")
-              .attr("stroke-width", 0.333);
-            // Update opacity of all event lines to match new dateline position
+              .attr("stroke-width", tickStroke);
             g.selectAll("line.event-line").attr("opacity", function(d) {
-              return computeOpacity(d, currentDatelineAngle);
+              return computeOpacity(d);
             });
           }
-          drawDateline();
-          // tick every N seconds
-          const tickInterval = 100000; // db update time - one minute in ms
+
+          drawDatelineAndUpdateOpacity();
+
+          const tickInterval = 100000;
           if (window._clockDatelineInterval) clearInterval(window._clockDatelineInterval);
           window._clockDatelineInterval = setInterval(() => {
-            drawDateline();
+            drawDatelineAndUpdateOpacity();
           }, tickInterval);
 
-          // draw each class ring
           filteredClasses.forEach((cls, i) => {
             const radius = ringScale(i);
             g.append("circle")
@@ -634,20 +627,21 @@ export function clockGraph(containerId, config = {}) {
               .style("fill", "none")
               .style("stroke", "#aaaaaa24");
 
-            // draw classified events
+            // Use the consolidated tickStroke for event lines
+            const strokeWidth = tickStroke;
+
             let lineBuffer = 2;
             g.selectAll(`.line-${i}`)
               .data(data.filter((d) => d.class === cls))
               .join("line")
               .attr("class", `line-${i} event-line`)
-              // Use NYC time-of-day for angle
               .attr("x1", (d) => (radius - lineBuffer) * Math.cos(angle(getNYCSecondsSinceMidnight(d.ts))))
               .attr("y1", (d) => (radius - lineBuffer) * Math.sin(angle(getNYCSecondsSinceMidnight(d.ts))))
               .attr("x2", (d) => (radius + lineBuffer) * Math.cos(angle(getNYCSecondsSinceMidnight(d.ts))))
               .attr("y2", (d) => (radius + lineBuffer) * Math.sin(angle(getNYCSecondsSinceMidnight(d.ts))))
               .attr("stroke", color(cls))
-              .attr("stroke-width", 1.5)
-              .attr("opacity", (d) => computeOpacity(d, currentDatelineAngle))
+              .attr("stroke-width", strokeWidth)
+              .attr("opacity", (d) => computeOpacity(d))
               .on("mouseover", (event, d) => {
                 const tsMs = d.ts * 1000;
                 const label = new Date(tsMs).toLocaleString("en-US", {
@@ -665,7 +659,10 @@ export function clockGraph(containerId, config = {}) {
               .on("mouseout", () => tooltip.style("visibility", "hidden"));
           });
 
-          // --- NEW: Fixed time labels at 12am, 6am, 12pm, 6pm ---
+          g.selectAll("line.event-line").attr("opacity", function(d) {
+            return computeOpacity(d);
+          });
+
           const labelTimes = [
             { label: "12:00 AM", seconds: 0, angle: -Math.PI / 2 },
             { label: "6:00 AM", seconds: 6 * 3600, angle: 0 },
@@ -692,7 +689,6 @@ export function clockGraph(containerId, config = {}) {
               .style("fill", "black");
           });
 
-          // legend
           legendContainer.selectAll("*").remove();
           const items = Array.from(classCounts.entries())
             .filter(([cls]) => filteredClasses.includes(cls))
@@ -715,8 +711,8 @@ export function clockGraph(containerId, config = {}) {
             .style("background-color", (d) => color(d.cls)); 
 
           legendItem.append("span")
-            .style("font-size", "0.85rem") // responsive font size
-            .text((d) => `${d.name} (${d.count})`); // Display human-readable names in the legend
+            .style("font-size", "0.85rem")
+            .text((d) => `${d.name} (${d.count})`);
         }
         if (typeof config.onD3Start === "function") config.onD3Start();
         draw();
