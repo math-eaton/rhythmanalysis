@@ -8,17 +8,23 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Load dbconfig.json for database URL
+const dbConfigPath = path.resolve(__dirname, '../../dbconfig.json');
+const dbConfig = JSON.parse(fs.readFileSync(dbConfigPath, 'utf8'));
+const pool = new Pool({
+  connectionString: dbConfig.postgres_url,
+  ssl: { rejectUnauthorized: false }
+});
+
 const app = express();
 app.use(cors());
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 app.get("/api/audio_logs", async (req, res) => {
   try {
     // Support start/end (UNIX seconds) or fallback to hours
-    const start = req.query.start ? parseInt(req.query.start, 10) : null;
-    const end = req.query.end ? parseInt(req.query.end, 10) : null;
-    let text, params;
+    const start = req.query.start ? parseFloat(req.query.start) : null;
+    const end = req.query.end ? parseFloat(req.query.end) : null;
+    let text, params, windowStart, windowEnd;
 
     if (start && end) {
       text = `
@@ -28,12 +34,20 @@ app.get("/api/audio_logs", async (req, res) => {
           c1_cf                      AS cf,
           db                         AS dB
         FROM audio_logs
-        WHERE ts >= to_timestamp($1) AND ts < to_timestamp($2)
+        WHERE ts > to_timestamp($1) AND ts < to_timestamp($2)
         ORDER BY ts ASC
       `;
       params = [start, end];
+      windowStart = start;
+      windowEnd = end;
+      console.log("/api/audio_logs SQL (start/end):", { start, end, sql: text });
     } else {
-      const hours = parseInt(req.query.hours, 10) || 24;
+      // Support fractional hours (float)
+      const hours = req.query.hours ? parseFloat(req.query.hours) : 12;
+      // Always use current time as windowEnd (real time)
+      const nowSec = Date.now() / 1000;
+      windowEnd = nowSec - (0 * 3600); // N hours ago
+      windowStart = windowEnd - hours * 3600;
       text = `
         SELECT
           EXTRACT(EPOCH FROM ts)     AS ts,
@@ -41,17 +55,30 @@ app.get("/api/audio_logs", async (req, res) => {
           c1_cf                      AS cf,
           db                         AS dB
         FROM audio_logs
-        WHERE ts >= NOW() - $1 * INTERVAL '1 hour'
+        WHERE ts >= to_timestamp($1) AND ts <= to_timestamp($2)
         ORDER BY ts ASC
       `;
-      params = [hours];
+      params = [windowStart, windowEnd];
+      console.log("/api/audio_logs SQL:", { windowStart, windowEnd, sql: text });
     }
 
     const { rows } = await pool.query(text, params);
-    res.json(rows);
+    console.log("/api/audio_logs returned rows:", rows.length);
+    if (rows.length > 0) {
+      const minTs = Math.min(...rows.map(r => +r.ts));
+      const maxTs = Math.max(...rows.map(r => +r.ts));
+      console.log("Earliest ts:", minTs, new Date(minTs * 1000).toISOString());
+      console.log("Latest ts:", maxTs, new Date(maxTs * 1000).toISOString());
+    }
+    res.json({
+      windowStart,
+      windowEnd,
+      data: rows
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "db error" });
+    console.error("/api/audio_logs ERROR:", err.stack || err);
+    res.status(500).json({ error: "db error", details: err.message });
   }
 });
 

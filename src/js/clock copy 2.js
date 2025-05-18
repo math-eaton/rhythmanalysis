@@ -1,20 +1,20 @@
 import * as d3 from "d3";
 
 export function clockGraph(containerId, config = {}) {
-  const inputHours = config.hours || 24; // always default to 24h range
-  // calculate the most recent local midnight timestamp
+  const inputHours = config.hours || 24; // default 24h range
   const now = new Date();
   const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
   // Fetch enough data to cover from previous midnight to now (ensure midnight anchor)
   const fetchHours = inputHours + secondsSinceMidnight / 3600;
+  console.log(fetchHours)
 
   // API endpoints and parameters
   const API_BASE_URL = config.apiBaseUrl || "https://rhythmanalysis.onrender.com/api";
   const DATA_URL = config.dataUrl || `${API_BASE_URL}/audio_logs?hours=${fetchHours}`;
-  console.log("Data URL:", DATA_URL);
   const CLASS_MAP_API = config.classMapUrl || `${API_BASE_URL}/yamnet_class_map`;
   const UPDATE_INTERVAL = config.updateInterval || 1000;  // 15 seconds
-  const hoursVisible = 24; // always 24h in view
+  const hoursVisible = config.hours || 24;                 // hours in view (24h static)
+
 
   // Set up container and sub-containers
   const container = d3.select(`#${containerId}`);
@@ -64,46 +64,43 @@ export function clockGraph(containerId, config = {}) {
     });
 
     // Initial data fetch
-    d3.json(DATA_URL).then(response => {
-      const rawData = response.data || response;    // support object or array
-      if (!Array.isArray(rawData)) {
-        console.error("Unexpected data format");
+    d3.json(DATA_URL).then((raw) => {
+      if (!Array.isArray(raw)) {
+        console.error("Unexpected data format: expected an array");
         return;
       }
-      dataCache = rawData.map((d, i) => {
+
+      dataCache = raw.map(d => {
           const rawTs = +d.ts;
-          const offsetSec = new Date(rawTs * 1000).getTimezoneOffset() * 60;
           return {
             origTs: rawTs,
-            ts: rawTs + offsetSec,
+            ts: rawTs, // keep as UTC
             class: d.cl,
             cf: +d.cf,
-            name: idxToNameMap[d.cl] || `Unknown (${d.cl})`,
-            key: d.ts + "_" + i
+            name: idxToNameMap[d.cl] || `Unknown (${d.cl})`
           };
         })
         .sort((a, b) => a.ts - b.ts);
 
       if (!dataCache.length) {
-        console.warn("No data in last 24h");
-        lastFetchedRaw = Math.floor(Date.now() / 1000);  // start updates from "now"
-      } else {
-        lastFetchedRaw = dataCache[dataCache.length - 1].origTs;
+        console.warn("no data");
+        return;
       }
 
-      // Set tsMin/tsMax to cover the most recent 24h window ending at the latest data point
-      if (dataCache.length) {
-        tsMax = dataCache[dataCache.length - 1].ts;
-        tsMin = tsMax - 24 * 3600;
-      } else {
-        // fallback: use local time
-        const nowUTC = Math.floor(Date.now() / 1000);
-        const nowOffset = new Date().getTimezoneOffset() * 60;
-        const nowLocalSec = nowUTC + nowOffset;
-        tsMax = nowLocalSec;
-        tsMin = nowLocalSec - 24 * 3600;
-      }
+      // Set initial time range and state
+      tsMin = dataCache[0].ts;
+      tsMax = dataCache[dataCache.length - 1].ts;
+      lastFetchedRaw = dataCache[dataCache.length - 1].origTs;
 
+      // After updating dataCache and tsMax:
+      const windowEnd = tsMax;
+      const windowStart = windowEnd - hoursVisible * 3600;
+      console.log('[DEBUG] tsMin:', tsMin, 'tsMax:', tsMax, 'windowStart:', windowStart, 'windowEnd:', windowEnd);
+      console.log('[DEBUG] dataCache.length (after initial fetch):', dataCache.length);
+      dataCache = dataCache.filter(d => d.ts >= windowStart && d.ts <= windowEnd);
+      console.log('[DEBUG] dataCache.length (after window filter):', dataCache.length);
+
+      // Initial full-range render
       draw();
       window.addEventListener("resize", draw);
 
@@ -111,32 +108,26 @@ export function clockGraph(containerId, config = {}) {
       if (window._clockDatelineInterval) clearInterval(window._clockDatelineInterval);
       if (window._clockUpdateInterval) clearInterval(window._clockUpdateInterval);
       window._clockUpdateInterval = setInterval(() => {
-        console.log("[clock] Update interval fired. updating:", updating);
         if (updating) return;
         updating = true;
         const nowUTC = Math.floor(Date.now() / 1000);
-        const nowOffsetSec = new Date().getTimezoneOffset() * 60;
-        const nowLocalSec = nowUTC + nowOffsetSec;
         // Fetch new records from last fetched timestamp up to current time
-        const startTs = lastFetchedRaw;
+        const startTs = lastFetchedRaw + 1;
         const endTs = nowUTC;
         const updateUrl = `${API_BASE_URL}/audio_logs?start=${startTs}&end=${endTs}`;
-        console.log("Update URL:", updateUrl);
-        d3.json(updateUrl).then(res => {
-          const newRaw = res.data || res;
+        d3.json(updateUrl).then(newRaw => {
           if (Array.isArray(newRaw) && newRaw.length) {
-            const newData = newRaw.map((d, i) => {
+            // Process and merge new data
+            const newData = newRaw.map(d => {
               const rawTs = +d.ts;
-              const offsetSec = new Date(rawTs * 1000).getTimezoneOffset() * 60;
               return {
                 origTs: rawTs,
-                ts: rawTs + offsetSec,
+                ts: rawTs, // keep as UTC
                 class: d.cl,
                 cf: +d.cf,
-                name: idxToNameMap[d.cl] || `Unknown (${d.cl})`,
-                key: d.ts + "_" + i
+                name: idxToNameMap[d.cl] || `Unknown (${d.cl})`
               };
-            });
+            }).sort((a, b) => a.ts - b.ts);
             dataCache = dataCache.concat(newData).sort((a, b) => a.ts - b.ts);
             lastFetchedRaw = newData[newData.length - 1].origTs;
           }
@@ -144,22 +135,20 @@ export function clockGraph(containerId, config = {}) {
           console.error("Data update failed:", err);
         }).finally(() => {
           // Prune data older than 24h
-          const cutoffTs = Math.floor(Date.now() / 1000) - hoursVisible * 3600;
+          const rangeSec = hoursVisible * 3600;
+          const nowUTC = Math.floor(Date.now() / 1000);
+          const cutoffTs = nowUTC - rangeSec;
           dataCache = dataCache.filter(d => d.ts >= cutoffTs);
           if (!dataCache.length) {
-            console.warn("No data in last 24h");
-            const nowUTC = Math.floor(Date.now()/1000);
-            const nowOffset = new Date().getTimezoneOffset() * 60;
-            const nowLocalSec = nowUTC + nowOffset;
-            tsMax = nowLocalSec;
-            tsMin = nowLocalSec - hoursVisible*3600;
-            lastFetchedRaw = nowUTC;
+            tsMin = Infinity;
+            tsMax = -Infinity;
           } else {
             tsMin = dataCache[0].ts;
             tsMax = dataCache[dataCache.length - 1].ts;
           }
-          updating = false;
+          // Always call draw for rendering
           draw();
+          updating = false;
         });
       }, UPDATE_INTERVAL);
 
@@ -170,17 +159,26 @@ export function clockGraph(containerId, config = {}) {
 
       // -------- Draw function (for initial render & resize) --------
       function draw() {
-        const t0 = tsMin, t1 = tsMax;
+        // Use the latest data timestamp as the end of the window
+        const windowEnd = tsMax;
+        const windowStart = windowEnd - hoursVisible * 3600;
+        console.log('[DRAW] windowStart:', windowStart, 'windowEnd:', windowEnd);
+
         // Responsive radii
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025;
         const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45;
-        // Filter data for full range
-        const data = dataCache.filter(d => d.ts >= t0 && d.ts <= t1);
+        // Filter data for the visible window
+        const data = dataCache.filter(d => d.ts >= windowStart && d.ts <= windowEnd);
         if (!data.length) {
-          console.warn("no data in selected range");
+          console.warn('[DRAW] no data in selected range');
           return;
+        }
+        console.log('[DRAW] data.length (filtered for window):', data.length);
+        if (data.length > 0) {
+          console.log('[DRAW] First event ts:', data[0].ts, 'date:', new Date(data[0].ts * 1000).toISOString());
+          console.log('[DRAW] Last event ts:', data[data.length-1].ts, 'date:', new Date(data[data.length-1].ts * 1000).toISOString());
         }
         // Initialize SVG canvas
         const w = viewportWidth * 0.85;
@@ -193,8 +191,8 @@ export function clockGraph(containerId, config = {}) {
         const cx = w / 2, cy = h / 2;
 
         // Date range label (top-left)
-        const minDateStr = new Date(tsMin * 1000).toDateString();
-        const maxDateStr = new Date(tsMax * 1000).toDateString();
+        const minDateStr = new Date(windowStart * 1000).toDateString();
+        const maxDateStr = new Date(windowEnd * 1000).toDateString();
         const visualizationDate = (minDateStr === maxDateStr) ? minDateStr : `${minDateStr} - ${maxDateStr}`;
         const topLeftText = svg.append("text")
           .attr("class", "date-range-label")
@@ -214,21 +212,16 @@ export function clockGraph(containerId, config = {}) {
           .attr("height", topLeftBBox.height + 4)
           .style("fill", "black");
 
-        // Find the timestamp for midnight (00:00) on the earliest date in the data window
-        const minDate = new Date(tsMin * 1000);
-        minDate.setHours(0, 0, 0, 0); // Set to midnight
-        const midnightTs = Math.floor(minDate.getTime() / 1000);
-        // Always map 24h to full circle
+        // Angle scale for the visible window
         const angle = d3.scaleLinear()
-          .domain([midnightTs, midnightTs + 24 * 3600])
+          .domain([windowStart, windowEnd])
           .range([-Math.PI / 2, (3 * Math.PI) / 2]);
 
-        // Determine and filter top N% classes for display
+        // Determine and filter top N% classes for display (use legend logic)
         const classCounts = d3.rollup(data, v => v.length, d => d.class);
-        console.log("Class counts:", classCounts);
-        const sortedClasses = Array.from(classCounts.entries()).sort((a, b) => a[1] - b[1]);
+        const sortedClasses = Array.from(classCounts.entries()).sort((a, b) => a[1] - b[1]); // ascending: lowest freq first
         const cutoffIndex = Math.floor(sortedClasses.length * 0.666);
-        const filteredClasses = sortedClasses.slice(cutoffIndex).map(([cls]) => cls);
+        const filteredClasses = sortedClasses.slice(cutoffIndex).map(([cls]) => cls); // keep top 1/3 by frequency
         const color = d3.scaleOrdinal(filteredClasses, d3.schemeCategory10);
         const ringScale = d3.scalePow().exponent(2)
           .domain([0, filteredClasses.length - 1])
@@ -256,31 +249,18 @@ export function clockGraph(containerId, config = {}) {
           return baseOpacity * cfScale(d.cf || 0);
         }
 
-        // Draw current time radial line
-        let currentDatelineAngle = null;
-        function drawDateline() {
-          svg.select("line.dateline-line")?.remove();
-          // current time in NY
-          const localTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
-          const secondsSinceMidnightNY = localTime.getHours() * 3600 + localTime.getMinutes() * 60 + localTime.getSeconds();
-          // angle: start at -π/2, sweep 2π for 24h
-          const dateLineAngle = -Math.PI / 2 + (secondsSinceMidnightNY / (24 * 3600)) * (2 * Math.PI);
-          currentDatelineAngle = dateLineAngle;
-          svg.append("line")
-            .attr("class", "dateline-line")
-            .attr("x1", cx + INNER_R * Math.cos(dateLineAngle))
-            .attr("y1", cy + INNER_R * Math.sin(dateLineAngle))
-            .attr("x2", cx + OUTER_R * Math.cos(dateLineAngle))
-            .attr("y2", cy + OUTER_R * Math.sin(dateLineAngle))
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 0.333);
-          // update event line opacities
-          g.selectAll("line.event-line").attr("opacity", d => computeOpacity(d, currentDatelineAngle));
-        }
-        drawDateline();
-        // (Dateline will be updated via the interval; no separate timer here)
+        // Draw current time radial line (dateline)
+        const currentDatelineAngle = angle(windowEnd);
+        svg.append("line")
+          .attr("class", "dateline-line")
+          .attr("x1", cx + INNER_R * Math.cos(currentDatelineAngle))
+          .attr("y1", cy + INNER_R * Math.sin(currentDatelineAngle))
+          .attr("x2", cx + OUTER_R * Math.cos(currentDatelineAngle))
+          .attr("y2", cy + OUTER_R * Math.sin(currentDatelineAngle))
+          .attr("stroke", "#fff")
+          .attr("stroke-width", 0.333);
 
-        // Draw rings and event tick marks for each visible class
+        // Draw rings and event tick marks for each visible class (use legend order)
         filteredClasses.forEach((cls, i) => {
           const radius = ringScale(i);
           g.append("circle")
@@ -289,30 +269,38 @@ export function clockGraph(containerId, config = {}) {
             .style("fill", "none")
             .style("stroke", "#aaaaaa24");
 
+          // Use .join with a key for proper enter/update/exit
           g.selectAll(`.line-${i}`)
-            .data(data.filter(d => d.class === cls))
-            .join("line")
-            .attr("class", `line-${i} event-line`)
-            .attr("x1", d => (radius - 1.5) * Math.cos(angle(d.ts)))
-            .attr("y1", d => (radius - 1.5) * Math.sin(angle(d.ts)))
-            .attr("x2", d => (radius + 1.5) * Math.cos(angle(d.ts)))
-            .attr("y2", d => (radius + 1.5) * Math.sin(angle(d.ts)))
-            .attr("stroke", color(cls))
-            .attr("stroke-width", 1.5)
-            .attr("opacity", d => computeOpacity(d, currentDatelineAngle))
-            .on("mouseover", (event, d) => {
-              const tsMs = d.ts * 1000;
-              const timeLabel = new Date(tsMs).toLocaleString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-                timeZone: "America/New_York"
-              });
-              tooltip.text(`${d.name}, ${timeLabel}`).style("visibility", "visible");
-            })
-            .on("mousemove", event => {
-              tooltip.style("top", `${event.pageY + 10}px`).style("left", `${event.pageX + 10}px`);
-            })
-            .on("mouseout", () => tooltip.style("visibility", "hidden"));
+            .data(data.filter(d => d.class === cls), d => `${d.class}-${d.ts}`)
+            .join(
+              enter => enter.append("line")
+                .attr("class", `line-${i} event-line`)
+                .attr("x1", d => (radius - 1.5) * Math.cos(angle(d.ts)))
+                .attr("y1", d => (radius - 1.5) * Math.sin(angle(d.ts)))
+                .attr("x2", d => (radius + 1.5) * Math.cos(angle(d.ts)))
+                .attr("y2", d => (radius + 1.5) * Math.sin(angle(d.ts)))
+                .attr("stroke", color(cls))
+                .attr("stroke-width", 1.5)
+                .attr("opacity", d => computeOpacity(d, currentDatelineAngle))
+                .on("mouseover", (event, d) => {
+                  const tsMs = d.ts * 1000;
+                  const timeLabel = new Date(tsMs).toUTCString().slice(17, 22); // HH:MM in UTC
+                  tooltip.text(`${d.name}, ${timeLabel}`).style("visibility", "visible");
+                })
+                .on("mousemove", event => {
+                  tooltip.style("top", `${event.pageY + 10}px`).style("left", `${event.pageX + 10}px`);
+                })
+                .on("mouseout", () => tooltip.style("visibility", "hidden")),
+              update => update
+                .attr("x1", d => (radius - 1.5) * Math.cos(angle(d.ts)))
+                .attr("y1", d => (radius - 1.5) * Math.sin(angle(d.ts)))
+                .attr("x2", d => (radius + 1.5) * Math.cos(angle(d.ts)))
+                .attr("y2", d => (radius + 1.5) * Math.sin(angle(d.ts)))
+                .attr("stroke", color(cls))
+                .attr("stroke-width", 1.5)
+                .attr("opacity", d => computeOpacity(d, currentDatelineAngle)),
+              exit => exit.remove()
+            );
         });
 
         // Clock face labels at 12, 3, 6, 9 o'clock
@@ -321,11 +309,7 @@ export function clockGraph(containerId, config = {}) {
         labelAngles.forEach(a => {
           const ts = invAngle(a);
           const tsMs = ts * 1000;
-          const txt = new Date(tsMs).toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "America/New_York"
-          });
+          const txt = new Date(tsMs).toUTCString().slice(17, 22); // HH:MM in UTC
           const textX = cx + (OUTER_R + 45) * Math.cos(a);
           const textY = cy + (OUTER_R + 25) * Math.sin(a);
           const textElem = svg.append("text")

@@ -39,4 +39,8 @@ const onDataReady = () => {
 };
 
 // Pass the onDataReady callback to the clockGraph function
-clockGraph("simpleGraphContainer", { onDataReady });
+clockGraph("simpleGraphContainer", { 
+  onDataReady, 
+  // apiBaseUrl: "http://localhost:3000/api" 
+});
+
