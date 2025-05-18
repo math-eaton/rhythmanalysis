@@ -404,7 +404,7 @@ export function clockGraph(containerId, config = {}) {
 
   function fetchAndDrawWindow() {
     // Calculate offsetHours for the API (in hours, negative means move window forward in time)
-    const offsetHours = config.offsetHours ? config.offsetHours : 48;
+    const offsetHours = config.offsetHours ? config.offsetHours : 0;
     // The window offset is in seconds, convert to hours
     const offsetHoursWithWindow = offsetHours - (windowOffsetSeconds / 3600);
     // Build a new config for this fetch
