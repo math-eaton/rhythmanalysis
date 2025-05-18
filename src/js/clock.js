@@ -108,15 +108,14 @@ export function clockGraph(containerId, config = {}) {
       .attr("width", topLeftBBox.width + 4)
       .attr("height", topLeftBBox.height + 4)
       .style("fill", "black");
-    // Helper: get NYC time-of-day in seconds since midnight
-    function getNYCSecondsSinceMidnight(ts) {
+    // Helper: get UTC time-of-day in seconds since midnight
+    function getUTCSecondsSinceMidnight(ts) {
       const date = new Date(ts * 1000);
-      const nyc = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-      return nyc.getHours() * 3600 + nyc.getMinutes() * 60 + nyc.getSeconds();
+      return date.getUTCHours() * 3600 + date.getUTCMinutes() * 60 + date.getUTCSeconds();
     }
     const angle = d3
       .scaleLinear()
-      .domain([0, 24 * 3600])
+      .domain([0, config.hours * 3600])
       .range([-Math.PI / 2, (3 * Math.PI) / 2]);
     // class counts
     const classCounts = d3.rollup(
@@ -146,7 +145,7 @@ export function clockGraph(containerId, config = {}) {
     let currentDatelineAngle = null;
     function computeOpacity(d) {
       if (currentDatelineAngle === null) return 1.0;
-      const eventAngle = angle(getNYCSecondsSinceMidnight(d.ts));
+      const eventAngle = angle(getUTCSecondsSinceMidnight(d.ts));
       let delta = (currentDatelineAngle - eventAngle) % (2 * Math.PI);
       if (delta < 0) delta += 2 * Math.PI;
       const hoursVisible = config.hours || 24;
@@ -160,10 +159,13 @@ export function clockGraph(containerId, config = {}) {
     }
     function updateDatelineAndOpacities() {
       if (dateline) dateline.remove();
-      const localTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
-      const secondsSinceMidnightNY = localTime.getHours() * 3600 + localTime.getMinutes() * 60 + localTime.getSeconds();
+      // --- Dateline: use NYC (America/New_York) seconds since midnight ---
+      const now = new Date();
+      // Convert current time to NYC time
+      const nycNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      const secondsSinceMidnightNYC = nycNow.getHours() * 3600 + nycNow.getMinutes() * 60 + nycNow.getSeconds();
       const hoursVisible = config.hours || 24;
-      const fractionOfRange = secondsSinceMidnightNY / (hoursVisible * 3600);
+      const fractionOfRange = secondsSinceMidnightNYC / (hoursVisible * 3600);
       const angleRange = 2 * Math.PI * (hoursVisible / 24);
       const dateLineAngle = -Math.PI / 2 + fractionOfRange * angleRange;
       currentDatelineAngle = dateLineAngle;
@@ -191,10 +193,10 @@ export function clockGraph(containerId, config = {}) {
         .data(data.filter(d => d.class === cls))
         .join("line")
           .attr("class", `line-${i} event-line`)
-          .attr("x1", d => (radius - lineBuffer) * Math.cos(angle(getNYCSecondsSinceMidnight(d.ts))))
-          .attr("y1", d => (radius - lineBuffer) * Math.sin(angle(getNYCSecondsSinceMidnight(d.ts))))
-          .attr("x2", d => (radius + lineBuffer) * Math.cos(angle(getNYCSecondsSinceMidnight(d.ts))))
-          .attr("y2", d => (radius + lineBuffer) * Math.sin(angle(getNYCSecondsSinceMidnight(d.ts))))
+          .attr("x1", d => (radius - lineBuffer) * Math.cos(angle(getUTCSecondsSinceMidnight(d.ts))))
+          .attr("y1", d => (radius - lineBuffer) * Math.sin(angle(getUTCSecondsSinceMidnight(d.ts))))
+          .attr("x2", d => (radius + lineBuffer) * Math.cos(angle(getUTCSecondsSinceMidnight(d.ts))))
+          .attr("y2", d => (radius + lineBuffer) * Math.sin(angle(getUTCSecondsSinceMidnight(d.ts))))
           .attr("stroke", color(cls))
           .attr("stroke-width", strokeWidth)
           .on("mouseover", (event, d) => {
@@ -202,9 +204,9 @@ export function clockGraph(containerId, config = {}) {
             const label = new Date(tsMs).toLocaleString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
-              timeZone: "America/New_York",
+              timeZone: "UTC",
             });
-            tooltip.text(`${d.name}, ${label}`).style("visibility", "visible");
+            tooltip.text(`${d.name}, ${label} UTC`).style("visibility", "visible");
           })
           .on("mousemove", (event) => {
             tooltip
@@ -213,7 +215,7 @@ export function clockGraph(containerId, config = {}) {
           })
           .on("mouseout", () => tooltip.style("visibility", "hidden"));
     });
-    // all event lines exist, give them their initial opacity
+    // Now that all your event lines exist, give them their initial opacity
     updateDatelineAndOpacities();
     // Set up interval to update dateline and opacities in sync with config.refresh_interval
     const tickInterval = config.refresh_interval || 30000;
@@ -309,7 +311,7 @@ export function clockGraph(containerId, config = {}) {
         dataCache.forEach((d) => {
           const date = new Date(d.ts * 1000);
           const nyc = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-          const secondsOfDay = nyc.getHours() * 3600 + nyc.getMinutes() * 60 + nyc.getSeconds();
+          const secondsOfDay = nyc.getUTCHours() * 3600 + nyc.getUTCMinutes() * 60 + nyc.getUTCSeconds();
           const bin = Math.floor(secondsOfDay / 30);
           const key = `${d.class}_${bin}`;
           if (!binMap.has(key) || d.cf > binMap.get(key).cf) {
@@ -396,7 +398,7 @@ export function clockGraph(containerId, config = {}) {
           dataCache.forEach((d) => {
             const date = new Date(d.ts * 1000);
             const nyc = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-            const secondsOfDay = nyc.getHours() * 3600 + nyc.getMinutes() * 60 + nyc.getSeconds();
+            const secondsOfDay = nyc.getUTCHours() * 3600 + nyc.getUTCMinutes() * 60 + nyc.getUTCSeconds();
             const bin = Math.floor(secondsOfDay / 30);
             const key = `${d.class}_${bin}`;
             if (!binMap.has(key) || d.cf > binMap.get(key).cf) {
