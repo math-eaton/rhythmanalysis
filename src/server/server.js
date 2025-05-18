@@ -9,11 +9,15 @@ import { DateTime } from "luxon";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load dbconfig.json for database URL
-const dbConfigPath = path.resolve(__dirname, '../../dbconfig.json');
-const dbConfig = JSON.parse(fs.readFileSync(dbConfigPath, 'utf8'));
+// env variable for remote web service, fallback to dbconfig.json for local dev
+let dbUrl = process.env.POSTGRES_URL;
+if (!dbUrl) {
+  const dbConfigPath = path.resolve(__dirname, '../../dbconfig.json');
+  const dbConfig = JSON.parse(fs.readFileSync(dbConfigPath, 'utf8'));
+  dbUrl = dbConfig.postgres_url;
+}
 const pool = new Pool({
-  connectionString: dbConfig.postgres_url,
+  connectionString: dbUrl,
   ssl: { rejectUnauthorized: false }
 });
 
