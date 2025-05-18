@@ -8,13 +8,19 @@ loadingOverlay.innerHTML = '<div id="loadingText">LOADING</div>';
 loadingOverlay.style = "";
 document.body.appendChild(loadingOverlay);
 
+let initialLoad = true; // Track if this is the first load
+let stopAnimation = null;
+if (initialLoad) {
+  stopAnimation = animateLoadingText();
+}
+
 function animateLoadingText() {
   const loadingText = document.getElementById("loadingText");
   let dotCount = 0;
 
   const interval = setInterval(() => {
-    loadingText.textContent = "LOADING" + ".".repeat(dotCount);
-    dotCount++;
+    loadingText.textContent = "LOADING" + " .".repeat(dotCount);
+    dotCount = (dotCount + 1);
   }, 250);
 
   console.log("Loading animation started");
@@ -26,17 +32,18 @@ function animateLoadingText() {
   };
 }
 
-const stopAnimation = animateLoadingText();
-
 // onDataReady callback to hide the overlay and stop the animation
 const onDataReady = () => {
-  setTimeout(() => {
-    const overlay = document.getElementById("loadingOverlay");
-    if (overlay) {
-      overlay.style.display = "none";
-    }
-    stopAnimation();
-  }, 100); 
+  if (initialLoad) {
+    setTimeout(() => {
+      const overlay = document.getElementById("loadingOverlay");
+      if (overlay) {
+        overlay.style.display = "none";
+      }
+      if (stopAnimation) stopAnimation();
+      initialLoad = false;
+    }, 100); 
+  }
 };
 
 // Pass the onDataReady callback to the clockGraph function
@@ -45,6 +52,7 @@ clockGraph("simpleGraphContainer", {
   apiBaseUrl: "http://localhost:3000/api",
   offsetHours: 48,
   binSeconds: 30,
+  refresh_interval: 30000, // 30 seconds in ms
   // Diagnostic: log timing for API fetch and D3 processing
   onApiFetchStart: () => { window._apiFetchStart = performance.now(); console.log('[main.js] API fetch started'); },
   onApiFetchEnd: () => { if (window._apiFetchStart) { console.log('[main.js] API fetch duration:', (performance.now() - window._apiFetchStart).toFixed(2), 'ms'); } },

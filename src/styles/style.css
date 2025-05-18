@@ -149,5 +149,7 @@ svg {
 #loadingText {
   font-size: 24px;
   font-weight: bold;
-  color: #000;
+  background-color: #242424;
+  color: #fff;
+  transform: scaleY(5);
 }
