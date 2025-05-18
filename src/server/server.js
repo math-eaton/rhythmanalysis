@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { parse as csvParse } from "csv-parse";
 import { fileURLToPath } from "url";
+import { DateTime } from "luxon";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,46 +22,35 @@ app.use(cors());
 
 app.get("/api/audio_logs", async (req, res) => {
   try {
-    // Support start/end (UNIX seconds) or fallback to hours
-    const start = req.query.start ? parseFloat(req.query.start) : null;
-    const end = req.query.end ? parseFloat(req.query.end) : null;
-    let text, params, windowStart, windowEnd;
-
-    if (start && end) {
-      text = `
-        SELECT
-          EXTRACT(EPOCH FROM ts)     AS ts,
-          c1_idx                     AS cl,
-          c1_cf                      AS cf,
-          db                         AS dB
-        FROM audio_logs
-        WHERE ts > to_timestamp($1) AND ts < to_timestamp($2)
-        ORDER BY ts ASC
-      `;
-      params = [start, end];
-      windowStart = start;
-      windowEnd = end;
-      console.log("/api/audio_logs SQL (start/end):", { start, end, sql: text });
+    let start, end;
+    if (req.query.start && req.query.end) {
+      start = parseFloat(req.query.start);
+      end = parseFloat(req.query.end);
     } else {
-      // Support fractional hours (float)
-      const hours = req.query.hours ? parseFloat(req.query.hours) : 12;
-      // Always use current time as windowEnd (real time)
-      const nowSec = Date.now() / 1000;
-      windowEnd = nowSec - (0 * 3600); // N hours ago
-      windowStart = windowEnd - hours * 3600;
-      text = `
-        SELECT
-          EXTRACT(EPOCH FROM ts)     AS ts,
-          c1_idx                     AS cl,
-          c1_cf                      AS cf,
-          db                         AS dB
-        FROM audio_logs
-        WHERE ts >= to_timestamp($1) AND ts <= to_timestamp($2)
-        ORDER BY ts ASC
-      `;
-      params = [windowStart, windowEnd];
-      console.log("/api/audio_logs SQL:", { windowStart, windowEnd, sql: text });
+      // Always use current UTC time as windowEnd
+      const now = DateTime.utc();
+      end = now.toSeconds();
+      start = now.minus({ hours: req.query.hours ? parseFloat(req.query.hours) : 24 }).toSeconds();
     }
+
+    const text = `
+      SELECT
+        id,
+        raw_ts,
+        EXTRACT(EPOCH FROM ts) AS ts,  -- now a FLOAT in seconds
+        db,
+        c1_idx,
+        c1_cf,
+        c2_idx,
+        c2_cf,
+        c3_idx,
+        c3_cf
+      FROM audio_logs
+      WHERE ts BETWEEN to_timestamp($1) AND to_timestamp($2)
+      ORDER BY ts, id
+    `;
+    const params = [start, end];
+    console.log("/api/audio_logs SQL:", { start, end, sql: text });
 
     const { rows } = await pool.query(text, params);
     console.log("/api/audio_logs returned rows:", rows.length);
@@ -71,8 +61,8 @@ app.get("/api/audio_logs", async (req, res) => {
       console.log("Latest ts:", maxTs, new Date(maxTs * 1000).toISOString());
     }
     res.json({
-      windowStart,
-      windowEnd,
+      windowStart: start,
+      windowEnd: end,
       data: rows
     });
 

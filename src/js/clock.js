@@ -1,33 +1,35 @@
 import * as d3 from "d3";
 
 export function clockGraph(containerId, config = {}) {
-  const inputHours = config.hours || 24; // always default to 24h range
+  const inputHours = config.hours || 24; // todo fix for dynamic ranges - only works for 24h rn
+
   // calculate the most recent local midnight timestamp
   const now = new Date();
   const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-  // Fetch enough data to cover from previous midnight to now (ensure midnight anchor)
+  // now.setHours(0, 0, 0, 0); // set to local midnight
+  // const midnightLocal = Math.floor(now.getTime() / 1000);
+  // Fetch enough data to cover from previous midnight to now (input param + time since midnight)
   const fetchHours = inputHours + secondsSinceMidnight / 3600;
 
-  // API endpoints and parameters
+  // Consolidate API endpoints at the top for easier config
   const API_BASE_URL = config.apiBaseUrl || "https://rhythmanalysis.onrender.com/api";
-  const DATA_URL = config.dataUrl || `${API_BASE_URL}/audio_logs?hours=${fetchHours}`;
-  console.log("Data URL:", DATA_URL);
+  const DATA_URL = config.dataUrl || `${API_BASE_URL}/audio_logs`;
   const CLASS_MAP_API = config.classMapUrl || `${API_BASE_URL}/yamnet_class_map`;
-  const UPDATE_INTERVAL = config.updateInterval || 1000;  // 15 seconds
-  const hoursVisible = 24; // always 24h in view
 
-  // Set up container and sub-containers
   const container = d3.select(`#${containerId}`);
   container.style("display", "flex").style("align-items", "flex-start");
 
+  // ensure a place for filters (hidden until checkbox checked)
   let filterContainer = container.select(".time-filters");
   if (filterContainer.empty()) {
-    filterContainer = container.insert("div", ":first-child")
+    filterContainer = container
+      .insert("div", ":first-child")
       .attr("class", "time-filters")
       .style("margin-bottom", "16px");
   }
   filterContainer.style("display", "none");
 
+  // ensure the legend container exists
   let legendContainer = container.select(".legend");
   if (legendContainer.empty()) {
     legendContainer = container.append("div").attr("class", "legend");
@@ -37,8 +39,10 @@ export function clockGraph(containerId, config = {}) {
     .style("max-height", "100vh")
     .style("margin-left", "16px");
 
-  // Tooltip for event hover
-  const tooltip = d3.select("body").append("div")
+  // create a tooltip element
+  const tooltip = d3
+    .select("body")
+    .append("div")
     .attr("class", "tooltip")
     .style("position", "absolute")
     .style("padding", "5px 10px")
@@ -49,193 +53,140 @@ export function clockGraph(containerId, config = {}) {
     .style("pointer-events", "none")
     .style("visibility", "hidden");
 
-  // Data cache and state
+  // cache for loaded data
   let dataCache = [];
-  let tsMin = Infinity, tsMax = -Infinity;
-  let lastFetchedRaw = null;
-  let updating = false;
-  const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);  // confidence->opacity scale
+  let tsMin = Infinity,
+      tsMax = -Infinity;
 
-  // Fetch class name mapping
+  // map yamnet indices from api to human-readable names
+  // fetch the mapping json from the API
   d3.json(CLASS_MAP_API).then((mappingData) => {
     const idxToNameMap = {};
-    mappingData.forEach(row => {
-      idxToNameMap[row.index] = row.display_name;
+    mappingData.forEach((row) => {
+      idxToNameMap[row.index] = row.display_name; // use "index" and "display_name" columns
     });
 
-    // Initial data fetch
-    d3.json(DATA_URL).then(response => {
-      const rawData = response.data || response;    // support object or array
-      if (!Array.isArray(rawData)) {
-        console.error("Unexpected data format");
+    d3.json(DATA_URL).then((raw) => {
+      if (!raw || !Array.isArray(raw.data)) {
+        console.error("Unexpected data format: expected an object with a data array");
         return;
       }
-      dataCache = rawData.map((d, i) => {
-          const rawTs = +d.ts;
-          const offsetSec = new Date(rawTs * 1000).getTimezoneOffset() * 60;
-          return {
-            origTs: rawTs,
-            ts: rawTs + offsetSec,
-            class: d.cl,
-            cf: +d.cf,
-            name: idxToNameMap[d.cl] || `Unknown (${d.cl})`,
-            key: d.ts + "_" + i
-          };
-        })
+
+      dataCache = raw.data
+        .map((d) => ({
+          ts: +d.ts, // or +d.raw_ts if you prefer
+          class: d.c1_idx,
+          cf: +d.c1_cf,
+          name: idxToNameMap[d.c1_idx] || `Unknown (${d.c1_idx})`,
+        }))
         .sort((a, b) => a.ts - b.ts);
 
       if (!dataCache.length) {
-        console.warn("No data in last 24h");
-        lastFetchedRaw = Math.floor(Date.now() / 1000);  // start updates from "now"
-      } else {
-        lastFetchedRaw = dataCache[dataCache.length - 1].origTs;
+        console.warn("no data");
+        return;
       }
 
-      // Set tsMin/tsMax to cover the most recent 24h window ending at the latest data point
-      if (dataCache.length) {
-        tsMax = dataCache[dataCache.length - 1].ts;
-        tsMin = tsMax - 24 * 3600;
-      } else {
-        // fallback: use local time
-        const nowUTC = Math.floor(Date.now() / 1000);
-        const nowOffset = new Date().getTimezoneOffset() * 60;
-        const nowLocalSec = nowUTC + nowOffset;
-        tsMax = nowLocalSec;
-        tsMin = nowLocalSec - 24 * 3600;
-      }
+      // Always use a 24-hour window ending at the latest timestamp
+      tsMax = dataCache[dataCache.length - 1].ts;
+      tsMin = tsMax - 24 * 3600;
 
+      // initial full-range draw
       draw();
       window.addEventListener("resize", draw);
 
-      // Set up periodic updates (15s interval)
-      if (window._clockDatelineInterval) clearInterval(window._clockDatelineInterval);
-      if (window._clockUpdateInterval) clearInterval(window._clockUpdateInterval);
-      window._clockUpdateInterval = setInterval(() => {
-        console.log("[clock] Update interval fired. updating:", updating);
-        if (updating) return;
-        updating = true;
-        const nowUTC = Math.floor(Date.now() / 1000);
-        const nowOffsetSec = new Date().getTimezoneOffset() * 60;
-        const nowLocalSec = nowUTC + nowOffsetSec;
-        // Fetch new records from last fetched timestamp up to current time
-        const startTs = lastFetchedRaw;
-        const endTs = nowUTC;
-        const updateUrl = `${API_BASE_URL}/audio_logs?start=${startTs}&end=${endTs}`;
-        console.log("Update URL:", updateUrl);
-        d3.json(updateUrl).then(res => {
-          const newRaw = res.data || res;
-          if (Array.isArray(newRaw) && newRaw.length) {
-            const newData = newRaw.map((d, i) => {
-              const rawTs = +d.ts;
-              const offsetSec = new Date(rawTs * 1000).getTimezoneOffset() * 60;
-              return {
-                origTs: rawTs,
-                ts: rawTs + offsetSec,
-                class: d.cl,
-                cf: +d.cf,
-                name: idxToNameMap[d.cl] || `Unknown (${d.cl})`,
-                key: d.ts + "_" + i
-              };
-            });
-            dataCache = dataCache.concat(newData).sort((a, b) => a.ts - b.ts);
-            lastFetchedRaw = newData[newData.length - 1].origTs;
-          }
-        }).catch(err => {
-          console.error("Data update failed:", err);
-        }).finally(() => {
-          // Prune data older than 24h
-          const cutoffTs = Math.floor(Date.now() / 1000) - hoursVisible * 3600;
-          dataCache = dataCache.filter(d => d.ts >= cutoffTs);
-          if (!dataCache.length) {
-            console.warn("No data in last 24h");
-            const nowUTC = Math.floor(Date.now()/1000);
-            const nowOffset = new Date().getTimezoneOffset() * 60;
-            const nowLocalSec = nowUTC + nowOffset;
-            tsMax = nowLocalSec;
-            tsMin = nowLocalSec - hoursVisible*3600;
-            lastFetchedRaw = nowUTC;
-          } else {
-            tsMin = dataCache[0].ts;
-            tsMax = dataCache[dataCache.length - 1].ts;
-          }
-          updating = false;
-          draw();
-        });
-      }, UPDATE_INTERVAL);
-
-      // Callback when initial data is ready
-      if (typeof config.onDataReady === "function") {
-        config.onDataReady();
-      }
-
-      // -------- Draw function (for initial render & resize) --------
+      // Adjust the draw function to always use the 24-hour window
       function draw() {
-        const t0 = tsMin, t1 = tsMax;
-        // Responsive radii
+        const t0 = tsMin;
+        const t1 = tsMax;
+
+        // Calculate responsive inner and outer radii
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
-        const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025;
-        const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45;
-        // Filter data for full range
-        const data = dataCache.filter(d => d.ts >= t0 && d.ts <= t1);
+        const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025; // 2.5% of the smaller dimension
+        const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 45% of the smaller dimension
+
+        // filter data to 24h window
+        const data = dataCache.filter((d) => d.ts >= t0 && d.ts <= t1);
         if (!data.length) {
           console.warn("no data in selected range");
           return;
         }
-        // Initialize SVG canvas
-        const w = viewportWidth * 0.85;
-        const h = viewportHeight;
-        const svg = container.select("svg").empty()
-          ? container.append("svg")
-          : container.select("svg");
-        svg.attr("width", w).attr("height", h);
+
+        // SVG sizing
+        const w = window.innerWidth * 0.85;
+        const h = window.innerHeight;
+        const svg = container
+          .select("svg")
+          .attr("width", w)
+          .attr("height", h);
         svg.selectAll("*").remove();
         const cx = w / 2, cy = h / 2;
 
-        // Date range label (top-left)
-        const minDateStr = new Date(tsMin * 1000).toDateString();
-        const maxDateStr = new Date(tsMax * 1000).toDateString();
-        const visualizationDate = (minDateStr === maxDateStr) ? minDateStr : `${minDateStr} - ${maxDateStr}`;
-        const topLeftText = svg.append("text")
-          .attr("class", "date-range-label")
-          .attr("x", 20)
-          .attr("y", 20)
+        // Add a label in the top left corner showing the date or date range of data visualization
+        const minDateStr = new Date(t0 * 1000).toDateString();
+        const maxDateStr = new Date(t1 * 1000).toDateString();
+        const visualizationDate = (minDateStr === maxDateStr)
+          ? minDateStr
+          : `${minDateStr} - ${maxDateStr}`;
+
+        const topLeftTextX = 20; // X position for the label
+        const topLeftTextY = 20; // Y position for the label
+
+        // Add background rectangle for the label
+        const topLeftTextElement = svg.append("text")
+          .attr("x", topLeftTextX)
+          .attr("y", topLeftTextY)
           .attr("text-anchor", "start")
-          .attr("dominant-baseline", "middle")
-          .style("font-size", "0.75rem")
+          .attr("dominant-baseline", "middle") // vertical centering
+          .style("font-size", "0.75rem") // responsive font size
           .style("fill", "#f5f5f5")
           .text(visualizationDate);
-        const topLeftBBox = topLeftText.node().getBBox();
+
+        const topLeftBBox = topLeftTextElement.node().getBBox();
         svg.insert("rect", "text")
-          .attr("class", "date-range-bg")
-          .attr("x", topLeftBBox.x - 2)
+          .attr("x", topLeftBBox.x - 2) // Add padding
           .attr("y", topLeftBBox.y - 2)
           .attr("width", topLeftBBox.width + 4)
           .attr("height", topLeftBBox.height + 4)
           .style("fill", "black");
 
-        // Find the timestamp for midnight (00:00) on the earliest date in the data window
-        const minDate = new Date(tsMin * 1000);
-        minDate.setHours(0, 0, 0, 0); // Set to midnight
-        const midnightTs = Math.floor(minDate.getTime() / 1000);
-        // Always map 24h to full circle
-        const angle = d3.scaleLinear()
-          .domain([midnightTs, midnightTs + 24 * 3600])
+        // --- NEW: Fixed time-of-day anchors for the clock ---
+        // Helper: get NYC time-of-day in seconds since midnight
+        function getNYCSecondsSinceMidnight(ts) {
+          const date = new Date(ts * 1000);
+          const nyc = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+          return nyc.getHours() * 3600 + nyc.getMinutes() * 60 + nyc.getSeconds();
+        }
+
+        // Angle: 0 seconds (midnight) at -π/2, 6am at 0, 12pm at π/2, 6pm at π, back to midnight at 3π/2
+        const angle = d3
+          .scaleLinear()
+          .domain([0, 24 * 3600])
           .range([-Math.PI / 2, (3 * Math.PI) / 2]);
 
-        // Determine and filter top N% classes for display
-        const classCounts = d3.rollup(data, v => v.length, d => d.class);
-        console.log("Class counts:", classCounts);
+        // class counts
+        const classCounts = d3.rollup(
+          data,
+          (v) => v.length,
+          (d) => d.class
+        );
         const sortedClasses = Array.from(classCounts.entries()).sort((a, b) => a[1] - b[1]);
+
+        // drop the bottom N% least-frequently occurring classes
         const cutoffIndex = Math.floor(sortedClasses.length * 0.666);
         const filteredClasses = sortedClasses.slice(cutoffIndex).map(([cls]) => cls);
+
         const color = d3.scaleOrdinal(filteredClasses, d3.schemeCategory10);
-        const ringScale = d3.scalePow().exponent(2)
+
+        const ringScale = d3
+          .scalePow()
+          .exponent(2) // Use an exponent of 2 for exponential scaling
           .domain([0, filteredClasses.length - 1])
           .range([INNER_R, OUTER_R]);
 
-        // Outer boundary circle
-        svg.append("circle")
+        // background circle
+        svg
+          .append("circle")
           .attr("cx", cx)
           .attr("cy", cy)
           .attr("r", OUTER_R)
@@ -244,102 +195,114 @@ export function clockGraph(containerId, config = {}) {
 
         const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
 
-        // Opacity helper
-        function computeOpacity(d, currentAngle) {
-          if (currentAngle == null) return 1.0;
-          const eventAngle = angle(d.ts);
-          let delta = (currentAngle - eventAngle) % (2 * Math.PI);
+        function computeOpacity(d, currentDatelineAngle) {
+          if (currentDatelineAngle === null) return 1.0;
+          const eventAngle = angle(getNYCSecondsSinceMidnight(d.ts));
+          let delta = (currentDatelineAngle - eventAngle) % (2 * Math.PI);
           if (delta < 0) delta += 2 * Math.PI;
-          const norm = delta / (2 * Math.PI * (hoursVisible / 24));
+          const norm = delta / (2 * Math.PI * (config.hours || 24) / 24); // [0,1]
+          // linear fade from newest to oldest timestamps
           const minOpacity = 0.33;
-          const baseOpacity = 1 - (1 - minOpacity) * norm;
-          return baseOpacity * cfScale(d.cf || 0);
+          const opacity = 1 - (1 - minOpacity) * norm;
+          const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);
+          return opacity * cfScale(d.cf || 0);
         }
 
-        // Draw current time radial line
-        let currentDatelineAngle = null;
+        // draw radial at current time
+        let dateline = null;
+        let currentDatelineAngle = null; // Store the dateline angle for opacity calculation
         function drawDateline() {
-          svg.select("line.dateline-line")?.remove();
+          // rm previous dateline if it exists
+          if (dateline) dateline.remove();
           // current time in NY
           const localTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
           const secondsSinceMidnightNY = localTime.getHours() * 3600 + localTime.getMinutes() * 60 + localTime.getSeconds();
-          // angle: start at -π/2, sweep 2π for 24h
-          const dateLineAngle = -Math.PI / 2 + (secondsSinceMidnightNY / (24 * 3600)) * (2 * Math.PI);
-          currentDatelineAngle = dateLineAngle;
-          svg.append("line")
-            .attr("class", "dateline-line")
+          // to tick based on input time range
+          const hoursVisible = config.hours || 24;
+          const fractionOfRange = secondsSinceMidnightNY / (hoursVisible * 3600);
+          // angle: start at -π/2, sweep 2π * (hoursVisible/24) for the visible range
+          const angleRange = 2 * Math.PI * (hoursVisible / 24);
+          const dateLineAngle = -Math.PI / 2 + fractionOfRange * angleRange;
+          currentDatelineAngle = dateLineAngle; // Save for use in opacity calculation
+          dateline = svg.append("line")
             .attr("x1", cx + INNER_R * Math.cos(dateLineAngle))
             .attr("y1", cy + INNER_R * Math.sin(dateLineAngle))
             .attr("x2", cx + OUTER_R * Math.cos(dateLineAngle))
             .attr("y2", cy + OUTER_R * Math.sin(dateLineAngle))
             .attr("stroke", "#fff")
             .attr("stroke-width", 0.333);
-          // update event line opacities
-          g.selectAll("line.event-line").attr("opacity", d => computeOpacity(d, currentDatelineAngle));
+          // Update opacity of all event lines to match new dateline position
+          g.selectAll("line.event-line").attr("opacity", function(d) {
+            return computeOpacity(d, currentDatelineAngle);
+          });
         }
         drawDateline();
-        // (Dateline will be updated via the interval; no separate timer here)
+        // tick every N seconds
+        const tickInterval = 100000; // db update time - one minute in ms
+        if (window._clockDatelineInterval) clearInterval(window._clockDatelineInterval);
+        window._clockDatelineInterval = setInterval(() => {
+          drawDateline();
+        }, tickInterval);
 
-        // Draw rings and event tick marks for each visible class
+        // draw each class ring
         filteredClasses.forEach((cls, i) => {
           const radius = ringScale(i);
           g.append("circle")
-            .attr("class", "class-ring")
             .attr("r", radius)
             .style("fill", "none")
             .style("stroke", "#aaaaaa24");
 
+          // draw classified events
+          let lineBuffer = 1.5;
           g.selectAll(`.line-${i}`)
-            .data(data.filter(d => d.class === cls))
+            .data(data.filter((d) => d.class === cls))
             .join("line")
             .attr("class", `line-${i} event-line`)
-            .attr("x1", d => (radius - 1.5) * Math.cos(angle(d.ts)))
-            .attr("y1", d => (radius - 1.5) * Math.sin(angle(d.ts)))
-            .attr("x2", d => (radius + 1.5) * Math.cos(angle(d.ts)))
-            .attr("y2", d => (radius + 1.5) * Math.sin(angle(d.ts)))
+            // Use NYC time-of-day for angle
+            .attr("x1", (d) => (radius - lineBuffer) * Math.cos(angle(getNYCSecondsSinceMidnight(d.ts))))
+            .attr("y1", (d) => (radius - lineBuffer) * Math.sin(angle(getNYCSecondsSinceMidnight(d.ts))))
+            .attr("x2", (d) => (radius + lineBuffer) * Math.cos(angle(getNYCSecondsSinceMidnight(d.ts))))
+            .attr("y2", (d) => (radius + lineBuffer) * Math.sin(angle(getNYCSecondsSinceMidnight(d.ts))))
             .attr("stroke", color(cls))
             .attr("stroke-width", 1.5)
-            .attr("opacity", d => computeOpacity(d, currentDatelineAngle))
+            .attr("opacity", (d) => computeOpacity(d, currentDatelineAngle))
             .on("mouseover", (event, d) => {
               const tsMs = d.ts * 1000;
-              const timeLabel = new Date(tsMs).toLocaleString("en-US", {
+              const label = new Date(tsMs).toLocaleString("en-US", {
                 hour: "2-digit",
                 minute: "2-digit",
-                timeZone: "America/New_York"
+                timeZone: "America/New_York",
               });
-              tooltip.text(`${d.name}, ${timeLabel}`).style("visibility", "visible");
+              tooltip.text(`${d.name}, ${label}`).style("visibility", "visible");
             })
-            .on("mousemove", event => {
-              tooltip.style("top", `${event.pageY + 10}px`).style("left", `${event.pageX + 10}px`);
+            .on("mousemove", (event) => {
+              tooltip
+                .style("top", `${event.pageY + 10}px`)
+                .style("left", `${event.pageX + 10}px`);
             })
             .on("mouseout", () => tooltip.style("visibility", "hidden"));
         });
 
-        // Clock face labels at 12, 3, 6, 9 o'clock
-        const labelAngles = [-Math.PI / 2, 0, Math.PI / 2, Math.PI];
-        const invAngle = d3.scaleLinear().domain(angle.range()).range(angle.domain());
-        labelAngles.forEach(a => {
-          const ts = invAngle(a);
-          const tsMs = ts * 1000;
-          const txt = new Date(tsMs).toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "America/New_York"
-          });
+        // --- NEW: Fixed time labels at 12am, 6am, 12pm, 6pm ---
+        const labelTimes = [
+          { label: "12:00 AM", seconds: 0, angle: -Math.PI / 2 },
+          { label: "6:00 AM", seconds: 6 * 3600, angle: 0 },
+          { label: "12:00 PM", seconds: 12 * 3600, angle: Math.PI / 2 },
+          { label: "6:00 PM", seconds: 18 * 3600, angle: Math.PI },
+        ];
+        labelTimes.forEach(({ label, angle: a }) => {
           const textX = cx + (OUTER_R + 45) * Math.cos(a);
           const textY = cy + (OUTER_R + 25) * Math.sin(a);
-          const textElem = svg.append("text")
-            .attr("class", "clock-label")
+          const textElement = svg.append("text")
             .attr("x", textX)
             .attr("y", textY)
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "middle")
             .style("font-size", "0.75rem")
             .style("fill", "#f5f5f5")
-            .text(txt);
-          const bbox = textElem.node().getBBox();
+            .text(label);
+          const bbox = textElement.node().getBBox();
           svg.insert("rect", "text")
-            .attr("class", "clock-label-bg")
             .attr("x", bbox.x - 2)
             .attr("y", bbox.y - 2)
             .attr("width", bbox.width + 4)
@@ -347,29 +310,39 @@ export function clockGraph(containerId, config = {}) {
             .style("fill", "black");
         });
 
-        // Legend (show filtered class names and counts)
+        // legend
         legendContainer.selectAll("*").remove();
-        const legendItems = Array.from(classCounts.entries())
+        const items = Array.from(classCounts.entries())
           .filter(([cls]) => filteredClasses.includes(cls))
           .sort((a, b) => b[1] - a[1])
-          .map(([cls, count]) => ({ name: idxToNameMap[cls] || `Unknown (${cls})`, count, cls }));
-        const itemDiv = legendContainer.selectAll(".item")
-          .data(legendItems)
+          .map(([cls, count]) => ({ name: idxToNameMap[cls] || `Unknown (${cls})`, count, cls })); 
+
+        const legendItem = legendContainer
+          .selectAll(".item")
+          .data(items)
           .join("div")
           .attr("class", "item")
           .style("margin-bottom", "4px");
-        itemDiv.append("span")
+
+        legendItem
+          .append("span")
           .style("display", "inline-block")
           .style("width", "12px")
           .style("height", "12px")
           .style("margin-right", "6px")
-          .style("background-color", d => color(d.cls));
-        itemDiv.append("span")
-          .style("font-size", "0.85rem")
-          .text(d => `${d.name} (${d.count})`);
-      } // end draw()
+          .style("background-color", (d) => color(d.cls)); 
+
+        legendItem.append("span")
+          .style("font-size", "0.85rem") // responsive font size
+          .text((d) => `${d.name} (${d.count})`); // Display human-readable names in the legend
+      }
+
+      // Call the onDataReady callback after the visualization is fully rendered
+      if (typeof config.onDataReady === "function") {
+        config.onDataReady();
+      }
     });
-  }).catch(error => {
+  }).catch((error) => {
     console.error("Failed to load the mapping JSON:", error);
   });
 }
