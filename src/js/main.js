@@ -1,3 +1,4 @@
+import { bin } from "d3";
 import { clockGraph } from "./clock.js";
 
 // loading overlay
@@ -42,6 +43,7 @@ const onDataReady = () => {
 clockGraph("simpleGraphContainer", { 
   onDataReady, 
   apiBaseUrl: "http://localhost:3000/api",
-  offsetHours: 48
+  offsetHours: 48,
+  binSeconds: 30,
 });
 

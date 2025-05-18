@@ -14,8 +14,15 @@ export function clockGraph(containerId, config = {}) {
   // Consolidate API endpoints at the top for easier config
   const API_BASE_URL = config.apiBaseUrl || "https://rhythmanalysis.onrender.com/api";
   let DATA_URL = config.dataUrl || `${API_BASE_URL}/audio_logs`;
+  const urlParams = [];
   if (config.offsetHours) {
-    DATA_URL += `?offsetHours=${encodeURIComponent(config.offsetHours)}`;
+    urlParams.push(`offsetHours=${encodeURIComponent(config.offsetHours)}`);
+  }
+  if (config.binSeconds) {
+    urlParams.push(`binSeconds=${encodeURIComponent(config.binSeconds)}`);
+  }
+  if (urlParams.length > 0) {
+    DATA_URL += `?${urlParams.join("&")}`;
   }
   const CLASS_MAP_API = config.classMapUrl || `${API_BASE_URL}/yamnet_class_map`;
 
@@ -75,9 +82,13 @@ export function clockGraph(containerId, config = {}) {
         return;
       }
 
+      // DEBUG: log first object to inspect available fields
+      if (raw.data.length > 0) {
+        console.log('[clock.js] First API object:', raw.data[0]);
+      }
       dataCache = raw.data
         .map((d) => ({
-          ts: +d.ts, // or +d.raw_ts if you prefer
+          ts: d.ts !== undefined ? +d.ts : (d.raw_ts !== undefined ? +d.raw_ts : NaN),
           class: d.c1_idx,
           cf: +d.c1_cf,
           name: idxToNameMap[d.c1_idx] || `Unknown (${d.c1_idx})`,
@@ -89,8 +100,28 @@ export function clockGraph(containerId, config = {}) {
         return;
       }
 
+      // BINNING: above event threshold, bin by class and 30 seconds (1 event per class per 30s)
+      // If server-side binning is used, no need to bin again client-side
+      let binnedData = dataCache;
+      if (!config.binSeconds && dataCache.length > 2000) {
+        // Bin by class and 30-second interval (NYC time)
+        const binMap = new Map();
+        dataCache.forEach((d) => {
+          const date = new Date(d.ts * 1000);
+          const nyc = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+          const secondsOfDay = nyc.getHours() * 3600 + nyc.getMinutes() * 60 + nyc.getSeconds();
+          const bin = Math.floor(secondsOfDay / 30); // 30-second bins
+          const key = `${d.class}_${bin}`;
+          // Keep the event with the highest confidence for this class/bin
+          if (!binMap.has(key) || d.cf > binMap.get(key).cf) {
+            binMap.set(key, d);
+          }
+        });
+        binnedData = Array.from(binMap.values());
+      }
+
       // Always use a 24-hour window ending at the latest timestamp
-      tsMax = dataCache[dataCache.length - 1].ts;
+      tsMax = binnedData[binnedData.length - 1].ts;
       tsMin = tsMax - 24 * 3600;
 
       // initial full-range draw
@@ -109,7 +140,13 @@ export function clockGraph(containerId, config = {}) {
         const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 45% of the smaller dimension
 
         // filter data to 24h window
-        const data = dataCache.filter((d) => d.ts >= t0 && d.ts <= t1);
+        console.log('[clock.js] binnedData.length:', binnedData.length);
+        if (binnedData.length) {
+          const tsVals = binnedData.map(d => d.ts);
+          console.log('[clock.js] binnedData ts min:', Math.min(...tsVals), 'max:', Math.max(...tsVals));
+          console.log('[clock.js] filter window t0:', t0, 't1:', t1);
+        }
+        const data = binnedData.filter((d) => d.ts >= t0 && d.ts <= t1);
         if (!data.length) {
           console.warn("no data in selected range");
           return;
