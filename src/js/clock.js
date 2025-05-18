@@ -76,12 +76,15 @@ export function clockGraph(containerId, config = {}) {
       idxToNameMap[row.index] = row.display_name; // use "index" and "display_name" columns
     });
 
+    if (typeof config.onApiFetchStart === "function") config.onApiFetchStart();
     d3.json(DATA_URL).then((raw) => {
+      if (typeof config.onApiFetchEnd === "function") config.onApiFetchEnd();
       if (!raw || !Array.isArray(raw.data)) {
         console.error("Unexpected data format: expected an object with a data array");
         return;
       }
 
+      if (typeof config.onD3Start === "function") config.onD3Start();
       // DEBUG: log first object to inspect available fields
       if (raw.data.length > 0) {
         console.log('[clock.js] First API object:', raw.data[0]);
@@ -97,6 +100,7 @@ export function clockGraph(containerId, config = {}) {
 
       if (!dataCache.length) {
         console.warn("no data");
+        if (typeof config.onD3End === "function") config.onD3End();
         return;
       }
 
@@ -125,7 +129,9 @@ export function clockGraph(containerId, config = {}) {
       tsMin = tsMax - 24 * 3600;
 
       // initial full-range draw
+      if (typeof config.onD3Start === "function") config.onD3Start(); // mark D3 start for draw
       draw();
+      if (typeof config.onD3End === "function") config.onD3End();
       window.addEventListener("resize", draw);
 
       // Adjust the draw function to always use the 24-hour window

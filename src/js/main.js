@@ -45,5 +45,10 @@ clockGraph("simpleGraphContainer", {
   apiBaseUrl: "http://localhost:3000/api",
   offsetHours: 48,
   binSeconds: 30,
+  // Diagnostic: log timing for API fetch and D3 processing
+  onApiFetchStart: () => { window._apiFetchStart = performance.now(); console.log('[main.js] API fetch started'); },
+  onApiFetchEnd: () => { if (window._apiFetchStart) { console.log('[main.js] API fetch duration:', (performance.now() - window._apiFetchStart).toFixed(2), 'ms'); } },
+  onD3Start: () => { window._d3Start = performance.now(); console.log('[main.js] D3 processing started'); },
+  onD3End: () => { if (window._d3Start) { console.log('[main.js] D3 processing duration:', (performance.now() - window._d3Start).toFixed(2), 'ms'); } },
 });
 
