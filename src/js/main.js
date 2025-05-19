@@ -47,11 +47,11 @@ const onDataReady = () => {
 };
 
 // Pass the onDataReady callback to the clockGraph function
-clockGraph("simpleGraphContainer", { 
+clockGraph("clockContainer", { 
   onDataReady, 
   // apiBaseUrl: "http://localhost:3000/api",
   hours: 24,
-  offsetHours: 72,
+  offsetHours: 96,
   binSeconds: 30,
   refresh_interval: 300000, // N seconds in ms
   // Diagnostic: log timing for API fetch and D3 processing

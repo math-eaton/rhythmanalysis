@@ -75,7 +75,7 @@ export function clockGraph(containerId, config = {}) {
     const viewportHeight = window.innerHeight;
     const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025; // 2.5% of the smaller dimension
     const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 45% of the smaller dimension
-    const tickStroke = config && config.refresh_interval === 100000 ? 0.5 : 1.25;
+    const eventStroke = 1.5;
     // SVG sizing
     const w = window.innerWidth * 0.85;
     const h = window.innerHeight;
@@ -175,7 +175,7 @@ export function clockGraph(containerId, config = {}) {
         .attr("x2", cx + OUTER_R * Math.cos(dateLineAngle))
         .attr("y2", cy + OUTER_R * Math.sin(dateLineAngle))
         .attr("stroke", "#fff")
-        .attr("stroke-width", tickStroke);
+        .attr("stroke-width", 0.5);
       g.selectAll("line.event-line").attr("opacity", function(d) {
         return computeOpacity(d);
       });
@@ -187,7 +187,7 @@ export function clockGraph(containerId, config = {}) {
         .attr("r", radius)
         .style("fill", "none")
         .style("stroke", "#aaaaaa24");
-      const strokeWidth = tickStroke;
+      const strokeWidth = eventStroke;
       let lineBuffer = 2;
       g.selectAll(`.line-${i}`)
         .data(data.filter(d => d.class === cls))
@@ -206,7 +206,7 @@ export function clockGraph(containerId, config = {}) {
               minute: "2-digit",
               timeZone: "UTC",
             });
-            tooltip.text(`${d.name}, ${label} UTC`).style("visibility", "visible");
+            tooltip.text(`${d.name}, ${label}`).style("visibility", "visible");
           })
           .on("mousemove", (event) => {
             tooltip
@@ -223,13 +223,23 @@ export function clockGraph(containerId, config = {}) {
     window._clockDatelineInterval = setInterval(() => {
       updateDatelineAndOpacities();
     }, tickInterval);
-    // Fixed time labels at 12am, 6am, 12pm, 6pm
-    const labelTimes = [
-      { label: "12:00 AM", seconds: 0, angle: -Math.PI / 2 },
-      { label: "6:00 AM", seconds: 6 * 3600, angle: 0 },
-      { label: "12:00 PM", seconds: 12 * 3600, angle: Math.PI / 2 },
-      { label: "6:00 PM", seconds: 18 * 3600, angle: Math.PI },
+    // time labels at fixed 0°, 90°, 180°, 270° positions
+    const totalHours = config.hours || 24;
+    const quarters = 4;
+    const fixedAngles = [
+      -Math.PI / 2, // top (0°)
+      0,            // right (90°)
+      Math.PI / 2,  // bottom (180°)
+      Math.PI       // left (270°)
     ];
+    const labelTimes = fixedAngles.map((angle, i) => {
+      const hour = Math.round((i * totalHours) / quarters) % 24;
+      const labelHour = hour.toString().padStart(2, '0');
+      return {
+        label: `${labelHour}:00`,
+        angle
+      };
+    });
     labelTimes.forEach(({ label, angle: a }) => {
       const textX = cx + (OUTER_R + 45) * Math.cos(a);
       const textY = cy + (OUTER_R + 25) * Math.sin(a);
@@ -259,17 +269,12 @@ export function clockGraph(containerId, config = {}) {
       .selectAll(".item")
       .data(items)
       .join("div")
-      .attr("class", "item")
-      .style("margin-bottom", "4px");
+      .attr("class", "item");
     legendItem
       .append("span")
-      .style("display", "inline-block")
-      .style("width", "12px")
-      .style("height", "12px")
-      .style("margin-right", "6px")
+      .attr("class", "swatch")
       .style("background-color", (d) => color(d.cls));
     legendItem.append("span")
-      .style("font-size", "0.85rem")
       .text((d) => `${d.name} (${d.count})`);
   }
 
