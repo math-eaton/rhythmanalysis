@@ -152,7 +152,7 @@ export function clockGraph(containerId, config = {}) {
       const angleRange = 2 * Math.PI * (hoursVisible / 24);
       let norm = delta / angleRange;
       if (norm > 1) norm = 1;
-      const minOpacity = 0.33;
+      const minOpacity = 0.333;
       const opacity = 1 - (1 - minOpacity) * norm;
       const cfScale = d3.scaleLinear().domain([0, 100]).range([0.1, 1]);
       return opacity * cfScale(d.cf || 0);
@@ -183,10 +183,23 @@ export function clockGraph(containerId, config = {}) {
     // draw each class ring
     filteredClasses.forEach((cls, i) => {
       const radius = ringScale(i);
+      // Draw the ring and add click-to-lock logic
       g.append("circle")
         .attr("r", radius)
+        .attr("class", `class-ring class-ring-${cls}`)
         .style("fill", "none")
-        .style("stroke", "#aaaaaa24");
+        .style("stroke", "#aaaaaa24")
+        .style("cursor", "pointer")
+        .on("click", function(event) {
+          event.stopPropagation();
+          if (lockedClass === cls) {
+            unlockClass();
+          } else {
+            lockedClass = cls;
+            g.selectAll("line.event-line")
+              .attr("opacity", lineData => (lineData.class === cls ? 1 : 0.1));
+          }
+        });
       const strokeWidth = eventStroke;
       let lineBuffer = 2;
       g.selectAll(`.line-${i}`)
@@ -213,9 +226,18 @@ export function clockGraph(containerId, config = {}) {
               .style("top", `${event.pageY + 10}px`)
               .style("left", `${event.pageX + 10}px`);
           })
-          .on("mouseout", () => tooltip.style("visibility", "hidden"));
+          .on("mouseout", () => tooltip.style("visibility", "hidden"))
+          .on("click", function(event, d) {
+            event.stopPropagation(); // Prevent document click from firing
+            if (lockedClass === d.class) {
+              unlockClass();
+            } else {
+              lockedClass = d.class;
+              g.selectAll("line.event-line")
+                .attr("opacity", lineData => (lineData.class === d.class ? 1 : 0.1));
+            }
+          });
     });
-    // Now that all your event lines exist, give them their initial opacity
     updateDatelineAndOpacities();
     // Set up interval to update dateline and opacities in sync with config.refresh_interval
     const tickInterval = config.refresh_interval || 30000;
@@ -234,9 +256,9 @@ export function clockGraph(containerId, config = {}) {
     ];
     const labelTimes = fixedAngles.map((angle, i) => {
       const hour = Math.round((i * totalHours) / quarters) % 24;
-      const labelHour = hour.toString().padStart(2, '0');
+      const labelHour = new Date(Date.UTC(2000, 0, 1, hour)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'UTC' });
       return {
-        label: `${labelHour}:00`,
+        label: `${labelHour}`,
         angle
       };
     });

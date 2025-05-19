@@ -51,7 +51,7 @@ clockGraph("clockContainer", {
   onDataReady, 
   // apiBaseUrl: "http://localhost:3000/api",
   hours: 24,
-  offsetHours: 96,
+  offsetHours: 0,
   binSeconds: 30,
   refresh_interval: 300000, // N seconds in ms
   // Diagnostic: log timing for API fetch and D3 processing

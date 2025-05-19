@@ -1,5 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap');
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: "Syne Mono", sans-serif; */
   line-height: 1.5;
   font-weight: 400;
 
@@ -12,6 +16,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 
 a {
   font-weight: 500;
@@ -65,7 +70,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-body { font-family: sans-serif; }
+body {   font-family: Helvetica, sans-serif; }
   .tick-label { font-size: 12px; fill: #333; text-anchor: middle; }
   .legend text { font-size: 12px; }
 
@@ -166,4 +171,8 @@ svg {
   background-color: #242424;
   color: #fff;
   transform: scaleY(5);
+}
+
+.event-line {
+  cursor: pointer;
 }
