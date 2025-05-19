@@ -110,6 +110,7 @@ body { font-family: sans-serif; }
   align-items: center;
   margin-bottom: 0.1rem;
   font-size: 0.85rem;
+  cursor: pointer;
 }
 .legend .swatch {
   display: inline-block;

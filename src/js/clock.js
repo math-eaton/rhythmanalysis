@@ -265,11 +265,57 @@ export function clockGraph(containerId, config = {}) {
       .filter(([cls]) => filteredClasses.includes(cls))
       .sort((a, b) => b[1] - a[1])
       .map(([cls, count]) => ({ name: idxToNameMap[cls] || `Unknown (${cls})`, count, cls }));
+    let lockedClass = null; // Track which class (if any) is locked by click
+    // Helper to unlock and restore opacities
+    function unlockClass() {
+      lockedClass = null;
+      g.selectAll("line.event-line")
+        .attr("opacity", function(lineData) {
+          return computeOpacity(lineData);
+        });
+    }
+    // Listen for outside clicks to unlock
+    function handleDocumentClick(event) {
+      if (lockedClass === null) return;
+      // Only unlock if click is outside the legend
+      if (!legendContainer.node().contains(event.target)) {
+        unlockClass();
+      }
+    }
+    document.addEventListener("mousedown", handleDocumentClick);
+    // Remove listener on redraw (to avoid duplicates)
+    svg.on("remove", function() {
+      document.removeEventListener("mousedown", handleDocumentClick);
+    });
     const legendItem = legendContainer
       .selectAll(".item")
       .data(items)
       .join("div")
-      .attr("class", "item");
+      .attr("class", "item")
+      .on("mouseover", function(event, d) {
+        if (lockedClass !== null) return; // Don't highlight if locked
+        g.selectAll("line.event-line")
+          .attr("opacity", lineData => (lineData.class === d.cls ? 1 : 0.1));
+      })
+      .on("mouseout", function() {
+        if (lockedClass !== null) return; // Don't restore if locked
+        g.selectAll("line.event-line")
+          .attr("opacity", function(lineData) {
+            return computeOpacity(lineData);
+          });
+      })
+      .on("click", function(event, d) {
+        event.stopPropagation(); // Prevent document click from firing
+        if (lockedClass === d.cls) {
+          // Unlock if clicking the same class
+          unlockClass();
+        } else {
+          // Lock to this class
+          lockedClass = d.cls;
+          g.selectAll("line.event-line")
+            .attr("opacity", lineData => (lineData.class === d.cls ? 1 : 0.1));
+        }
+      });
     legendItem
       .append("span")
       .attr("class", "swatch")
