@@ -41,6 +41,11 @@ const onDataReady = () => {
         overlay.style.display = "none";
       }
       if (stopAnimation) stopAnimation();
+      // Show the help-link after loading overlay disappears
+      const helpLink = document.getElementById("help-link");
+      if (helpLink) {
+        helpLink.classList.add("visible");
+      }
       initialLoad = false;
     }, 100); 
   }

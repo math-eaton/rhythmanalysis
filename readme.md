@@ -23,29 +23,6 @@ timezone config
 
 ---
 
-## todo:
-
-1. Visualization 
-    - event resolution
-        - quantize consecutive events within a threshold to arcs rather than individual svg
-        - map events onto coarser classes for legend display
-    - user interaction
-        - better tooltips. focus class on hover
-        - zoom/pan
-        - legend toggles
-    - standardize color scheme - currently remaps classes on page load
-    - live monitoring. visualize as new records are added
-    - db values currently unused
-    - time zones: should visualize relative to the data collector timezone. database in UTC
-
-2. Database
-    - quickly approaching free storage limits. instead of paid cloud service, host postgreSQL / api locally on home server
-
-3. Model
-    - lots of noise in yamnet ... fine-tunable alternatives?
-
-
-
 
 ## **Project log**
 
@@ -137,3 +114,29 @@ Sonically, I was challenged to develop alternate habits of pattern recognition; 
 
 
 ***LLM disclaimer**: I am a competent-enough but self-taught and unsophisticated programmer with a firm grasp on the fundamentals of digital audio signal processing, an enthusiastic but very much in-progress training in sensors and IoT, middling understanding of good database management practices, and zero technical knowledge of machine learning techniques beyond critical readings. I made extensive use of ChatGPT-4 in-browser and with GitHub Copilot for rapid prototyping of the programs and end-to-end data processing pipelines that constitute this project.*
+
+---
+
+## todo:
+
+1. Visualization 
+    - event resolution
+        <!-- - quantize consecutive events within a threshold to arcs rather than individual svg -->
+        - map events onto coarser classes for legend display
+    - user interaction
+        <!-- - better tooltips. focus class on hover -->
+        - zoom/pan
+        <!-- - legend toggles -->
+    - standardize color scheme - currently remaps classes on page load
+    <!-- - live monitoring. visualize as new records are added -->
+    - db values currently unused
+    <!-- - time zones: should visualize relative to the data collector timezone. database in UTC -->
+
+2. Database
+    - quickly approaching free storage limits. instead of paid cloud service, host postgreSQL / api locally on home server
+
+3. Model
+    - lots of noise in yamnet ... fine-tunable alternatives?
+
+
+

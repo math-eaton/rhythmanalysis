@@ -176,3 +176,29 @@ svg {
 .event-line {
   cursor: pointer;
 }
+
+#help-link {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  font-size: 1.75em;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.87);
+  background: rgba(36,36,36,0.85);
+  border-radius: 50%;
+  width: 4vh;
+  height: 4vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: background 0.2s, color 0.2s;
+}
+#help-link.visible {
+  display: flex;
+}
+#help-link:hover {
+  color: #fff;
+  background: #1b1b1b;
+}
