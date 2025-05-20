@@ -44,10 +44,6 @@ export function clockGraph(containerId, config = {}) {
   if (legendContainer.empty()) {
     legendContainer = container.append("div").attr("class", "legend");
   }
-  legendContainer
-    .style("overflow-y", "auto")
-    .style("max-height", "100vh")
-    .style("margin-left", "16px");
 
   // create a tooltip element
   const tooltip = d3
@@ -55,12 +51,6 @@ export function clockGraph(containerId, config = {}) {
     .append("div")
     .attr("class", "tooltip")
     .style("position", "absolute")
-    .style("padding", "5px 10px")
-    .style("background", "rgba(0, 0, 0, 0.7)")
-    .style("color", "#fff")
-    .style("border-radius", "4px")
-    .style("font-size", "12px")
-    .style("pointer-events", "none")
     .style("visibility", "hidden");
 
   // cache for loaded data
@@ -85,9 +75,9 @@ export function clockGraph(containerId, config = {}) {
       .attr("height", h);
     svg.selectAll("*").remove();
     const cx = w / 2, cy = h / 2;
-    // Add a label in the top left corner showing the date or date range of data visualization
-    const minDateStr = new Date(tsMin * 1000).toDateString();
-    const maxDateStr = new Date(tsMax * 1000).toDateString();
+    // Add a label in the top left corner showing the UTC date or date range of data visualization
+    const minDateStr = new Date(tsMin * 1000).toUTCString().split(' ').slice(0, 4).join(' ');
+    const maxDateStr = new Date(tsMax * 1000).toUTCString().split(' ').slice(0, 4).join(' ');
     const visualizationDate = (minDateStr === maxDateStr)
       ? minDateStr
       : `${minDateStr} - ${maxDateStr}`;
@@ -98,16 +88,8 @@ export function clockGraph(containerId, config = {}) {
       .attr("y", topLeftTextY)
       .attr("text-anchor", "start")
       .attr("dominant-baseline", "middle")
-      .style("font-size", "0.75rem")
-      .style("fill", "#f5f5f5")
+      .attr("class", "clock-text-label date-label")
       .text(visualizationDate);
-    const topLeftBBox = topLeftTextElement.node().getBBox();
-    svg.insert("rect", "text")
-      .attr("x", topLeftBBox.x - 2)
-      .attr("y", topLeftBBox.y - 2)
-      .attr("width", topLeftBBox.width + 4)
-      .attr("height", topLeftBBox.height + 4)
-      .style("fill", "black");
     // Helper: get UTC time-of-day in seconds since midnight
     function getUTCSecondsSinceMidnight(ts) {
       const date = new Date(ts * 1000);
@@ -137,8 +119,7 @@ export function clockGraph(containerId, config = {}) {
       .attr("cx", cx)
       .attr("cy", cy)
       .attr("r", OUTER_R)
-      .style("fill", "none")
-      .style("stroke", "#aaaaaa24");
+      .attr("class", "outer-clock-circle");
     const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
     // --- Dateline and timer logic ---
     let dateline = null;
@@ -174,8 +155,7 @@ export function clockGraph(containerId, config = {}) {
         .attr("y1", cy + INNER_R * Math.sin(dateLineAngle))
         .attr("x2", cx + OUTER_R * Math.cos(dateLineAngle))
         .attr("y2", cy + OUTER_R * Math.sin(dateLineAngle))
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 0.5);
+        .attr("class", "dateline");
       g.selectAll("line.event-line").attr("opacity", function(d) {
         return computeOpacity(d);
       });
@@ -187,9 +167,6 @@ export function clockGraph(containerId, config = {}) {
       g.append("circle")
         .attr("r", radius)
         .attr("class", `class-ring class-ring-${cls}`)
-        .style("fill", "none")
-        .style("stroke", "#aaaaaa24")
-        .style("cursor", "pointer")
         .on("click", function(event) {
           event.stopPropagation();
           if (lockedClass === cls) {
@@ -214,12 +191,19 @@ export function clockGraph(containerId, config = {}) {
           .attr("stroke-width", strokeWidth)
           .on("mouseover", (event, d) => {
             const tsMs = d.ts * 1000;
-            const label = new Date(tsMs).toLocaleString("en-US", {
+            const dateTime = new Date(tsMs);
+            const timeLabel = dateTime.toLocaleString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
               timeZone: "UTC",
             });
-            tooltip.text(`${d.name}, ${label}`).style("visibility", "visible");
+            const dateLabel = dateTime.toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              timeZone: "UTC"
+            });
+            tooltip.html(`${d.name}, ${timeLabel}<br>${dateLabel}`).style("visibility", "visible");
           })
           .on("mousemove", (event) => {
             tooltip
@@ -270,16 +254,8 @@ export function clockGraph(containerId, config = {}) {
         .attr("y", textY)
         .attr("text-anchor", "middle")
         .attr("dominant-baseline", "middle")
-        .style("font-size", "0.75rem")
-        .style("fill", "#f5f5f5")
+        .attr("class", "clock-text-label time-label")
         .text(label);
-      const bbox = textElement.node().getBBox();
-      svg.insert("rect", "text")
-        .attr("x", bbox.x - 2)
-        .attr("y", bbox.y - 2)
-        .attr("width", bbox.width + 4)
-        .attr("height", bbox.height + 4)
-        .style("fill", "black");
     });
     // legend
     legendContainer.selectAll("*").remove();

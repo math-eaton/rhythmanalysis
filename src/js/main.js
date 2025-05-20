@@ -56,9 +56,9 @@ clockGraph("clockContainer", {
   onDataReady, 
   // apiBaseUrl: "http://localhost:3000/api",
   hours: 24,
-  offsetHours: 0,
+  offsetHours: 4, // UTC to NYC offset (Eastern Time is UTC-4 during DST, UTC-5 standard time)
   binSeconds: 30,
-  refresh_interval: 300000, // N seconds in ms
+  refresh_interval: 300000, // 5 minutes in ms
   // Diagnostic: log timing for API fetch and D3 processing
   onApiFetchStart: () => { window._apiFetchStart = performance.now(); console.log('[main.js] API fetch started'); },
   onApiFetchEnd: () => { if (window._apiFetchStart) { console.log('[main.js] API fetch duration:', (performance.now() - window._apiFetchStart).toFixed(2), 'ms'); } },

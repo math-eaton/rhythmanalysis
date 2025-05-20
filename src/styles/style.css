@@ -15,6 +15,9 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  font-size: 0.85rem;
+  text-anchor: middle;
 }
 
 
@@ -70,9 +73,6 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-body {   font-family: Helvetica, sans-serif; }
-  .tick-label { font-size: 12px; fill: #333; text-anchor: middle; }
-  .legend text { font-size: 12px; }
 
 .container { 
   display: flex; 
@@ -177,6 +177,17 @@ svg {
   cursor: pointer;
 }
 
+.outer-clock-circle {
+  fill: none;
+  stroke: #aaaaaa24;
+}
+
+.class-ring {
+  fill: none;
+  stroke: #aaaaaa24;
+  cursor: pointer;
+}
+
 #help-link {
   position: fixed;
   left: 16px;
@@ -201,4 +212,92 @@ svg {
 #help-link:hover {
   color: #fff;
   background: #1b1b1b;
+}
+
+#date-range-label {
+  color: wheat;
+  position: absolute;
+  top: 1vh;
+  left: 1vw;
+  font-size: 0.75rem;
+  color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.date-range-label {
+  font-size: 0.75rem;
+  fill: #f5f5f5;
+}
+
+.dateline {
+  stroke: #fff;
+  stroke-width: 0.5;
+}
+
+.tooltip {
+  padding: 2px 5px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  pointer-events: none;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.clock-text-label {
+  font-size: 0.75rem;
+  fill: #f5f5f5;
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, 0.7);
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.time-label {
+  font-weight: 500;
+}
+
+.date-label {
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .legend {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 20vh;
+    background: rgba(36, 36, 36, 0.93);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 1001;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .legend .item {
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1.2rem 0 0;
+    min-width: 48px;
+    padding-bottom: 0.5rem;
+  }
+  .legend .swatch {
+    width: 18px;
+    height: 18px;
+    margin: 0 0 0.5rem 0;
+  }
+  .legend .item span:last-child {
+    /* rotate text 90° */
+    transform: rotate(90deg);
+    transform-origin: center;
+    white-space: nowrap;
+  }
 }
