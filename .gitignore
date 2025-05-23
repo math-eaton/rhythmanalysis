@@ -14,6 +14,7 @@ classification-tflite/
 *.h5
 dbconfig.*
 backups/
+*.csv
 
 # platformio
 .pio
