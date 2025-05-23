@@ -60,11 +60,24 @@ export function clockGraph(containerId, config = {}) {
 
   // --- Shared draw function for both initial and moving window draws ---
   function draw(data, tsMin, tsMax, config, idxToNameMap, legendContainer, container, tooltip) {
+    // Debounce utility function for hover events
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+      };
+    }
+    
+    // Variable to track current highlighted class
+    let highlightedClass = null;
+    
     // Calculate responsive inner and outer radii
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025; // 2.5% of the smaller dimension
-    const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.45; // 45% of the smaller dimension
+    const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025; // N% of the smaller dimension
+    const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.4; // N% of the smaller dimension
     const eventStroke = 1.5;
     // SVG sizing
     const w = window.innerWidth * 0.85;
@@ -204,13 +217,32 @@ export function clockGraph(containerId, config = {}) {
               timeZone: "UTC"
             });
             tooltip.html(`${d.name}, ${timeLabel}<br>${dateLabel}`).style("visibility", "visible");
+            
+            // Don't update highlight if a class is locked
+            if (lockedClass !== null) return;
+            
+            highlightedClass = d.class;
+            g.selectAll("line.event-line")
+              .attr("opacity", lineData => (lineData.class === d.class ? 1 : 0.1));
           })
           .on("mousemove", (event) => {
             tooltip
               .style("top", `${event.pageY + 10}px`)
               .style("left", `${event.pageX + 10}px`);
           })
-          .on("mouseout", () => tooltip.style("visibility", "hidden"))
+          .on("mouseout", debounce(() => {
+            tooltip.style("visibility", "hidden");
+            
+            // Don't update if a class is locked
+            if (lockedClass !== null) return;
+            
+            // Only reset if no other element has taken focus
+            if (highlightedClass !== null) {
+              highlightedClass = null;
+              g.selectAll("line.event-line")
+                .attr("opacity", lineData => computeOpacity(lineData));
+            }
+          }, 100)) // 100ms debounce delay
           .on("click", function(event, d) {
             event.stopPropagation(); // Prevent document click from firing
             if (lockedClass === d.class) {
@@ -267,6 +299,7 @@ export function clockGraph(containerId, config = {}) {
     // Helper to unlock and restore opacities
     function unlockClass() {
       lockedClass = null;
+      highlightedClass = null;
       g.selectAll("line.event-line")
         .attr("opacity", function(lineData) {
           return computeOpacity(lineData);
@@ -285,6 +318,20 @@ export function clockGraph(containerId, config = {}) {
     svg.on("remove", function() {
       document.removeEventListener("mousedown", handleDocumentClick);
     });
+    // Create debounced handler functions for legend hover
+    const handleLegendOut = debounce(function() {
+      if (lockedClass !== null) return; // Don't restore if locked
+      
+      // Only reset if no other legend item has taken focus
+      if (highlightedClass !== null) {
+        highlightedClass = null;
+        g.selectAll("line.event-line")
+          .attr("opacity", function(lineData) {
+            return computeOpacity(lineData);
+          });
+      }
+    }, 150); // slightly longer debounce for legend items
+    
     const legendItem = legendContainer
       .selectAll(".item")
       .data(items)
@@ -292,16 +339,12 @@ export function clockGraph(containerId, config = {}) {
       .attr("class", "item")
       .on("mouseover", function(event, d) {
         if (lockedClass !== null) return; // Don't highlight if locked
+        
+        highlightedClass = d.cls;
         g.selectAll("line.event-line")
           .attr("opacity", lineData => (lineData.class === d.cls ? 1 : 0.1));
       })
-      .on("mouseout", function() {
-        if (lockedClass !== null) return; // Don't restore if locked
-        g.selectAll("line.event-line")
-          .attr("opacity", function(lineData) {
-            return computeOpacity(lineData);
-          });
-      })
+      .on("mouseout", handleLegendOut)
       .on("click", function(event, d) {
         event.stopPropagation(); // Prevent document click from firing
         if (lockedClass === d.cls) {
