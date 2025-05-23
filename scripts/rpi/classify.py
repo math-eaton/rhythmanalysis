@@ -218,11 +218,16 @@ try:
                 names = labels[top_idx]
                 confs = [f"{c*100:.1f}%" for c in top_conf]
 
-                # Skip logging for excluded labels
+                # Check if the top prediction is "Silence" - if so, skip logging entirely
+                if names[0] == "Silence":
+                    # Optionally print for debugging/monitoring
+                    print(f"{datetime.fromtimestamp(ts, pytz.UTC).strftime('%H:%M:%S')} -> Silence ({confs[0]}) - not logged")
+                    continue
+
+                # Skip logging for other excluded environmental labels
                 excluded_classes = [
-                    "Silence",
                     "Inside, small room",
-                    "Inside, large room or hall",
+                    "Inside, large room or hall", 
                     "Inside, public space",
                     "Outside, urban or manmade",
                     "Outside, rural or natural"
