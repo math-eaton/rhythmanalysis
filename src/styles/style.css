@@ -18,6 +18,16 @@
 
   font-size: 0.85rem;
   text-anchor: middle;
+
+  /* Responsive clock sizing variables */
+  --clock-container-width: 75vw;
+  --clock-container-height: 100vh;
+  --legend-width: 22vw;
+  --legend-max-width: 280px;
+  --clock-inner-radius-scale: 0.025;
+  --clock-outer-radius-scale: 0.4;
+  --clock-width-scale: 0.75;
+  --clock-padding: 16px;
 }
 
 
@@ -36,6 +46,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow: hidden; 
 }
 
 h1 {
@@ -76,10 +87,12 @@ button:focus-visible {
 
 .container { 
   display: flex; 
-  flex-direction: column; /* Stack legend and clock vertically */
+  flex-direction: column;
   align-items: center; 
   justify-content: flex-start;
-  height: 100%;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
 }
 
 #clock { 
@@ -88,27 +101,15 @@ button:focus-visible {
   height: auto;
  }
 
-#legend {
-  margin-left: 1rem;
-  border: 1px solid #212121;
-  max-width: 15vw;
-}
-#legend .item {
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.1rem;
-}
-#legend .swatch {
-  width: 12px;
-  height: 12px;
-  margin-right: 0.5rem;
-}
-
 .legend {
   overflow-y: auto;
-  max-height: 100vh;
-  margin-left: 16px;
+  max-height: var(--clock-container-height);
+  width: var(--legend-width);
+  max-width: var(--legend-max-width);
+  min-width: 180px;
+  margin-left: 0;
+  padding: 12px;
+  box-sizing: border-box;
 }
 .legend .item {
   display: flex;
@@ -137,20 +138,25 @@ button:focus-visible {
 
 #clockContainer {
   display: flex;
-  flex-direction: row; /* Keep clock and legend side by side */
+  flex-direction: row;
   align-items: flex-start;
-  justify-content: center;
-  flex-wrap: nowrap; /* Prevent wrapping */
-  width: 100%;
-  height: 100%;
-  overflow-y: hidden;
+  justify-content: flex-start; 
+  flex-wrap: nowrap;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  gap: 24px; 
+  padding-left: 50rem; 
 }
 
 svg {
-  flex: 1;
-  max-width: 75vw; /* Ensure the clock takes up most of the width */
-  height: auto;
-  overflow: visible; /* Allow the clock to overflow its container */
+  width: var(--clock-container-width);
+  height: var(--clock-container-height);
+  max-width: calc(100vw - var(--legend-width) - var(--clock-padding) * 2 - 44px); /* Account for gap and padding */
+  min-width: 300px;
+  overflow: visible;
+  flex-shrink: 0;
+  padding-right: 10rem;
 }
 
 #loadingOverlay {
@@ -214,6 +220,18 @@ svg {
   background: #1b1b1b;
 }
 
+/* Responsive help link positioning */
+@media (max-width: 600px) {
+  #help-link {
+    bottom: 22vh; /* Above mobile legend */
+    right: 16px;
+    left: auto;
+    width: 6vh;
+    height: 6vh;
+    font-size: 2em;
+  }
+}
+
 #date-range-label {
   color: wheat;
   position: absolute;
@@ -246,6 +264,18 @@ svg {
   pointer-events: none;
   text-align: center;
   line-height: 1.2;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+/* Responsive tooltip */
+@media (max-width: 600px) {
+  .tooltip {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    max-width: 150px;
+    border-radius: 6px;
+  }
 }
 
 .clock-text-label {
@@ -266,14 +296,64 @@ svg {
   font-style: italic;
 }
 
+/* Responsive text sizing */
 @media (max-width: 600px) {
+  .clock-text-label {
+    font-size: 0.7rem;
+    stroke-width: 1.5px;
+  }
+
+  .event-line {
+    stroke-width: 1.2 !important;
+  }
+}
+
+@media (min-width: 1441px) {
+  .clock-text-label {
+    font-size: 0.8rem;
+  }
+
+  .event-line {
+    stroke-width: 1.8 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --clock-container-width: 100vw;
+    --clock-container-height: 75vh;
+    --legend-width: 100vw;
+    --clock-outer-radius-scale: 0.35;
+    --clock-padding: 8px;
+  }
+
+  body {
+    overflow: auto; /* Allow scrolling on mobile */
+  }
+
+  #clockContainer {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  svg {
+    width: 100vw;
+    height: 75vh;
+    max-width: none;
+    margin-bottom: 20vh; /* Space for bottom legend */
+  }
+
   .legend {
     position: fixed;
     left: 0;
     bottom: 0;
     width: 100vw;
     height: 20vh;
-    background: rgba(36, 36, 36, 0.93);
+    max-width: none;
+    margin-left: 0;
+    background: rgba(36, 36, 36, 0.95);
+    backdrop-filter: blur(8px);
     display: flex;
     flex-direction: row;
     align-items: flex-end;
@@ -281,6 +361,7 @@ svg {
     overflow-y: hidden;
     z-index: 1001;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+    padding: 8px 12px 12px 12px;
   }
   .legend .item {
     flex-direction: column;
@@ -288,6 +369,7 @@ svg {
     margin: 0 1.2rem 0 0;
     min-width: 48px;
     padding-bottom: 0.5rem;
+    flex-shrink: 0;
   }
   .legend .swatch {
     width: 18px;
@@ -295,9 +377,123 @@ svg {
     margin: 0 0 0.5rem 0;
   }
   .legend .item span:last-child {
-    /* rotate text 90° */
     transform: rotate(90deg);
     transform-origin: center;
     white-space: nowrap;
+    font-size: 0.75rem;
+  }
+}
+
+/* Tablet and small desktop */
+@media (min-width: 601px) and (max-width: 1024px) {
+  :root {
+    --clock-container-width: 70vw;
+    --legend-width: 25vw;
+    --clock-outer-radius-scale: 0.38;
+    --clock-padding: 12px;
+  }
+
+  #clockContainer {
+    gap: 16px; /* Smaller gap on tablets */
+    padding-left: 12px;
+  }
+}
+
+/* Large tablets and small desktops */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  :root {
+    --clock-container-width: 72vw;
+    --legend-width: 24vw;
+    --legend-max-width: 320px;
+    --clock-outer-radius-scale: 0.4;
+  }
+
+  #clockContainer {
+    gap: 20px;
+    padding-left: 16px;
+  }
+}
+
+/* Large desktops */
+@media (min-width: 1441px) {
+  :root {
+    --clock-container-width: 75vw;
+    --legend-width: 22vw;
+    --legend-max-width: 350px;
+    --clock-outer-radius-scale: 0.42;
+  }
+
+  #clockContainer {
+    gap: 28px; /* More generous gap on large screens */
+    padding-left: 24px;
+  }
+}
+
+/* Ultra-wide displays */
+@media (min-width: 1921px) {
+  :root {
+    --clock-container-width: 60vw;
+    --legend-width: 18vw;
+    --legend-max-width: 380px;
+  }
+
+  #clockContainer {
+    gap: 32px; /* Even more generous gap on ultra-wide */
+    padding-left: 32px;
+  }
+}
+
+/* Landscape mobile phones */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --clock-container-width: 65vw;
+    --clock-container-height: 90vh;
+    --legend-width: 30vw;
+    --clock-outer-radius-scale: 0.32;
+  }
+
+  #clockContainer {
+    flex-direction: row;
+  }
+
+  svg {
+    width: 65vw;
+    height: 90vh;
+    margin-bottom: 0;
+  }
+
+  .legend {
+    position: relative;
+    width: 30vw;
+    height: 90vh;
+    background: transparent;
+    backdrop-filter: none;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-shadow: none;
+    padding: 12px;
+  }
+
+  .legend .item {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 0 0.2rem 0;
+    min-width: auto;
+    padding-bottom: 0;
+    width: 100%;
+  }
+
+  .legend .swatch {
+    width: 14px;
+    height: 14px;
+    margin: 0 0.5rem 0 0;
+  }
+
+  .legend .item span:last-child {
+    transform: none;
+    font-size: 0.8rem;
+    white-space: normal;
   }
 }

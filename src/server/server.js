@@ -46,7 +46,7 @@ app.get("/api/audio_logs", async (req, res) => {
   try {
     // build time window
     let start, end;
-    const offset = req.query.offsetHours ? parseFloat(req.query.offsetHours) : 0;
+    const offset = req.query.offsetHours ? parseFloat(req.query.offsetHours) : 500;
     const binSeconds = req.query.binSeconds ? parseInt(req.query.binSeconds) : null;
     const limit = req.query.limit
       ? parseInt(req.query.limit)

@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-export function clockGraph(containerId, config = {}) {
+export function clockGraph(containerId, legendContainerId, config = {}) {
   const inputHours = config.hours || 24; // todo fix for dynamic ranges - only works for 24h rn
 
   // calculate the most recent local midnight timestamp
@@ -29,20 +29,11 @@ export function clockGraph(containerId, config = {}) {
   const container = d3.select(`#${containerId}`);
   container.style("display", "flex").style("align-items", "flex-start");
 
-  // ensure a place for filters (hidden until checkbox checked)
-  let filterContainer = container.select(".time-filters");
-  if (filterContainer.empty()) {
-    filterContainer = container
-      .insert("div", ":first-child")
-      .attr("class", "time-filters")
-      .style("margin-bottom", "16px");
-  }
-  filterContainer.style("display", "none");
-
-  // ensure the legend container exists
-  let legendContainer = container.select(".legend");
+  // ensure the legend container exists in the specified legendContainerId
+  const legendContainer = d3.select(`#${legendContainerId}`);
   if (legendContainer.empty()) {
-    legendContainer = container.append("div").attr("class", "legend");
+    console.error(`Legend container with ID '${legendContainerId}' not found.`);
+    return;
   }
 
   // create a tooltip element
@@ -73,15 +64,25 @@ export function clockGraph(containerId, config = {}) {
     // Variable to track current highlighted class
     let highlightedClass = null;
     
-    // Calculate responsive inner and outer radii
+    // Calculate responsive inner and outer radii using CSS custom properties
+    const computedStyle = getComputedStyle(document.documentElement);
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const INNER_R = Math.min(viewportWidth, viewportHeight) * 0.025; // N% of the smaller dimension
-    const OUTER_R = Math.min(viewportWidth, viewportHeight) * 0.4; // N% of the smaller dimension
-    const eventStroke = 1.5;
-    // SVG sizing
-    const w = window.innerWidth * 0.85;
-    const h = window.innerHeight;
+    const minDimension = Math.min(viewportWidth, viewportHeight);
+    
+    // Get scaling factors from CSS custom properties
+    const innerRadiusScale = parseFloat(computedStyle.getPropertyValue('--clock-inner-radius-scale')) || 0.025;
+    const outerRadiusScale = parseFloat(computedStyle.getPropertyValue('--clock-outer-radius-scale')) || 0.4;
+    const widthScale = parseFloat(computedStyle.getPropertyValue('--clock-width-scale')) || 0.75;
+    
+    const INNER_R = minDimension * innerRadiusScale;
+    const OUTER_R = minDimension * outerRadiusScale;
+    const eventStroke = viewportWidth < 600 ? 1.2 : 1.5; // Slightly thinner lines on mobile
+    
+    // SVG sizing - get dimensions from container rather than hardcoded viewport percentages
+    const containerRect = container.node().getBoundingClientRect();
+    const w = containerRect.width || viewportWidth * widthScale;
+    const h = containerRect.height || viewportHeight;
     const svg = container
       .select("svg").empty() ? container.append("svg") : container.select("svg")
       .attr("width", w)
@@ -279,8 +280,11 @@ export function clockGraph(containerId, config = {}) {
       };
     });
     labelTimes.forEach(({ label, angle: a }) => {
-      const textX = cx + (OUTER_R + 45) * Math.cos(a);
-      const textY = cy + (OUTER_R + 25) * Math.sin(a);
+      // Responsive label positioning - closer on mobile, further on desktop
+      const labelOffset = viewportWidth < 600 ? 35 : 45;
+      const labelVerticalOffset = viewportWidth < 600 ? 20 : 25;
+      const textX = cx + (OUTER_R + labelOffset) * Math.cos(a);
+      const textY = cy + (OUTER_R + labelVerticalOffset) * Math.sin(a);
       const textElement = svg.append("text")
         .attr("x", textX)
         .attr("y", textY)
@@ -296,6 +300,7 @@ export function clockGraph(containerId, config = {}) {
       .sort((a, b) => b[1] - a[1])
       .map(([cls, count]) => ({ name: idxToNameMap[cls] || `Unknown (${cls})`, count, cls }));
     let lockedClass = null; // Track which class (if any) is locked by click
+
     // Helper to unlock and restore opacities
     function unlockClass() {
       lockedClass = null;
@@ -305,6 +310,7 @@ export function clockGraph(containerId, config = {}) {
           return computeOpacity(lineData);
         });
     }
+
     // Listen for outside clicks to unlock
     function handleDocumentClick(event) {
       if (lockedClass === null) return;
@@ -318,10 +324,11 @@ export function clockGraph(containerId, config = {}) {
     svg.on("remove", function() {
       document.removeEventListener("mousedown", handleDocumentClick);
     });
+
     // Create debounced handler functions for legend hover
     const handleLegendOut = debounce(function() {
       if (lockedClass !== null) return; // Don't restore if locked
-      
+
       // Only reset if no other legend item has taken focus
       if (highlightedClass !== null) {
         highlightedClass = null;
@@ -331,7 +338,7 @@ export function clockGraph(containerId, config = {}) {
           });
       }
     }, 150); // slightly longer debounce for legend items
-    
+
     const legendItem = legendContainer
       .selectAll(".item")
       .data(items)
@@ -339,7 +346,7 @@ export function clockGraph(containerId, config = {}) {
       .attr("class", "item")
       .on("mouseover", function(event, d) {
         if (lockedClass !== null) return; // Don't highlight if locked
-        
+
         highlightedClass = d.cls;
         g.selectAll("line.event-line")
           .attr("opacity", lineData => (lineData.class === d.cls ? 1 : 0.1));
@@ -424,13 +431,39 @@ export function clockGraph(containerId, config = {}) {
       }
 
       draw(filteredData, tsMin, tsMax, config, idxToNameMap, legendContainer, container, tooltip);
+      
+      // Store current data for resize events
+      currentData = filteredData;
+      currentTsMin = tsMin;
+      currentTsMax = tsMax;
+      currentIdxToNameMap = idxToNameMap;
+      
       if (typeof config.onDataReady === "function") config.onDataReady();
       if (typeof config.onD3End === "function") config.onD3End();
-      window.addEventListener("resize", () => draw(filteredData, tsMin, tsMax, config, idxToNameMap, legendContainer, container, tooltip));
     });
   }).catch((error) => {
     console.error("Failed to load the mapping JSON:", error);
   });
+
+  // Debounced resize handler for responsive behavior
+  function handleResize() {
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (currentData && currentTsMin && currentTsMax && currentIdxToNameMap) {
+        draw(currentData, currentTsMin, currentTsMax, config, currentIdxToNameMap, legendContainer, container, tooltip);
+      }
+    }, 150); // 150ms debounce
+  }
+
+  // Add resize event listener
+  window.addEventListener("resize", handleResize);
+
+  // Cleanup function for resize listener
+  if (window._clockResizeCleanup) window._clockResizeCleanup();
+  window._clockResizeCleanup = () => {
+    window.removeEventListener("resize", handleResize);
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+  };
 
   //  MOVING WINDOW LOGIC 
   let windowOffsetSeconds = 0; // Offset in seconds from initial window (increases by 30s every interval)
@@ -445,12 +478,11 @@ export function clockGraph(containerId, config = {}) {
     const fetchConfig = {
       ...config,
       offsetHours: offsetHoursWithWindow,
-      // Remove callbacks to avoid recursion
+      // Remove callbacks to avoid recursion, but keep onDataReady for first load
       onApiFetchStart: undefined,
       onApiFetchEnd: undefined,
       onD3Start: undefined,
       onD3End: undefined,
-      onDataReady: undefined,
     };
     // Callbacks for diagnostics
     if (typeof config.onApiFetchStart === "function") config.onApiFetchStart();
@@ -508,9 +540,16 @@ export function clockGraph(containerId, config = {}) {
           return;
         }
         draw(filteredData, tsMin, tsMax, config, idxToNameMap, legendContainer, container, tooltip);
+        
+        // Update stored data for resize events
+        currentData = filteredData;
+        currentTsMin = tsMin;
+        currentTsMax = tsMax;
+        currentIdxToNameMap = idxToNameMap;
+        
         if (typeof config.onD3End === "function") config.onD3End();
-        window.addEventListener("resize", () => draw(filteredData, tsMin, tsMax, config, idxToNameMap, legendContainer, container, tooltip));
-        if (typeof config.onDataReady === "function") config.onDataReady();
+        // Call onDataReady for initial load (when windowOffsetSeconds is 0)
+        if (windowOffsetSeconds === 0 && typeof config.onDataReady === "function") config.onDataReady();
       });
     });
   }
