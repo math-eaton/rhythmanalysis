@@ -1,0 +1,54 @@
+# Version control
+.git/
+.gitignore
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+venv/
+env/
+*.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Output (will be volume mounted)
+output/
+*.dump
+
+# PM2
+ecosystem.config.cjs
+
+# Documentation
+readme.md
+*.md
+!DOCKER.md
+
+# Miscellaneous
+.cache/
+*.tmp
+*.bak
+rhythmanalysis.dump

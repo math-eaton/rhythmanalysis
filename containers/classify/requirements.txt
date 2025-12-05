@@ -1,0 +1,19 @@
+# Core ML and numeric computing
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# TensorFlow Lite - architecture specific
+# For Raspberry Pi (ARM): use ai-edge-litert
+# For desktop (x86_64): use tensorflow-lite-runtime
+# The Dockerfile will install the appropriate one based on platform
+
+# Audio capture and processing
+sounddevice>=0.4.6
+# Note: portaudio19 is a system package, installed via apt/apk
+
+# MQTT communication
+paho-mqtt>=1.6.1
+
+# Timezone handling
+pytz>=2023.3

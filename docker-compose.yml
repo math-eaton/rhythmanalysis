@@ -1,0 +1,96 @@
+services:
+  # Audio classification service - captures audio and performs ML inference
+  classify:
+    build:
+      context: ./containers/classify
+      dockerfile: Dockerfile
+    container_name: rhythmanalysis-classify
+    restart: unless-stopped
+    devices:
+      - /dev/snd:/dev/snd  # USB audio device access
+    privileged: true  # Required for ALSA on Raspberry Pi
+    environment:
+      - MQTT_BROKER=${MQTT_BROKER}
+      - MQTT_PORT=${MQTT_PORT}
+      - MQTT_USERNAME=${MQTT_USERNAME}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
+      - MQTT_TOPIC=${MQTT_TOPIC}
+      - CONFIDENCE_THRESHOLD=${CONFIDENCE_THRESHOLD}
+      - TZ=${TZ}
+    volumes:
+      # Mount model files (read-only)
+      - ./scripts/models/yamnet:/app/models/yamnet:ro
+      # Mount output directory for CSV backups
+      - ./output:/app/output
+    mem_limit: 300m
+    mem_reservation: 256m
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "classify.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - rhythmanalysis
+
+  # MQTT to PostgreSQL publisher
+  publish:
+    build:
+      context: ./containers/publish
+      dockerfile: Dockerfile
+    container_name: rhythmanalysis-publish
+    restart: unless-stopped
+    depends_on:
+      classify:
+        condition: service_healthy
+    environment:
+      - MQTT_BROKER=${MQTT_BROKER}
+      - MQTT_PORT=${MQTT_PORT}
+      - MQTT_USERNAME=${MQTT_USERNAME}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
+      - MQTT_TOPIC=${MQTT_TOPIC}
+      - POSTGRES_URL=${POSTGRES_URL}
+      - TZ=${TZ}
+    mem_limit: 150m
+    mem_reservation: 128m
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "publish.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - rhythmanalysis
+
+  # API server for data visualization
+  api:
+    build:
+      context: ./containers/api
+      dockerfile: Dockerfile
+    container_name: rhythmanalysis-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - POSTGRES_URL=${POSTGRES_URL}
+      - PORT=3000
+      - NODE_ENV=production
+      - TZ=${TZ}
+    mem_limit: 256m
+    mem_reservation: 128m
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/audio_logs/count"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - rhythmanalysis
+
+networks:
+  rhythmanalysis:
+    driver: bridge
+
+volumes:
+  output:
+    driver: local

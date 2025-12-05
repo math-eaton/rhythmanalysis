@@ -1,0 +1,5 @@
+# MQTT communication
+paho-mqtt>=1.6.1
+
+# PostgreSQL database
+psycopg2-binary>=2.9.9
