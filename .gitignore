@@ -15,6 +15,7 @@ classification-tflite/
 dbconfig.*
 backups/
 *.csv
+!yamnet_class_map.csv
 
 # platformio
 .pio
